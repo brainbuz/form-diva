@@ -1,0 +1,32 @@
+<htmL>
+<head>
+<title>Author Test for DIVA</title>
+<!--
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script src="/static/js/jquery.h5validate.js"></script>
+-->
+</head>
+<body>
+ 
+[% # Note That the '-' at the beginning or end of TT code  -%]
+[% # "chomps" the whitespace/newline at that end of the    -%]
+[% # output (use View Source in browser to see the effect) -%]
+ 
+[% # Some basic HTML with a loop to display books -%]
+
+<p>[% author.id %]</p>
+<p>[% author.last_name %], [% author.first_name %]</P>
+
+<p><form>
+<p><label="breakfast"><input type="number" name="breakfast", id="breakfast">
+<p><input type="submit" name="submit" value="Submit">
+<input type="reset" name="reset" value="Reset"></P>
+</form>
+<!--
+<script>
+    $(document).ready(function () {
+    $('form').h5Validate();
+    });
+</script>
+-->
+</body></html>
