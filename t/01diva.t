@@ -23,4 +23,14 @@ is( $newform->[0]{placeholder}, 'Your Name', 'value from p got moved to placehol
 is( $newform->[3]{name}, 'our_id', 'last record in test is named our_id' );
 is( $newform->[3]{extra}, 'disabled', 'last record extra field has value disabled' );
 
+my $rehashed = &Form::Diva::_map_form_as_hash( $diva->{form} );
+
+my $data1 = {
+        name => 'spaghetti', 
+        our_id => 1,
+        email => 'dinner@food.food', };
+
+my $test1 = $diva->generate( $data1 );
+for( @{$test1} ) { note( $_->{label} ); } 
+
 done_testing();
