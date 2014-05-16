@@ -7,7 +7,7 @@ use 5.018;
 use_ok( 'Form::Diva' );
 
 my $diva = Form::Diva->new( 
-label_class => '',
+label_class => 'testclass',
 input_class => 'form-control',
 form        => [ 
     { n => 'name', t => 'text', p => 'Your Name', l => 'Full Name' },
@@ -23,7 +23,9 @@ is( $newform->[0]{placeholder}, 'Your Name', 'value from p got moved to placehol
 is( $newform->[3]{name}, 'our_id', 'last record in test is named our_id' );
 is( $newform->[3]{extra}, 'disabled', 'last record extra field has value disabled' );
 
-my $rehashed = &Form::Diva::_map_form_as_hash( $diva->{form} );
+#my $rehashed = &Form::Diva::_map_form_as_hash( $newform );
+#my @rhkeys = keys %{$rehashed};
+#note ( "@rhkeys" );
 
 my $data1 = {
         name => 'spaghetti', 
@@ -31,6 +33,8 @@ my $data1 = {
         email => 'dinner@food.food', };
 
 my $test1 = $diva->generate( $data1 );
-for( @{$test1} ) { note( $_->{label} ); } 
+for( @{$test1} ) { note( $_->{label}, "\n", $_->{input} ); } 
+my $test2 = $diva->generate(  );
+for( @{$test2} ) { note( $_->{label}, "\n", $_->{input} ); } 
 
 done_testing();
