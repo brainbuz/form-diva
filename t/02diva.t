@@ -33,7 +33,7 @@ my $labels1 = Form::Diva->new(
     label_class => 'testclass',
     input_class => 'form-control',
     form        => [
-        { name => 'withlabels', type => 'radio', 
+        { name => 'withlabels', type => 'radio', default => 1,
         values => [ 
         	"1:Peruvian Music", 
         	"2:Argentinian Dance",
@@ -49,20 +49,20 @@ is( $newform->[0]{type}, 'radio',
 is( $testradio1values->[2], 'Canadian', 'Test _expandshortcuts for values' );
 
 my $radio_nodata_expected =<< 'RNDX' ;
-<input type="radio" name="radiotest" value="American">American<br>
-<input type="radio" name="radiotest" value="English">English<br>
-<input type="radio" name="radiotest" value="Canadian">Canadian<br>
+<input type="radio" class="form-control"  name="radiotest" value="American" >American<br>
+<input type="radio" class="form-control"  name="radiotest" value="English" >English<br>
+<input type="radio" class="form-control"  name="radiotest" value="Canadian" >Canadian<br>
 RNDX
 my $check_nodata_expected =<< 'CNDX' ;
-<input type="checkbox" name="checktest" value="French">French<br>
-<input type="checkbox" name="checktest" value="Irish">Irish<br>
-<input type="checkbox" name="checktest" value="Russian">Russian<br>
+<input type="checkbox" class="form-control"  name="checktest" value="French" >French<br>
+<input type="checkbox" class="form-control"  name="checktest" value="Irish" >Irish<br>
+<input type="checkbox" class="form-control"  name="checktest" value="Russian" >Russian<br>
 CNDX
 
 my $labels1_nodata_expected =<< 'NDDX';
-<input type="radio" name="withlabels" value="1">Peruvian Music<br>
-<input type="radio" name="withlabels" value="2">Argentinian Dance<br>
-<input type="radio" name="withlabels" value="3">Cuban<br>
+<input type="radio" class="form-control"  name="withlabels" value="1" checked >Peruvian Music<br>
+<input type="radio" class="form-control"  name="withlabels" value="2" >Argentinian Dance<br>
+<input type="radio" class="form-control"  name="withlabels" value="3" >Cuban<br>
 NDDX
 
 my @radio1_nodata = @{ $radio1->generate };
@@ -73,87 +73,32 @@ my @labels1_nodata = @{ $labels1->generate} ;
 is( $labels1_nodata[0]->{input}, $labels1_nodata_expected , 
 	'generated radio with labels and values.');
 
-
-=pod
-my $diva1 = Form::Diva->new(
+my $classoverride1 = Form::Diva->new(
     label_class => 'testclass',
     input_class => 'form-control',
     form        => [
-        { n => 'name', t => 'text', p => 'Your Name', l => 'Full Name' },
-        { name => 'phone', type => 'tel', extra => 'required' },
-        {qw / n email t email l Email /},
-        { name => 'our_id', type => 'number', extra => 'disabled' },
+        { n => 'radiotest', t => 'radio', c => 'not-default', extra =>'disabled',
+        v => [ qw /American English Canadian/ ] },
     ],
 );
 
-my $newform = &Form::Diva::_expandshortcuts( $diva1->{form} );
-is( $newform->[0]{p},     undef,       'record 0 p is undef' );
-is( $newform->[0]{label}, 'Full Name', 'record 0 label is Full Name' );
-is( $newform->[0]{placeholder},
-    'Your Name', 'value from p got moved to placeholder' );
-is( $newform->[3]{name}, 'our_id', 'last record in test is named our_id' );
-is( $newform->[3]{extra},
-    'disabled', 'last record extra field has value disabled' );
+like( $labels1_nodata[0]->{input}, qr/class="form-control"/ ,
+		"The default class is being used." );
+my @classoverridden = @{$classoverride1->generate};
+like( $classoverridden[0]->{input}, qr/class="not-default"/ ,
+		"The default class has been overridden." );
+like( $classoverridden[0]->{input}, qr/disabled/ ,
+		"Check the extra field, we set value to disabled." );
 
-#my $rehashed = &Form::Diva::_map_form_as_hash( $newform );
-#my @rhkeys = keys %{$rehashed};
-#note ( "@rhkeys" );
-
-my $data1 = {
-    name   => 'spaghetti',
-    our_id => 1,
-    email  => 'dinner@food.food',
-};
-
-# my $test1 = $diva1->generate( $data1 );
-# for( @{$test1} ) { note( $_->{label}, "\n", $_->{input} ); }
-# my $test2 = $diva1->generate(  );
-# for( @{$test2} ) { note( $_->{label}, "\n", $_->{input} ); }
-
-my @html_types = (
-    {qw / n color t color l Colour /},
-    {qw / n date   t date   l Date /},
-    { n => 'datetime', t => 'datetime', l => 'Date Time' },
-    {   n => 'datetime-local',
-        t => 'datetime-local',
-        l => 'Localized Date Time'
-    	},
-    {qw / n email  t email  l Email /},
-    {qw / n month  t month  l Month /},
-    {qw / n number t number l Number /},
-    {qw / n yourpassword t password l YourSecretPassword /},
-    {qw / n range  t range  l Range /},
-    {qw / n search t search l Search/},
-    {qw / n tel    t tel    l Telephone /},
-    {qw / n url    t url    l URL /},
-    {qw / n week   t week   l Week /},
-);
-
-note('Testing all of the html form field types');
-my $diva_html_types = Form::Diva->new(
+my $textarea1 = Form::Diva->new(
     label_class => 'testclass',
     input_class => 'form-control',
-    form        => dclone( \@html_types ),
-);
-my @html_field_types_form = @{ $diva_html_types->generate() };
-for ( my $i = 0; $i < scalar(@html_types); $i++ ) {
-    my %data = %{ $html_types[$i] };
-    my %res  = %{ $html_field_types_form[$i] };
-    note("");
-    is( $res{label},
-        qq!<LABEL for="$data{n}" class="testclass">$data{l}</LABEL>!,
-        "Testing Field Type: $data{t} Label Validated"
-    );
+    form        => [
+        { n => 'textarea', t => 'textarea', 
+        v => [ qw /American English Canadian/ ] },
+    ],
+); 
 
-    #note( $res{input} ) ;
-    is( $res{input},
-        qq!<INPUT TYPE="$data{t}" name="$data{n}" >!,
-        "Testing Field Type: $data{t}. Input Field validated"
-    );
 
-    #last;
-}
-
-=cut
 
 done_testing();

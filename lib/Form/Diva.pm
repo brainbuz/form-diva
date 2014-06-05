@@ -47,31 +47,62 @@ sub _expandshortcuts {
 sub _class_input {
     my $self   = shift;
     my $field  = shift;
-    my $fname  = $field->{name};
     my $fclass = $field->{class} || '';
     if   ($fclass) { return qq!class="$fclass"! }
     else           { return qq!class="$self->{input_class}"! }
 }
 
 =pod
-type: radio
-values: [ 'Male', 'Female']
- <form>
-}
-<input type="radio" name="sex" value="male">Male<br>
-<input type="radio" name="sex" value="female">Female
-</form> 
+Need to work on Pre selected Checkbox radio syntax is the same.
+the states need to come from data not source. 
+We can make a check box pre selected (checked) even before the users try to select, using the entry "checked"
+
+Example Code:
+<form name=myform>
+<input type="checkbox" name=mybox value="1" checked>one
+<input type="checkbox" name=mybox value="2" >two
+<input type="checkbox" name=mybox value="3" checked>three
+</form>
+
+Result:
+one two three
+
+Non Editable / Non Selectable check box
+We can make a Checkbox non selectable (disable) using the entry "disabled"
+
+Example:
+<form name=myform>
+<input type="checkbox" name=mybox value="1" disabled>one
+<input type="checkbox" name=mybox value="2" disabled>two
+<input type="checkbox" name=mybox value="3" disabled>three
+</form>
+
+<input type="radio" name=myradio value="1" >one
+<input type="radio" name=myradio value="2" checked>two
+<input type="radio" name=myradio value="1" disabled>one
 =cut
 
-sub _radiocheck {
+# Note need to check default field and disable disabled fields
+# this needs to be implemented after data is being handled because 
+# default is irrelevant if there is data.
+
+sub _radiocheck { # field, input_class, data;
     my $self        = shift;
     my $field       = shift;
     my $input_class = shift;
+    my $data        = shift;
     my $output      = '';
+    my $extra       = $field->{extra }   || "" ;  
+    my $default      = $field->{default} ?
+        do{ if ( $data ) { undef } else { $field->{default }} } : undef;
+    if( $field->{disabled}) { $extra .= ' disabled '}
     foreach my $val ( @{ $field->{values} } ) {
         my ( $value, $v_lab ) = ( split( /\:/, $val ), $val );
-        $output .= qq!<input type="$field->{type}" name="$field->{name}" value="$value">$v_lab<br>\n!;
-    }
+        my $checked = '';
+        if ( $data eq $value ) { $checked = 'checked '}
+        elsif( $default eq $value ) { $checked = 'checked '}
+        $output .= qq!<input type="$field->{type}" $input_class $extra name="$field->{name}" value="$value" $checked>$v_lab<br>\n!;       
+    }   
     return $output;
 }
 
