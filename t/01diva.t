@@ -40,6 +40,12 @@ like( $processed1->[0]{input}, qr/class="form-control"/,
     'Row 0 has default class tag.');
 like( $processed1->[2]{input}, qr/class="form-email"/, 
     'Row 2 has over-ridden class tag.');    
+like( $processed1->[0]{input}, qr/value="spaghetti"/, 
+    'Row 0 has value of spaghetti.');
+unlike( $processed1->[1]{input}, qr/value/, 
+    'Row 1 has no value set.');
+like( $processed1->[2]{input}, qr/value="dinner\@food\.food"/, 
+    'Row 2 has a value like the email address.');
 # my $test1 = $diva1->generate( $data1 );
 # for( @{$test1} ) { note( $_->{label}, "\n", $_->{input} ); }
 # my $test2 = $diva1->generate(  );
@@ -74,19 +80,26 @@ my @html_field_types_form = @{ $diva_html_types->generate() };
 for ( my $i = 0; $i < scalar(@html_types); $i++ ) {
     my %data = %{ $html_types[$i] };
     my %res  = %{ $html_field_types_form[$i] };
-    note("Testing Field Type: $data{t}");
+#    note("Testing Field Type: $data{t}");
     is( $res{label},
         qq!<LABEL for="$data{n}" class="testclass">$data{l}</LABEL>!,
         "Label $data{l} generated for $data{t}"
     );
-
-    #note( $res{input} ) ;
     is( $res{input},
         qq!<INPUT TYPE="$data{t}" name="$data{n}" class="form-control">!,
         "Input Field validated for $data{t} -- $res{input}"
     );
-
-    #last;
 }
+
+my $data1_diva1 = {
+        name   => 'Maria Callas',
+        phone  => '212-MU5-3767',
+        email  => 'maria@yahoo.com',
+        our_id => 1487,
+    };
+
+my @f1_d1 = @{ $diva1->generate( $data1_diva1 ) };
+
+for ( @f1_d1 ) { note( "$_->{label} $_->{input}" ) }
 
 done_testing();

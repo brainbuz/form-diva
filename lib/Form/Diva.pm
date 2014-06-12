@@ -83,26 +83,31 @@ Example:
 =cut
 
 # Note need to check default field and disable disabled fields
-# this needs to be implemented after data is being handled because 
+# this needs to be implemented after data is being handled because
 # default is irrelevant if there is data.
 
-sub _radiocheck { # field, input_class, data;
+sub _radiocheck {    # field, input_class, data;
     my $self        = shift;
     my $field       = shift;
     my $input_class = shift;
     my $data        = shift;
     my $output      = '';
-    my $extra       = $field->{extra }   || "" ;  
-    my $default      = $field->{default} ?
-        do{ if ( $data ) { undef } else { $field->{default }} } : undef;
-    if( $field->{disabled}) { $extra .= ' disabled '}
+    my $extra       = $field->{extra} || "";
+    my $default     = $field->{default}
+        ? do {
+        if   ($data) {undef}
+        else         { $field->{default} }
+        }
+        : undef;
+    if ( $field->{disabled} ) { $extra .= ' disabled ' }
     foreach my $val ( @{ $field->{values} } ) {
         my ( $value, $v_lab ) = ( split( /\:/, $val ), $val );
         my $checked = '';
-        if ( $data eq $value ) { $checked = 'checked '}
-        elsif( $default eq $value ) { $checked = 'checked '}
-        $output .= qq!<input type="$field->{type}" $input_class $extra name="$field->{name}" value="$value" $checked>$v_lab<br>\n!;       
-    }   
+        if    ( $data    eq $value ) { $checked = 'checked ' }
+        elsif ( $default eq $value ) { $checked = 'checked ' }
+        $output
+            .= qq!<input type="$field->{type}" $input_class $extra name="$field->{name}" value="$value" $checked>$v_lab<br>\n!;
+    }
     return $output;
 }
 
@@ -124,21 +129,31 @@ sub generate {
             )
         {
             if ( $field->{type} eq $itype ) {
-                $input .= "<INPUT TYPE=\"$itype\" ";
+                $input = "<INPUT TYPE=\"$itype\" ";
             }
         }
-        if ( $field->{type} eq 'textarea' ) { }
+
+        # Textarea has option filed form="id" where id matches a form
+        # the form id should be passed through data.
+        # Textarea needs to be built after data structure.
+        if ( $field->{type} eq 'textarea' ) {
+            1;#...
+
+                # my $value = $data->
+                # $input = qq |<textarea name="$field->{name}"
+                # form="usrform">Enter text here...</textarea> |;
+        }
         elsif ( $field->{type} eq 'radio' || $field->{type} eq 'checkbox' ) {
             $input = $self->_radiocheck( $field, $input_class );
         }
         else {
-            $input .= "name=\"$field->{name}\" $input_class";
+            $input .= qq |name="$field->{name}" $input_class|;
 
            # attempting to read from data forces evaluation as a hashref
            # but empty data is set to 0 (false) because an empty hashref still
            # evaluates as true, an exception would be thrown.
             my $value = eval { $data->{ $field->{name} } };
-            if ($value) { $input .= "value=\"$value\" " }
+            if ($value) { $input .= " value=\"$value\" " }
 
             # placeholder is only placed in a new record, ie no data.
             unless ($data) {
@@ -148,6 +163,7 @@ sub generate {
                 }
             }
             $input .= '>';
+            $input =~ s/\s+/ /g; # remove extra whitespace.
         }
         push @generated, { label => $label, input => $input };
     }
