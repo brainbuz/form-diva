@@ -91,15 +91,4 @@ for ( my $i = 0; $i < scalar(@html_types); $i++ ) {
     );
 }
 
-my $data1_diva1 = {
-        name   => 'Maria Callas',
-        phone  => '212-MU5-3767',
-        email  => 'maria@yahoo.com',
-        our_id => 1487,
-    };
-
-my @f1_d1 = @{ $diva1->generate( $data1_diva1 ) };
-
-for ( @f1_d1 ) { note( "$_->{label} $_->{input}" ) }
-
 done_testing();

@@ -113,14 +113,21 @@ sub _radiocheck {    # field, input_class, data;
 
 sub generate {
     my $self      = shift;
-    my $data      = shift || 0;
+    my $data      = shift || undef;
     my @generated = ();
     foreach my $field ( @{ $self->{FormMap} } ) {
+        my $fname = $field->{name};
         my $label       = '';
+        my $extra   = $field->{extra} || '';
+        my $form = $data->{form_name} ?
+                qq!form="$data->{form_name}"! : '' ;
+        my $placeholder = $field->{placeholder};   
+        my $value = $data ?
+                $data->{ $fname } : $field->{default} ;   
         my $label_class = $self->{label_class};
         my $input_class = $self->_class_input($field);
         my $label_tag   = $field->{label} || ucfirst( $field->{name} );
-        my $label = qq|<LABEL for="$field->{name}" class="$label_class">|
+        my $label = qq|<LABEL for="$fname" class="$label_class">|
             . qq|$label_tag</LABEL>|;
         my $input = '';
         foreach my $itype (
@@ -133,15 +140,12 @@ sub generate {
             }
         }
 
-        # Textarea has option filed form="id" where id matches a form
+        # Textarea has option field form="id" where id matches a form
         # the form id should be passed through data.
         # Textarea needs to be built after data structure.
-        if ( $field->{type} eq 'textarea' ) {
-            1;#...
-
-                # my $value = $data->
-                # $input = qq |<textarea name="$field->{name}"
-                # form="usrform">Enter text here...</textarea> |;
+        if ( $field->{type} eq 'textarea' ) {      
+            $input = qq |<textarea $form $input_class $extra $placeholder
+            name="$fname">$value</textarea> |;
         }
         elsif ( $field->{type} eq 'radio' || $field->{type} eq 'checkbox' ) {
             $input = $self->_radiocheck( $field, $input_class );
@@ -152,7 +156,7 @@ sub generate {
            # attempting to read from data forces evaluation as a hashref
            # but empty data is set to 0 (false) because an empty hashref still
            # evaluates as true, an exception would be thrown.
-            my $value = eval { $data->{ $field->{name} } };
+            my $value = eval { $data->{ $fname } };
             if ($value) { $input .= " value=\"$value\" " }
 
             # placeholder is only placed in a new record, ie no data.
