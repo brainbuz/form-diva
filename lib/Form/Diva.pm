@@ -16,6 +16,7 @@ plus formlabel and forminput items that Diva generated.
 sub new {
     my $class = shift;
     my $self  = {@_};
+    unless ( $self->{form_name}) { die "form_name is mandatory"}
     bless $self, $class;
     $self->{class}   = $class;
     $self->{FormMap} = &_expandshortcuts( $self->{form} );
@@ -28,7 +29,7 @@ sub _expandshortcuts {
     my %DivaShortMap = (
         qw /
             n name t type i id e extra l label p placeholder
-            d default v values c class/
+            d default v values value values c class/
     );
     my %DivaLongMap = map { $DivaShortMap{$_}, $_ } keys(%DivaShortMap);
     my $FormMap = shift;
@@ -53,7 +54,26 @@ sub _class_input {
     else           { return qq!class="$self->{input_class}"! }
 }
 
+sub _field_bits {
+    my $self = shift ;
+    my $field_ref = shift ;
+    my $data = shift ;
+    my %in = %{$field_ref} ;
+    my %out = () ;
+    $out{input_class} = $self->_class_input($field_ref);
+    $out{label_class} = qq!class="$self->{label_class}"!;
+    $out{label_tag} = $in{label} || ucfirst( $in{name} );
+    $out{extra} = $in{extra};
+    $out{placeholder} = $data ? '' : qq!placeholder="$in{placeholder}"! ;
+    $out{value} = $data ? $data->{ $in{name} } : $in{default} ;
+    $out{name}  = $in{name};
+    $out{id} = $in{id} ? $in{id} : $in{name};
 
+    return %out;
+}
+
+sub _textarea { ... }
+sub _normalfield { ... }
 
 # Note need to check default field and disable disabled fields
 # this needs to be implemented after data is being handled because
