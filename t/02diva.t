@@ -49,20 +49,20 @@ is( $newform->[0]{type}, 'radio',
 is( $testradio1values->[2], 'Canadian', 'Test _expandshortcuts for values' );
 
 my $radio_nodata_expected =<< 'RNDX' ;
-<input type="radio" class="form-control"  name="radiotest" value="American" >American<br>
-<input type="radio" class="form-control"  name="radiotest" value="English" >English<br>
-<input type="radio" class="form-control"  name="radiotest" value="Canadian" >Canadian<br>
+<input type="radio" class="form-control" name="radiotest" value="American">American<br>
+<input type="radio" class="form-control" name="radiotest" value="English">English<br>
+<input type="radio" class="form-control" name="radiotest" value="Canadian">Canadian<br>
 RNDX
 my $check_nodata_expected =<< 'CNDX' ;
-<input type="checkbox" class="form-control"  name="checktest" value="French" >French<br>
-<input type="checkbox" class="form-control"  name="checktest" value="Irish" >Irish<br>
-<input type="checkbox" class="form-control"  name="checktest" value="Russian" >Russian<br>
+<input type="checkbox" class="form-control" name="checktest" value="French">French<br>
+<input type="checkbox" class="form-control" name="checktest" value="Irish">Irish<br>
+<input type="checkbox" class="form-control" name="checktest" value="Russian">Russian<br>
 CNDX
 
 my $labels1_nodata_expected =<< 'NDDX';
-<input type="radio" class="form-control"  name="withlabels" value="1" checked >Peruvian Music<br>
-<input type="radio" class="form-control"  name="withlabels" value="2" >Argentinian Dance<br>
-<input type="radio" class="form-control"  name="withlabels" value="3" >Cuban<br>
+<input type="radio" class="form-control" name="withlabels" value="1" checked>Peruvian Music<br>
+<input type="radio" class="form-control" name="withlabels" value="2">Argentinian Dance<br>
+<input type="radio" class="form-control" name="withlabels" value="3">Cuban<br>
 NDDX
 
 my @radio1_nodata = @{ $radio1->generate };
