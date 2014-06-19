@@ -61,14 +61,17 @@ sub _field_bits {
     my %in = %{$field_ref} ;
     my %out = () ;
     $out{input_class} = $self->_class_input($field_ref);
-    $out{label_class} = qq!class="$self->{label_class}"!;
-    $out{label_tag} = $in{label} || ucfirst( $in{name} );
+    $out{label_class} = $in{class} ?
+        qq!class="$in{class}"! :
+        qq!class="$self->{label_class}"! ;
+    $out{label_displaytext} = $in{label} || ucfirst( $in{name} );
     $out{extra} = $in{extra};
     $out{placeholder} = $data ? '' : qq!placeholder="$in{placeholder}"! ;
+warn   "$in{name} $in{default}"  ;
     $out{value} = $data ? $data->{ $in{name} } : $in{default} ;
     $out{name}  = $in{name};
     $out{id} = $in{id} ? $in{id} : $in{name};
-
+    $out{type} = $in{type};
     return %out;
 }
 
