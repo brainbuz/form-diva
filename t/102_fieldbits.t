@@ -1,8 +1,8 @@
 #!/usr/bin/env perl
 use strict;
-use warnings;
+use warnings; 
 use Test::More;
-use 5.018;
+use 5.014;
 use Storable qw(dclone);
 
 use_ok('Form::Diva');
@@ -27,6 +27,11 @@ my %email_no_data = $diva1->_field_bits( $fields[2] );
 my %ourid_no_data = $diva1->_field_bits( $fields[3] );
 for ( keys %name_no_data ) { note($_) }
 
+my $value_name_no_data = 57 ;
+my $value_phoe_no_data = undef ;
+
+note (  "default value for nametest is " . $fields[3]->{name} . ' ' . $fields[3]->{default} );
+
 foreach my $nametest (
     [ 'label_displaytext', 'Full Name' ],
     [ 'label_class',       'class="testclass"' ],
@@ -39,6 +44,8 @@ foreach my $nametest (
     my $testv = $nametest->[1];
     is( $name_no_data{$testf}, $testv, "name_no_data $testf = $testv" );
 }
+
+=pod
 TODO: {
 local $TODO = 'Dont have type yet.';
 
@@ -82,6 +89,8 @@ foreach my $ouridtest (
     is( $ourid_no_data{$testf}, $testv, "email_no_data $testf = $testv" );
 }
 }
+
+=cut
 
 done_testing;
 

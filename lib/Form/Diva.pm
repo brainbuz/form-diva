@@ -67,8 +67,6 @@ sub _field_bits {
     $out{label_displaytext} = $in{label} || ucfirst( $in{name} );
     $out{extra} = $in{extra};
     $out{placeholder} = $data ? '' : qq!placeholder="$in{placeholder}"! ;
-warn   "$in{name} $in{default}"  ;
-    $out{value} = $data ? $data->{ $in{name} } : $in{default} ;
     $out{name}  = $in{name};
     $out{id} = $in{id} ? $in{id} : $in{name};
     $out{type} = $in{type};
