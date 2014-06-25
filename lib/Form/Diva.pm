@@ -77,17 +77,8 @@ sub _field_bits {
     $out{label_displaytext} = $in{label} || ucfirst( $in{name} );
     $out{extra} = $in{extra};
     $out{placeholder} = $data ? '' : qq!placeholder="$in{placeholder}"! ;
-# warn "before";
-# warn Dumper(\%out);
-# warn Dumper(\%in);
+    $out{value} = $in{default} ;
 
-#warn "rebar $in{ name } $in{rebar}";    
-    $out{default}=$in{default};
-    $out{value} = $in{rebar};
-#warn "rebar $out{name} $out{rebar}";      
-# warn "after";
-# warn Dumper(\%out);
-# warn Dumper(\%in);
     $out{name}  = $in{name};
     $out{id} = $in{id} ? $in{id} : $in{name};
     $out{type} = $in{type};

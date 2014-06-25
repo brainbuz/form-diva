@@ -32,7 +32,8 @@ sub tester {
     my $test_name    = shift ;
     my $test0        = shift ;
     my $test1        = shift ;
-    is( $test_results->{$test0}, $test1, "$test_name : $test0 : $test1" );
+    my $note1 = $test1 || 'undef' ;
+    is( $test_results->{$test0}, $test1, "$test_name : $test0 : $note1" );
 }
 
 foreach my $nametest (
@@ -77,7 +78,7 @@ foreach my $ouridtest (
 	[ 'type', 'number' ], 
 	[ 'extra', 'disabled'],
 	[ 'name', 'our_id'],
-	[ 'default' , 57 ],  
+	[ 'value' , 57 ],  
 	)
 	{
     tester( \%ourid_no_data, 'OurId No Data', 
