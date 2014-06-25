@@ -54,6 +54,16 @@ sub _class_input {
     else           { return qq!class="$self->{input_class}"! }
 }
 
+# sub _field_value {
+    # my $self = shift ;
+    # my $data = shift ;
+    # my $fname = shift ;
+    # if ( $data->{'_blank'} ) { }
+    # elsif ( $data->{ $fname } ){
+        # $data->{ value } = 
+        
+use Data::Dumper;
+
 sub _field_bits {
     my $self = shift ;
     my $field_ref = shift ;
@@ -67,11 +77,24 @@ sub _field_bits {
     $out{label_displaytext} = $in{label} || ucfirst( $in{name} );
     $out{extra} = $in{extra};
     $out{placeholder} = $data ? '' : qq!placeholder="$in{placeholder}"! ;
+# warn "before";
+# warn Dumper(\%out);
+# warn Dumper(\%in);
+
+#warn "rebar $in{ name } $in{rebar}";    
+    $out{default}=$in{default};
+    $out{value} = $in{rebar};
+#warn "rebar $out{name} $out{rebar}";      
+# warn "after";
+# warn Dumper(\%out);
+# warn Dumper(\%in);
     $out{name}  = $in{name};
     $out{id} = $in{id} ? $in{id} : $in{name};
     $out{type} = $in{type};
     return %out;
 }
+    
+    
 
 sub _textarea { ... }
 sub _normalfield { ... }

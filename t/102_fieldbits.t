@@ -25,29 +25,30 @@ my %name_no_data  = $diva1->_field_bits( $fields[0] );
 my %phone_no_data = $diva1->_field_bits( $fields[1] );
 my %email_no_data = $diva1->_field_bits( $fields[2] );
 my %ourid_no_data = $diva1->_field_bits( $fields[3] );
-for ( keys %name_no_data ) { note($_) }
+#for ( keys %name_no_data ) { note($_) }
 
-my $value_name_no_data = 57 ;
-my $value_phoe_no_data = undef ;
-
-note (  "default value for nametest is " . $fields[3]->{name} . ' ' . $fields[3]->{default} );
+sub tester {
+    my $test_results = shift;
+    my $test_name    = shift ;
+    my $test0        = shift ;
+    my $test1        = shift ;
+    is( $test_results->{$test0}, $test1, "$test_name : $test0 : $test1" );
+}
 
 foreach my $nametest (
     [ 'label_displaytext', 'Full Name' ],
     [ 'label_class',       'class="testclass"' ],
     [ 'input_class',       'class="form-control"' ],
     [ 'placeholder',       'placeholder="Your Name"' ],
-    [ 'value', 57 ],
+    [ 'value', undef ],
     )
 {
-    my $testf = $nametest->[0];
-    my $testv = $nametest->[1];
-    is( $name_no_data{$testf}, $testv, "name_no_data $testf = $testv" );
-}
+    tester( \%name_no_data, 'Name No Data', 
+            $nametest->[0], $nametest->[1] );
+        }
 
-=pod
-TODO: {
-local $TODO = 'Dont have type yet.';
+# TODO: {
+# local $TODO = 'Dont have type yet.';
 
 foreach my $phonetest ( 
 	[ 'type', 'tel' ], 
@@ -56,13 +57,9 @@ foreach my $phonetest (
     [ 'id' , 'not name'],
     [ 'label_displaytext', 'Phone'],
 	) {
-    my $testf = $phonetest->[0];
-    my $testv = $phonetest->[1];
-    is( $phone_no_data{$testf}, $testv, "phone_no_data $testf = $testv" );
-}
-}
-TODO: {
-local $TODO = 'EMAIL.';
+    tester( \%phone_no_data, 'Phone No Data', 
+            $phonetest->[0], $phonetest->[1] );
+        }
 
 foreach my $emailtest ( 
 	[ 'type', 'email' ], 
@@ -70,28 +67,23 @@ foreach my $emailtest (
 	[ 'placeholder', 'placeholder="doormat"'],
 	[ 'id', 'email'],
 	[ 'name', 'email'],	
-	) {
-    my $testf = $emailtest->[0];
-    my $testv = $emailtest->[1];
-    is( $email_no_data{$testf}, $testv, "email_no_data $testf = $testv" );
-}
-}
-
-TODO: {
-local $TODO = 'OURID.';
-
+	) 
+	{
+    tester( \%email_no_data, 'Email No Data', 
+            $emailtest->[0], $emailtest->[1] );
+        }
+ 
 foreach my $ouridtest ( 
 	[ 'type', 'number' ], 
 	[ 'extra', 'disabled'],
-	) {
-    my $testf = $ouridtest->[0];
-    my $testv = $ouridtest->[1];
-    is( $ourid_no_data{$testf}, $testv, "email_no_data $testf = $testv" );
-}
-}
-
-=cut
-
+	[ 'name', 'our_id'],
+	[ 'default' , 57 ],  
+	)
+	{
+    tester( \%ourid_no_data, 'OurId No Data', 
+            $ouridtest->[0], $ouridtest->[1] );
+        }
+        
 done_testing;
 
 #value needs data
