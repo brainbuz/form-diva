@@ -109,7 +109,12 @@ sub _label {
 }
 
 sub _textarea { ... }
-sub _normalfield { ... }
+sub _input { 
+    my $self = shift ;
+    my $field = shift ;
+    my $data = shift ;
+
+}
 
 # Note need to check default field and disable disabled fields
 # this needs to be implemented after data is being handled because
@@ -147,23 +152,15 @@ sub generate {
     my @generated = ();
     foreach my $field ( @{ $self->{FormMap} } ) {
         my $fname = $field->{name};
-        my $label       = '';
         my $extra   = $field->{extra} || '';
         my $form = $data->{form_name} ?
                 qq!form="$data->{form_name}"! : '' ;
         my $value = $data ?
                 $data->{ $fname } : $field->{default} ;   
-        my $label_class = $self->{label_class};
         my $input_class = $self->_class_input($field);
-        my $label_tag   = $field->{label} || ucfirst( $field->{name} );
-
         my $placeholder = $data ? 
             '' : 
             do { if ($field->{placeholder}) {"placeholder=\"$field->{placeholder}\""}};
-#my $placeholder     = "placeholder=\"$field->{placeholder}\"";   
-
-        $label .= qq|<LABEL for="$fname" class="$label_class">|
-            . qq|$label_tag</LABEL>|;
         my $input = '';
         foreach my $itype (
             qw / text color date datetime datetime-local
@@ -198,7 +195,9 @@ warn "Textarea Placeholder ? $placeholder"            ;
         }
         $input =~ s/  +/ /g; # remove extra whitespace.
         $input =~ s/\s+>/>/g ; # cleanup space before closing >
-        push @generated, { label => $label, input => $input };
+        push @generated, { 
+            label => $self->_label( $field ),
+            input => $input };
     }
     return \@generated;
 }
