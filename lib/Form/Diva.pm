@@ -94,8 +94,19 @@ sub _field_bits {
     $out{value} = qq!value="$out{rawvalue}"!;
     return %out;
 }
-    
-    
+
+# Generate Label
+# 
+sub _label {
+    my $self = shift ;
+    my $field = shift ;
+    my $fname = $field->{name} ;
+    my $label_class = $self->{label_class};
+    my $label_tag   = $field->{label} || ucfirst( $fname );
+    return qq|<LABEL for="$fname" class="$label_class" |
+            . qq|form="$self->{form_name}">|
+            . qq|$label_tag</LABEL>|;
+}
 
 sub _textarea { ... }
 sub _normalfield { ... }

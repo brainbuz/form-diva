@@ -1,0 +1,65 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use Test::More;
+use 5.014;
+use Storable qw(dclone);
+
+use_ok('Form::Diva');
+
+my $diva1 = Form::Diva->new(
+    form_name   => 'DIVA1',
+    label_class => 'testclass',
+    input_class => 'form-control',
+    form        => [
+        { n => 'fullname', t => 'text', p => 'Your Name', l => 'Full Name' },
+        {   name  => 'phone',
+            type  => 'tel',
+            extra => 'required',
+            id    => 'not name',
+        },
+        {qw / n email t email l Email c form-email placeholder doormat/},
+        {   name    => 'our_id',
+            type    => 'number',
+            extra   => 'disabled',
+            default => 57,
+        },
+    ],
+);
+
+my $diva2 = Form::Diva->new(
+    form_name   => 'DIVA2',
+    label_class => 'testclass',
+    input_class => 'form-control',
+    form        => [
+        {   n => 'radiotest',
+            t => 'radio',
+            v => [qw /American English Canadian/]
+        },
+    ],
+);
+
+my @fields      = @{ $diva1->{FormMap} };
+my @radiofields = @{ $diva2->{FormMap} };
+foreach my $test (
+    [   $diva1->_label( $fields[0] ),
+        '<LABEL for="fullname" class="testclass" form="DIVA1">Full Name</LABEL>'
+    ],
+    [   $diva1->_label( $fields[1] ),
+        '<LABEL for="phone" class="testclass" form="DIVA1">Phone</LABEL>'
+    ],
+    [   $diva1->_label( $fields[2] ),
+        '<LABEL for="email" class="testclass" form="DIVA1">Email</LABEL>'
+    ],
+    [   $diva1->_label( $fields[3] ),
+        '<LABEL for="our_id" class="testclass" form="DIVA1">Our_id</LABEL>'
+    ],
+    [   $diva2->_label( $radiofields[0] ),
+        '<LABEL for="radiotest" class="testclass" form="DIVA2">Radiotest</LABEL>'
+    ],
+    )
+{
+    is( $test->[0], $test->[1], "$test->[1]" );
+}
+
+done_testing;
