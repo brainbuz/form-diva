@@ -1,6 +1,6 @@
 package Form::Diva;
 
-use 5.014;
+use 5.010;
 
 =pod
 

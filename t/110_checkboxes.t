@@ -12,6 +12,7 @@ use_ok('Form::Diva');
 =cut
 
 my $radio1 = Form::Diva->new(
+    form_name   => 'DIVA110',
     label_class => 'testclass',
     input_class => 'form-control',
     form        => [
@@ -21,6 +22,7 @@ my $radio1 = Form::Diva->new(
 );
 
 my $check1 = Form::Diva->new(
+    form_name   => 'DIVA110A',
     label_class => 'testclass',
     input_class => 'form-control',
     form        => [
@@ -30,6 +32,7 @@ my $check1 = Form::Diva->new(
 );
 
 my $labels1 = Form::Diva->new(
+    form_name   => 'DIVA110B',
     label_class => 'testclass',
     input_class => 'form-control',
     form        => [
@@ -74,6 +77,7 @@ is( $labels1_nodata[0]->{input}, $labels1_nodata_expected ,
 	'generated radio with labels and values.');
 
 my $classoverride1 = Form::Diva->new(
+    form_name   => 'override',
     label_class => 'testclass',
     input_class => 'form-control',
     form        => [
