@@ -70,18 +70,28 @@ sub _field_bits {
     my $data = shift ;
     my %in = %{$field_ref} ;
     my %out = () ;
+    my $fname = $in{name};
     $out{input_class} = $self->_class_input($field_ref);
     $out{label_class} = $in{class} ?
         qq!class="$in{class}"! :
         qq!class="$self->{label_class}"! ;
     $out{label_displaytext} = $in{label} || ucfirst( $in{name} );
     $out{extra} = $in{extra};
-    $out{placeholder} = $data ? '' : qq!placeholder="$in{placeholder}"! ;
-    $out{value} = $in{default} ;
-
     $out{name}  = $in{name};
     $out{id} = $in{id} ? $in{id} : $in{name};
     $out{type} = $in{type};
+
+    if ( $data ) {
+        $out{placeholder} = '';
+        $out{rawvalue} = $data->{$fname} || '' ;
+    } else {
+        if ( $in{placeholder}) { 
+            $out{placeholder} = qq!placeholder="$in{placeholder}"! }
+        else { $out{placeholder} = '' }
+        if ( $in{default}) { $out{rawvalue} = $in{default}; }
+        else { $out{rawvalue} = '' }
+    }
+    $out{value} = qq!value="$out{rawvalue}"!;
     return %out;
 }
     
