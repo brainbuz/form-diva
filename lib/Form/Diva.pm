@@ -108,11 +108,11 @@ sub _input {
     my %B     = $self->_field_bits( $field, $data );
     my $input = '';
     if ( $B{textarea} ) {
-        $input = qq|<TEXTAREA $B{id} $B{name} form="$self->{form_name}"
+        $input = qq|<TEXTAREA $B{name} $B{id} form="$self->{form_name}"
         $B{input_class} $B{placeholder} $B{extra} >$B{rawvalue}</TEXTAREA>|;
     }
     else {
-        $input .= qq|<INPUT $B{type} $B{id} $B{name} form="$self->{form_name}"
+        $input .= qq|<INPUT $B{type} $B{name} $B{id} form="$self->{form_name}"
         $B{input_class} $B{value} $B{placeholder} $B{extra} >|;
     }
     $input =~ s/\s+/ /g;     # remove extra whitespace.
@@ -155,50 +155,12 @@ sub generate {
     unless ( keys %{$data} ) { $data = undef }
     my @generated = ();
     foreach my $field ( @{ $self->{FormMap} } ) {
-        my $fname = $field->{name};
-        my $extra = $field->{extra} || '';
-        my $form  = $data->{form_name} ? qq!form="$data->{form_name}"! : '';
-        my $value = $data ? $data->{$fname} : $field->{default};
-        my $input_class = $self->_class_input($field);
-        my $placeholder
-            = $data
-            ? ''
-            : do {
-            if ( $field->{placeholder} ) {
-                "placeholder=\"$field->{placeholder}\"";
-            }
-            };
-        my $input = '';
-        foreach my $itype (
-            qw / text color date datetime datetime-local
-            email month number range search tel time url week password/
-            )
-        {
-            if ( $field->{type} eq $itype ) {
-                $input = "<INPUT TYPE=\"$itype\" ";
-            }
-        }
-
-        # Textarea has option field form="id" where id matches a form
-        # the form id should be passed through data.
-        # Textarea needs to be built after data structure.
-        if ( $field->{type} eq 'textarea' ) {
-            $input = qq |<textarea $form $input_class $extra $placeholder
-            name="$fname">$value</textarea> |;
-            warn "Textarea Placeholder ? $placeholder";
-        }
-        elsif ( $field->{type} eq 'radio' || $field->{type} eq 'checkbox' ) {
-            $input = $self->_radiocheck( $field, $input_class );
+        my $input = undef;
+        if ( $field->{type} eq 'radio' || $field->{type} eq 'checkbox' ) {
+            $input = $self->_radiocheck( $field, $self->_class_input($field) );
         }
         else {
-            $input .= qq |name="$field->{name}" $input_class $placeholder|;
-
-           # attempting to read from data forces evaluation as a hashref
-           # but empty data is set to 0 (false) because an empty hashref still
-           # evaluates as true, an exception would be thrown.
-            my $value = eval { $data->{$fname} };
-            if ($value) { $input .= " value=\"$value\" " }
-            $input .= '>';
+            $input = $self->_input( $field, $data);
         }
         $input =~ s/  +/ /g;     # remove extra whitespace.
         $input =~ s/\s+>/>/g;    # cleanup space before closing >

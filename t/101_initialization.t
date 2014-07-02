@@ -45,8 +45,8 @@ like( $processed1->[2]{input}, qr/class="form-email"/,
     'Row 2 has over-ridden class tag.');    
 like( $processed1->[0]{input}, qr/value="spaghetti"/, 
     'Row 0 has value of spaghetti.');
-unlike( $processed1->[1]{input}, qr/value/, 
-    'Row 1 has no value set.');
+like( $processed1->[1]{input}, qr/value=""/, 
+    'Row 1 has empty value set.');
 like( $processed1->[2]{input}, qr/value="dinner\@food\.food"/, 
     'Row 2 has a value like the email address.');
 
@@ -80,13 +80,12 @@ my @html_field_types_form = @{ $diva_html_types->generate() };
 for ( my $i = 0; $i < scalar(@html_types); $i++ ) {
     my %data = %{ $html_types[$i] };
     my %res  = %{ $html_field_types_form[$i] };
-#    note("Testing Field Type: $data{t}");
     my $labelStr = qq!<LABEL for="$data{n}"!;
     like( $res{label},
         qr/$labelStr/,
         "Label $labelStr generated for $data{t}"
     );
-    my $inptStr = qq!<INPUT TYPE="$data{t}" name="$data{n}"!;
+    my $inptStr = qq!<INPUT type="$data{t}" name="$data{n}"!;
     like( $res{input},
         qr/$inptStr/,
         "Input Field validated for $data{t} -- $inptStr"
