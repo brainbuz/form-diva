@@ -2,6 +2,22 @@ package Form::Diva;
 
 use 5.010;
 
+our $VERSION = '0.01'; # VERSION
+
+=head1 NAME
+ 
+Form::Diva Form Generation Helper
+
+=head1 VERSION
+ 
+version 0.01
+ 
+=head1 SYNOPSIS
+ 
+Generate Form Label and Input Tags from a simple data structure.
+Simplify form code in your views without replacing it with a lot of even
+uglier Perl Code in your Controller. 
+
 =pod
 
 FormMap hash of components of a form
@@ -175,4 +191,41 @@ sub generate {
 
 1;
 
-=pod
+=head1 AUTHOR
+
+John Karr, C<< <brainbuz at brainbuz.org> >>
+
+=head1 BUGS
+
+Please report any bugs or feature requests through the web interface at L<https://bitbucket.org/brainbuz/formdiva/issues>.  I will be notified, and then you'll automatically be notified of progress on your bug as I make changes.
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Form::Diva
+
+You can also look for information at:
+
+=head1 ACKNOWLEDGEMENTS
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2014 John Karr.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see L<http://www.gnu.org/licenses/>.
+
+=cut
+
+1; # End of Form::Diva
