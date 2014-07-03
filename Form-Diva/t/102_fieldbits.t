@@ -25,6 +25,7 @@ my $diva1 = Form::Diva->new(
             type    => 'number',
             extra   => 'disabled',
             default => 57,
+            class => 'other-class shaded-green',
         },
         {   n => 'longtext',
             type => 'TextArea',
@@ -144,6 +145,7 @@ foreach my $ouridtest (
     [ 'name',     'name="our_id"' ],
     [ 'rawvalue', 57 ],
     [ 'value',    'value="57"' ],
+    [ 'input_class', 'class="other-class shaded-green"' ],
     )
 {
     tester( \%ourid_no_data, 'OurId No Data',

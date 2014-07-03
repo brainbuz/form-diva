@@ -4,6 +4,8 @@ use 5.010;
 
 our $VERSION = '0.01'; # VERSION
 
+# ABSTRACT: Form Generation Helper
+
 =head1 NAME
  
 Form::Diva Form Generation Helper
