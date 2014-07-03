@@ -4,6 +4,7 @@ use warnings;
 use Test::More;
 use 5.014;
 use Storable qw(dclone);
+use Test::Exception 0.32;
 
 use_ok('Form::Diva');
 
@@ -18,6 +19,13 @@ my $diva1 = Form::Diva->new(
         { name => 'our_id', type => 'number', extra => 'disabled' },
     ],
 );
+
+dies_ok( 
+    sub { my $baddiva = Form::Diva->new(
+    label_class => 'testclass',
+    input_class => 'form-control',
+    form        => [{qw / n email t email l Email /}, ],
+    ) }, 'Not providing a Form Name is Fatal' );
 
 my $newform = &Form::Diva::_expandshortcuts( $diva1->{form} );
 is( $newform->[0]{p},     undef,       'record 0 p is undef' );

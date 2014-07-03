@@ -1,6 +1,9 @@
+use strict;
+use warnings;
+no warnings 'uninitialized';
 package Form::Diva;
 
-use 5.010;
+# use 5.014;
 
 our $VERSION = '0.01'; # VERSION
 
@@ -153,9 +156,8 @@ sub _radiocheck {            # field, input_class, data;
         ? do {
         if   ($data) {undef}
         else         { $field->{default} }
-        }
+        } 
         : undef;
-    if ( $field->{disabled} ) { $extra .= ' disabled ' }
     foreach my $val ( @{ $field->{values} } ) {
         my ( $value, $v_lab ) = ( split( /\:/, $val ), $val );
         my $checked = '';
@@ -175,7 +177,8 @@ sub generate {
     foreach my $field ( @{ $self->{FormMap} } ) {
         my $input = undef;
         if ( $field->{type} eq 'radio' || $field->{type} eq 'checkbox' ) {
-            $input = $self->_radiocheck( $field, $self->_class_input($field) );
+            $input = $self->_radiocheck( 
+            	$field, $self->_class_input($field), $data->{ $field->{name} } );
         }
         else {
             $input = $self->_input( $field, $data);
@@ -195,7 +198,7 @@ sub generate {
 
 =head1 AUTHOR
 
-John Karr, C<< <brainbuz at brainbuz.org> >>
+John Karr, C<brainbuz at brainbuz.org>
 
 =head1 BUGS
 
@@ -230,4 +233,5 @@ along with this program.  If not, see L<http://www.gnu.org/licenses/>.
 
 =cut
 
-1; # End of Form::Diva
+1;
+
