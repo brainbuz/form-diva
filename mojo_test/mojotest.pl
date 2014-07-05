@@ -1,7 +1,6 @@
 #!/usr/bin/env perl
 use Mojolicious::Lite;
-use Form::Diva;
-#use Data::GUID::Any 'guid_as_string';
+use Form::DivaZ;
 
 # Documentation browser under "/perldoc"
 plugin 'PODRenderer';
@@ -9,7 +8,7 @@ plugin 'PODRenderer';
 app->secrets(['My very secret passphrase.']);
 my $log = Mojo::Log->new;
 
-my $diva1 = Form::Diva->new(
+my $diva1 = Form::DivaZ->new(
     form_name   => 'DIVA1',
     label_class => 'col-sm-3 control-label',
     input_class => 'form-control',
@@ -51,17 +50,14 @@ post '/form1' => sub {
   my $c = shift;
     $c->stash( form_name => $diva1->form_name) ;
     my %data = ();
-    my @params = $c->param ;
-$log->info( "what was recieved @params")    ;
-     $data{name} =  $c->req->param('name'); 
-$log->info( 'The Grand ' . $c->req->param('grand') );      
-    # ( $data{name}, $data{id}, $data{phone}, $data{email}) =
-    # 	$c->param( 'name', 'id', 'phone', 'email');
-$log->info( 'post data')    	;
-foreach my $k ( keys %data) {
-	$log->info( "$k : $data{$k}") ;
-}
-    $c->stash( form1 => $diva1->generate( \%data ) );
+    my @params = $c->param ;;
+    foreach my $pram ( $c->param ) { $data{$pram} = $c->req->param($pram) }  
+    if( $data{our_id} == 57 ) { 
+    	$data{our_id} = int(rand(10000)); 
+    }
+    $c->stash( 
+    		form1 => $diva1->generate( \%data ));
+    $c->stash( massage => "params @params \nid set to $data{our_id}" );
   $c->render('form1');
 };
 

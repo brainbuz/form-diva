@@ -138,12 +138,12 @@ sub _input {
     my %B     = $self->_field_bits( $field, $data );
     my $input = '';
     if ( $B{textarea} ) {
-        $input = qq|<TEXTAREA $B{name} $B{id} form="$self->{form_name}"
+        $input = qq|<TEXTAREA $B{name} $B{id}"
         $B{input_class} $B{placeholder} $B{extra} >$B{rawvalue}</TEXTAREA>|;
     }
     else {
-        $input .= qq|<INPUT $B{type} $B{name} 
-        $B{input_class} $B{placeholder} $B{extra} >|;
+        $input .= qq|<INPUT $B{type} $B{name} $B{id}"
+        $B{input_class} $B{placeholder} $B{extra} $B{value} >|;
     }
 
     # if ( $B{textarea} ) {
@@ -153,7 +153,7 @@ sub _input {
     # else {
     #     $input .= qq|<INPUT $B{type} $B{name} $B{id} form="$self->{form_name}"
     #     $B{input_class} $B{value} $B{placeholder} $B{extra} >|;
-    # }    
+    # }
     $input =~ s/\s+/ /g;     # remove extra whitespace.
     $input =~ s/\s+>/>/g;    # cleanup space before closing >
     return $input;
