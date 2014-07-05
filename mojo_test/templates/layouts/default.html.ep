@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<title><%= title %></title>
+  	<link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  </head>
+  <body><div class="container">
+  <%= content %>
+  <p>The template was used!</p>
+  </div></body>
+</html>
+
+

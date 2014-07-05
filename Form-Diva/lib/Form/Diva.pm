@@ -1,11 +1,12 @@
 use strict;
 use warnings;
 no warnings 'uninitialized';
+
 package Form::Diva;
 
 # use 5.014;
 
-our $VERSION = '0.01'; # VERSION
+our $VERSION = '0.0102';    # VERSION
 
 # ABSTRACT: Form Generation Helper
 
@@ -44,6 +45,11 @@ sub new {
     return $self;
 }
 
+sub form_name {
+    my $self = shift ;
+    return $self->{form_name} ;
+}
+
 # specification calls for single letter shortcuts on all fields
 # these all need to expand to the long form.
 sub _expandshortcuts {
@@ -61,6 +67,8 @@ sub _expandshortcuts {
                     = delete $formfield->{$tag};
             }
         }
+        unless ( $formfield->{type} ) { $formfield->{type} = 'text'  }
+        unless ( $formfield->{name} ) { die "fields must have names" }     
     }
     return $FormMap;
 }
@@ -86,12 +94,13 @@ sub _field_bits {
     $out{input_class} = $self->_class_input($field_ref);
     $out{name}        = qq!name="$in{name}"!;
     $out{id}          = $in{id} ? qq!id="$in{id}"! : qq!id="$in{name}"!;
+
     if ( lc( $in{type} ) eq 'textarea' ) {
         $out{type}     = 'textarea';
         $out{textarea} = 1;
     }
-    else { 
-        $out{type} = qq!type="$in{type}"!; 
+    else {
+        $out{type}     = qq!type="$in{type}"!;
         $out{textarea} = 0;
     }
     if ($data) {
@@ -156,7 +165,7 @@ sub _radiocheck {            # field, input_class, data;
         ? do {
         if   ($data) {undef}
         else         { $field->{default} }
-        } 
+        }
         : undef;
     foreach my $val ( @{ $field->{values} } ) {
         my ( $value, $v_lab ) = ( split( /\:/, $val ), $val );
@@ -177,11 +186,14 @@ sub generate {
     foreach my $field ( @{ $self->{FormMap} } ) {
         my $input = undef;
         if ( $field->{type} eq 'radio' || $field->{type} eq 'checkbox' ) {
-            $input = $self->_radiocheck( 
-            	$field, $self->_class_input($field), $data->{ $field->{name} } );
+            $input = $self->_radiocheck(
+                $field,
+                $self->_class_input($field),
+                $data->{ $field->{name} }
+            );
         }
         else {
-            $input = $self->_input( $field, $data);
+            $input = $self->_input( $field, $data );
         }
         $input =~ s/  +/ /g;     # remove extra whitespace.
         $input =~ s/\s+>/>/g;    # cleanup space before closing >

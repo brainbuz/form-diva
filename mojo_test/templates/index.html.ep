@@ -1,0 +1,5 @@
+% layout 'default';
+% title 'Welcome';
+<h1>Welcome to the Mojolicious real-time web framework!</h1>
+<p>This Page Generated from a template file.</p>
+

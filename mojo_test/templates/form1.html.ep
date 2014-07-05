@@ -1,0 +1,50 @@
+% layout 'default';
+% title 'Form1';
+% use Time::Piece;
+% my $now = localtime;
+% my $form_name = stash 'form_name';
+<h1>Form Diva. Test Form 1</h1>
+<form class="form-horizontal well col-md-8" role="form"
+  method="post" action="" name="<%=$form_name%>" >  
+<input type="hidden" name="grand" value="poobah">
+
+<div class="form-group">
+% foreach my $field (@$form1) {
+	<%== $field->{'label'} %>
+    <div class="col-sm-8">
+		<%== $field->{'input'} %>
+	</div>  
+% }
+</div>
+<div class="form-group">
+    <div class="col-sm-offset-3 col-sm-8">
+      <input type="submit" class="btn btn-large btn-primary" 
+      name="submit" value="submit_me" >&nbsp;
+      <input type="reset" value="reset" class="btn btn-large btn-primary">&nbsp;
+      <a class="btn btn-large btn-primary" 
+          href="/form1">New</a>
+    </div>
+  </div>
+</form>
+
+<pre>
+<%= $now->cdate %>
+</pre>
+
+<%#
+  <div class="form-group">
+    <label for="[% field.n %]" 
+      class="col-sm-3 control-label">[% IF field.label %][% field.label %]
+  [% ELSE %][% field.n FILTER ucfirst %]
+  [% END %]: </label>
+    <div class="col-sm-8">
+      <input type="text" class="form-control" id="[% field.n %]" 
+      name="[% field.n %]"
+      [% field.extra %] 
+      [% IF field.default %]default="[% field.default %]"[% END %]      
+      [% IF new %]placeholder="[% field.placeholder %]"[% END %]
+        value="[% SET fv = field.n %][% item.$fv %]">
+    </div>
+  </div>
+ %>
+

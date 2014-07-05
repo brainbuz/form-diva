@@ -20,23 +20,43 @@ my $diva1 = Form::Diva->new(
     ],
 );
 
+my $diva2 = Form::Diva->new(
+    label_class => 'testclass',
+    input_class => 'form-control',
+    form_name => 'diva2',
+    form        => [
+        { n => 'something' },
+    ],
+);
+
 dies_ok( 
     sub { my $baddiva = Form::Diva->new(
     label_class => 'testclass',
     input_class => 'form-control',
     form        => [{qw / n email t email l Email /}, ],
-    ) }, 'Not providing a Form Name is Fatal' );
+    ) }, 'Dies: Not providing a Form Name is Fatal' );
+dies_ok(
+    sub { my $baddiva = Form::Diva->new(
+    label_class => 'testclass',
+    input_class => 'form-control',
+    form        => [{qw /t email l Email /}, ],
+    ) }, 'Dies: Not providing a Field Name is Fatal' );
 
 my $newform = &Form::Diva::_expandshortcuts( $diva1->{form} );
-is( $newform->[0]{p},     undef,       'record 0 p is undef' );
 is( $newform->[0]{label}, 'Full Name', 'record 0 label is Full Name' );
+is( $newform->[0]{p},     undef,       'record 0 p is undef' );
 is( $newform->[0]{placeholder},
     'Your Name', 'value from p got moved to placeholder' );
 is( $newform->[2]{placeholder},
     'doormat', 'placeholder set for the email field too' );
 is( $newform->[3]{name}, 'our_id', 'last record in test is named our_id' );
 is( $newform->[3]{extra},
-    'disabled', 'last record extra field has value disabled' );
+    'disabled', 'last record extra field is: disabled' );
+my $form2 = $diva2->{form};
+is( $form2->[0]{name}, 'something', 
+    'Second form has a name: something');
+is( $form2->[0]{type}, 'text', 
+    'Second form: field type defaulted to text');
 
 
 done_testing();
