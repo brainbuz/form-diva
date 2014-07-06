@@ -2,13 +2,12 @@
 use strict;
 use warnings;
 use Test::More;
-use 5.014;
+#use 5.014;
 use Storable qw(dclone);
 
 use_ok('Form::Diva');
 
 my $diva1 = Form::Diva->new(
-    form_name   => 'DIVA1',
     label_class => 'testclass',
     input_class => 'form-control',
     form        => [
@@ -28,7 +27,6 @@ my $diva1 = Form::Diva->new(
 );
 
 my $diva2 = Form::Diva->new(
-    form_name   => 'DIVA2',
     label_class => 'testclass',
     input_class => 'form-control',
     form        => [
@@ -43,19 +41,19 @@ my @fields      = @{ $diva1->{FormMap} };
 my @radiofields = @{ $diva2->{FormMap} };
 foreach my $test (
     [   $diva1->_label( $fields[0] ),
-        '<LABEL for="fullname" class="testclass" form="DIVA1">Full Name</LABEL>'
+        '<LABEL for="fullname" class="testclass">Full Name</LABEL>'
     ],
     [   $diva1->_label( $fields[1] ),
-        '<LABEL for="phone" class="testclass" form="DIVA1">Phone</LABEL>'
+        '<LABEL for="phone" class="testclass">Phone</LABEL>'
     ],
     [   $diva1->_label( $fields[2] ),
-        '<LABEL for="email" class="testclass" form="DIVA1">Email</LABEL>'
+        '<LABEL for="email" class="testclass">Email</LABEL>'
     ],
     [   $diva1->_label( $fields[3] ),
-        '<LABEL for="our_id" class="testclass" form="DIVA1">Our_id</LABEL>'
+        '<LABEL for="our_id" class="testclass">Our_id</LABEL>'
     ],
     [   $diva2->_label( $radiofields[0] ),
-        '<LABEL for="radiotest" class="testclass" form="DIVA2">Radiotest</LABEL>'
+        '<LABEL for="radiotest" class="testclass">Radiotest</LABEL>'
     ],
     )
 {

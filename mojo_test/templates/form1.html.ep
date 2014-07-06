@@ -5,7 +5,7 @@
 %# my $form_name = stash 'form_name';
 <h1>Form Diva. Test Form 1</h1>
 <form class="form-horizontal well col-md-8" role="form"
-  method="post" action="/form1" name="<%=$form_name%>" >  
+  method="post" action="/form1" name="DIVA1" >  
 <input type="hidden" name="grand" value="poobah">
 
 <div class="form-group">

@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 use Mojolicious::Lite;
-use Form::DivaZ;
+use Form::Diva;
 
 # Documentation browser under "/perldoc"
 plugin 'PODRenderer';
@@ -8,8 +8,7 @@ plugin 'PODRenderer';
 app->secrets(['My very secret passphrase.']);
 my $log = Mojo::Log->new;
 
-my $diva1 = Form::DivaZ->new(
-    form_name   => 'DIVA1',
+my $diva1 = Form::Diva->new(
     label_class => 'col-sm-3 control-label',
     input_class => 'form-control',
     form        => [
@@ -25,14 +24,13 @@ my $diva1 = Form::DivaZ->new(
             default => 57,
             class => 'other-class shaded-green',
         },
+        {   name    => 'trivial' },        
         {   n => 'longtext',
             type => 'TextArea',
             placeholder => 'Type some stuff here',
         }        
     ],
 );
-
-
 
 get '/' => sub {
   my $c = shift;
@@ -41,14 +39,12 @@ get '/' => sub {
 
 get '/form1' => sub {
   my $c = shift;
-    $c->stash( form_name => $diva1->form_name) ;
     $c->stash( form1 => $diva1->generate );
   $c->render('form1');
 };
 
 post '/form1' => sub {
   my $c = shift;
-    $c->stash( form_name => $diva1->form_name) ;
     my %data = ();
     my @params = $c->param ;;
     foreach my $pram ( $c->param ) { $data{$pram} = $c->req->param($pram) }  

@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Test::More;
-use 5.014;
+#use 5.014;
 use Storable qw(dclone);
 
 use_ok('Form::Diva');
@@ -10,7 +10,6 @@ use_ok('Form::Diva');
 # need to test field level class over-ride in here.
 
 my $diva1 = Form::Diva->new(
-    form_name   => 'DIVA1',
     label_class => 'testclass',
     input_class => 'form-control',
     form        => [
@@ -29,7 +28,8 @@ my $diva1 = Form::Diva->new(
         {   n => 'longtext',
             type => 'TextArea',
             placeholder => 'Type some stuff here',
-        }
+        },
+        {   name    => 'trivial' },         
     ],
 );
 
@@ -76,8 +76,6 @@ my $ourid_no_data2_tr = $diva1->_input( $fields[3], $data2 );
 note( "Input Element for Our_ID Data2 $ourid_no_data2_tr");
 like( $ourid_no_data2_tr, qr/value="91"/, 
     'Value is not default but actual value: value="91"');
-like( $ourid_no_data2_tr, qr/form="DIVA1"/, 
-    'Form is named: form="DIVA1"');
 
 my $textarea_tr = $diva1->_input( $fields[4],  );
 note( "Input Element for textarea $textarea_tr");
@@ -88,5 +86,13 @@ like(   $textarea_data2_tr,
         qr/>I typed things in here!<\/TEXTAREA>/, 
         'TextArea has value and closing tag');
 
+note( 'Test a field where we only provided a name.');
+my $trivial_tr = $diva1->_input( $fields[5],  );
+like(   $trivial_tr, 
+        qr/name="trivial"/, 
+        'Input has field name');
+like(   $trivial_tr, 
+        qr/type="text"/, 
+        'Input is a text field');
 
 done_testing;

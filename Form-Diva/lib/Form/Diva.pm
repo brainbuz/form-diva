@@ -6,48 +6,17 @@ package Form::Diva;
 
 # use 5.014;
 
-our $VERSION = '0.0102';    # VERSION
-
-# ABSTRACT: Form Generation Helper
-
-=head1 NAME
- 
-Form::Diva Form Generation Helper
-
-=head1 VERSION
- 
-version 0.01
- 
-=head1 SYNOPSIS
- 
-Generate Form Label and Input Tags from a simple data structure.
-Simplify form code in your views without replacing it with a lot of even
-uglier Perl Code in your Controller. 
-
-=pod
-
-FormMap hash of components of a form
-
-FormData a structure of data that is presented to Form::Diva for translation
-
-FormObjects an object returned by Form::Diva containing both the original FormData
-plus formlabel and forminput items that Diva generated.
-
-=cut
+our $VERSION = '0.0103';    # VERSION
 
 sub new {
     my $class = shift;
     my $self  = {@_};
-    unless ( $self->{form_name} ) { die "form_name is mandatory" }
     bless $self, $class;
     $self->{class}   = $class;
+    unless( $self->{input_class}) { die 'input_class is required.' }
+    unless( $self->{label_class}) { die 'label_class is required.' }
     $self->{FormMap} = &_expandshortcuts( $self->{form} );
     return $self;
-}
-
-sub form_name {
-    my $self = shift ;
-    return $self->{form_name} ;
 }
 
 # specification calls for single letter shortcuts on all fields
@@ -55,7 +24,7 @@ sub form_name {
 sub _expandshortcuts {
     my %DivaShortMap = (
         qw /
-            n name t type i id e extra l label p placeholder
+            n name t type i id e extra x extra l label p placeholder
             d default v values value values c class/
     );
     my %DivaLongMap = map { $DivaShortMap{$_}, $_ } keys(%DivaShortMap);
@@ -126,8 +95,7 @@ sub _label {
     my $label_class = $self->{label_class};
     my $label_tag   = $field->{label} || ucfirst($fname);
     return
-          qq|<LABEL for="$fname" class="$label_class" |
-        . qq|form="$self->{form_name}">|
+          qq|<LABEL for="$fname" class="$label_class">|
         . qq|$label_tag</LABEL>|;
 }
 
@@ -138,12 +106,12 @@ sub _input {
     my %B     = $self->_field_bits( $field, $data );
     my $input = '';
     if ( $B{textarea} ) {
-        $input = qq|<TEXTAREA $B{name} $B{id} form="$self->{form_name}"
+        $input = qq|<TEXTAREA $B{name} $B{id}"
         $B{input_class} $B{placeholder} $B{extra} >$B{rawvalue}</TEXTAREA>|;
     }
     else {
-        $input .= qq|<INPUT $B{type} $B{name} $B{id} form="$self->{form_name}"
-        $B{input_class} $B{value} $B{placeholder} $B{extra} >|;
+        $input .= qq|<INPUT $B{type} $B{name} $B{id}"
+        $B{input_class} $B{placeholder} $B{extra} $B{value} >|;
     }
     $input =~ s/\s+/ /g;     # remove extra whitespace.
     $input =~ s/\s+>/>/g;    # cleanup space before closing >
@@ -207,6 +175,153 @@ sub generate {
 }
 
 1;
+
+=head1 NAME
+ 
+Form::Diva - Generate HTML5 form label and input fields
+
+=head1 SYNOPSIS
+ 
+Generate Form Label and Input Tags from a simple data structure.
+Simplify form code in your views without replacing it without a lot of even
+uglier Perl Code in your Controller. 
+
+Drastically reduce form clutter in your View Templates with small Data Structures.
+
+=head1 DESCRIPTION
+
+Create a new instance of Form::Diva from an array_ref of hash_refs describing each field of your form. The most common attributes have a single letter abbreviation to reduce typing.
+
+Return a similar structure of the label and input attributes ready for inclusion in a web page by your templating system.
+
+=head1 USAGE
+
+ use Form::Diva;
+
+ my $diva = Form::Diva->new(
+    label_class => 'col-sm-3 control-label',
+    input_class => 'form-control',
+    form        => [
+        { n => 'name', t => 'text', p => 'Your Name', l => 'Full Name' },
+        { name => 'phone', type => 'tel', extra => 'required' },
+        {qw / n email t email l Email c form-email placeholder doormat/},
+    ],
+ );
+
+ my $fields = $diva->generate;
+ my $filledfields = $diva->generate( $hashref_of_data );
+
+Once you send this to your stash or directly to the templating system the form might look like:
+
+  <form class="form-horizontal well col-md-8" role="form"
+   method="post" action="/form1" name="DIVA1" >  
+
+  <div class="form-group">
+In Template Toolkit:
+  [% FOREACH field IN diva %] {
+    [% field.label %]
+    <div class="col-sm-8">
+        [% field.input %]
+    </div>
+  [% END %]
+Or in Mojo::Template
+  % foreach my $field (@$diva) {
+    <%== $field->{'label'} %>
+    <div class="col-sm-8">
+        <%== $field->{'input'} %>
+    </div>
+ % }
+
+ </div>
+
+ <div class="form-group">
+    <div class="col-sm-offset-3 col-sm-8">
+      <input type="submit" class="btn btn-large btn-primary" 
+      name="submit" value="submit_me" >&nbsp;
+    </div>
+ </div>
+ </form>
+
+=head1 METHODS
+
+=head2 new
+
+Create a new object from a Data Structure ().
+
+=head2 generate
+
+When called without arguments returns the blank form with placeholders and value set to default or null if there is no default.
+
+When provided an optional hashref it sets values based on the hashref and suppresses placeholder. 
+
+The data returned is in the form of an array reference with a hash reference for the label and input attributes.
+
+=head2 spawn
+
+Not yet implemented. The same as generate but specify which fields to include and or change field order.
+
+=head1 The Form::Diva Data Structure
+
+ { label_class => 'some class in your css',
+   input_class => 'some class in your css',
+   form        => [
+        { name => 'some_field_name', ... },
+        ...
+   ],
+ }
+
+=head2 label_class, input_class
+
+Specify the contents the label's class attribute and the input's class attribute. The input_class can be over-ridden for a single field by using the c/class attribute in a field definition.
+
+=head2 form
+
+Form::Diva knows about the most frequently needed attributes in HTML5 label and input tags. The attribute extra is provided to handle valueless attributes like required and attributes that are not explicitly supported by Form::Diva. Each supported tag has a single character shortcut. When no values in a field definition require spaces the shortcuts make it extremely compact to describe a field using qw/. 
+
+The only required value in a field definition is name. When not specified type defaults to text. 
+
+Multivalued fields are not currently supported, but may be in the future.
+
+Supported attributes and their shortcuts
+
+ c       class        over-ride input_class for this field
+ d       default      sets value for an empty form
+ e       extra        any other attribute(s)
+ i       id           defaults to name
+ l       label        defaults to ucfirst(name)
+ n       name         field name -- required
+ p       placeholder  placeholder to show in an empty form
+ t       type         checkbox, radio, textarea or any input types
+                      type defaults to text input type
+ x       extra        any attribute(s) not already provided
+ v       values       for radio and checkbox inputs only
+ value   values       for radio and checkbox inputs only
+
+d/default sets value when an empty form is returned. 
+
+v/value/values is only used for Radio and CheckBox input types. 
+
+=head2 extra attribute
+
+The contents of extra are placed verbatim in the input tag. Use for HTML5 attributes that have no value such as disabled and any of the other attributes you may wish to use in your forms that have not been implemented.
+
+=head3 Common Attributes with no Value
+
+=over 1
+
+=item disabled
+=item readonly
+=item required
+
+=back
+
+Should be placed in the extra field when needed.
+
+=head1 PHILOSOPHY
+
+I've tried to use some of the other Form Handler modules on CPAN in the past and found that all they accomplished was moving code from my View to my Controller. As cluttered as a form may become it is easier to read as html, and easier for someone who hasn't committed to using the same form library to comprehend. I developed my own shorthand for defining a form, allowing me to write the elements in a loop, (incorporated as the definition shortcuts) but still requiring too much processing in the view. 
+
+Unlike other Form Generators Form::Diva doesn't even generate the entire form, just the elements. Generating form tags and buttons is in my opinion the job of the view. Form::Diva can potentially be placed in the Model, View, or Controller, when outside of the View it should bring as little of the View as possible with it. 
 
 =head1 AUTHOR
 
