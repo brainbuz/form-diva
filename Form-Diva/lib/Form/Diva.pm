@@ -1,12 +1,8 @@
 use strict;
 use warnings;
-no warnings 'uninitialized';
+no  warnings 'uninitialized';
 
 package Form::Diva;
-
-# use 5.014;
-
-our $VERSION = '0.0103';    # VERSION
 
 sub new {
     my $class = shift;
@@ -25,7 +21,7 @@ sub _expandshortcuts {
     my %DivaShortMap = (
         qw /
             n name t type i id e extra x extra l label p placeholder
-            d default v values value values c class/
+            d default v values c class/
     );
     my %DivaLongMap = map { $DivaShortMap{$_}, $_ } keys(%DivaShortMap);
     my $FormMap = shift;
@@ -204,7 +200,9 @@ Return a similar structure of the label and input attributes ready for inclusion
     form        => [
         { n => 'name', t => 'text', p => 'Your Name', l => 'Full Name' },
         { name => 'phone', type => 'tel', extra => 'required' },
-        {qw / n email t email l Email c form-email placeholder doormat/},
+        { qw / n email t email l Email c form-email placeholder doormat/},
+        { name => 'myradio', type => 'radio', default => 1,
+           values => [ "1:Yes", "2:No", "3:Maybe" ] },   
     ],
  );
 
@@ -218,14 +216,14 @@ Once you send this to your stash or directly to the templating system the form m
 
   <div class="form-group">
 In Template Toolkit:
-  [% FOREACH field IN diva %] {
+  [% FOREACH field IN fields %] {
     [% field.label %]
     <div class="col-sm-8">
         [% field.input %]
     </div>
   [% END %]
 Or in Mojo::Template
-  % foreach my $field (@$diva) {
+  % foreach my $field (@$fields) {
     <%== $field->{'label'} %>
     <div class="col-sm-8">
         <%== $field->{'input'} %>
@@ -286,42 +284,42 @@ Supported attributes and their shortcuts
 
  c       class        over-ride input_class for this field
  d       default      sets value for an empty form
- e       extra        any other attribute(s)
+ e,x     extra        any other attribute(s)
  i       id           defaults to name
  l       label        defaults to ucfirst(name)
  n       name         field name -- required
  p       placeholder  placeholder to show in an empty form
  t       type         checkbox, radio, textarea or any input types
                       type defaults to text input type
- x       extra        any attribute(s) not already provided
  v       values       for radio and checkbox inputs only
- value   values       for radio and checkbox inputs only
-
-d/default sets value when an empty form is returned. 
-
-v/value/values is only used for Radio and CheckBox input types. 
 
 =head2 extra attribute
 
-The contents of extra are placed verbatim in the input tag. Use for HTML5 attributes that have no value such as disabled and any of the other attributes you may wish to use in your forms that have not been implemented.
+The contents of extra are placed verbatim in the input tag. Use for HTML5 attributes that have no value such as disabled and any of the other attributes you may wish to use in your forms that have not been implemented, you will need to type out attribute="something" if it is not valueluess.
 
 =head3 Common Attributes with no Value
 
-=over 1
-
-=item disabled
-=item readonly
-=item required
-
-=back
+B<disabled>, B<readonly>, B<required>
 
 Should be placed in the extra field when needed.
 
-=head1 PHILOSOPHY
+=head2 TextArea, Radio Button and CheckBox
 
-I've tried to use some of the other Form Handler modules on CPAN in the past and found that all they accomplished was moving code from my View to my Controller. As cluttered as a form may become it is easier to read as html, and easier for someone who hasn't committed to using the same form library to comprehend. I developed my own shorthand for defining a form, allowing me to write the elements in a loop, (incorporated as the definition shortcuts) but still requiring too much processing in the view. 
+TextArea fields are handled the same as the text type. Radio Buttons and CheckBoxes are very similar to each other, and take an extra attribute 'values'. Form::Diva does not currently support multi-valued Radio Buttons and CheckBoxes, if a record's data has multiple values only one will be selected in the form.
 
-Unlike other Form Generators Form::Diva doesn't even generate the entire form, just the elements. Generating form tags and buttons is in my opinion the job of the view. Form::Diva can potentially be placed in the Model, View, or Controller, when outside of the View it should bring as little of the View as possible with it. 
+=head3 values
+
+For CheckBoxes the values attribute is just the values of the check boxes. If value is set and matches one of the values it will be checked. 
+
+  { type => 'checkbox',
+    name => 'mycheckbox',
+    values => [ 'Miami', 'Chicago', 'London', 'Paris' ] }
+
+For RadioButtons the values attribute is a number and text seperated by a colon. When the form is submitted just the number will be returned.
+
+  { t => 'radio',
+    n => 'myradio',
+    v => [ '1:New York', '2:Philadelphia', '3:Boston' ] }
 
 =head1 AUTHOR
 

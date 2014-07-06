@@ -28,7 +28,14 @@ my $diva1 = Form::Diva->new(
         {   n => 'longtext',
             type => 'TextArea',
             placeholder => 'Type some stuff here',
-        }        
+        },
+        { name => 'mycheckbox', type => 'checkbox', 
+                   values => [ qw /French Irish Russian/ ] },
+        { name => 'myradio', type => 'radio', default => 1,
+                values => [ 
+                    "1:Peruvian Music", 
+                    "2:Argentinian Dance",
+                    "3:Cuban" ] },        
     ],
 );
 
@@ -53,7 +60,8 @@ post '/form1' => sub {
     }
     $c->stash( 
     		form1 => $diva1->generate( \%data ));
-    $c->stash( massage => "params @params \nid set to $data{our_id}" );
+    $c->stash( massage => "params @params \nid set to $data{our_id},\n
+        checkbox value $data{'mycheckbox'} radio value $data{myradio}" );
   $c->render('form1');
 };
 
