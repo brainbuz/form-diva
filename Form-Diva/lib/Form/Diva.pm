@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-no  warnings 'uninitialized';
+no warnings 'uninitialized';
 
 package Form::Diva;
 
@@ -8,10 +8,11 @@ sub new {
     my $class = shift;
     my $self  = {@_};
     bless $self, $class;
-    $self->{class}   = $class;
-    unless( $self->{input_class}) { die 'input_class is required.' }
-    unless( $self->{label_class}) { die 'label_class is required.' }
-    $self->{FormMap} = &_expandshortcuts( $self->{form} );
+    $self->{class} = $class;
+    unless ( $self->{input_class} ) { die 'input_class is required.' }
+    unless ( $self->{label_class} ) { die 'label_class is required.' }
+    ( $self->{FormMap}, $self->{FormHash} )
+        = &_expandshortcuts( $self->{form} );
     return $self;
 }
 
@@ -24,7 +25,8 @@ sub _expandshortcuts {
             d default v values c class/
     );
     my %DivaLongMap = map { $DivaShortMap{$_}, $_ } keys(%DivaShortMap);
-    my $FormMap = shift;
+    my $FormHash    = {};
+    my $FormMap     = shift;
     foreach my $formfield ( @{$FormMap} ) {
         foreach my $tag ( keys %{$formfield} ) {
             if ( $DivaShortMap{$tag} ) {
@@ -32,10 +34,11 @@ sub _expandshortcuts {
                     = delete $formfield->{$tag};
             }
         }
-        unless ( $formfield->{type} ) { $formfield->{type} = 'text'  }
-        unless ( $formfield->{name} ) { die "fields must have names" }     
+        unless ( $formfield->{type} ) { $formfield->{type} = 'text' }
+        unless ( $formfield->{name} ) { die "fields must have names" }
+        $FormHash->{ $formfield->{name} } = $formfield;
     }
-    return $FormMap;
+    return ( $FormMap, $FormHash );
 }
 
 # given a field returns either the default field class="string"
@@ -90,8 +93,7 @@ sub _label {
     my $fname       = $field->{name};
     my $label_class = $self->{label_class};
     my $label_tag   = $field->{label} || ucfirst($fname);
-    return
-          qq|<LABEL for="$fname" class="$label_class">|
+    return qq|<LABEL for="$fname" class="$label_class">|
         . qq|$label_tag</LABEL>|;
 }
 

@@ -46,7 +46,7 @@ dies_ok(
     form        => [{qw /t email n Email /}, ],
     ) }, 'Dies: Not providing input_class is fatal' );
 
-my $newform = &Form::Diva::_expandshortcuts( $diva1->{form} );
+my ($newform) = &Form::Diva::_expandshortcuts( $diva1->{form} );
 is( $newform->[0]{label}, 'Full Name', 'record 0 label is Full Name' );
 is( $newform->[0]{p},     undef,       'record 0 p is undef' );
 is( $newform->[0]{placeholder},
