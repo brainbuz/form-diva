@@ -76,6 +76,7 @@ foreach my $nametest (
     [ 'rawvalue',          '' ],
     [ 'value',             'value=""' ],
     [ 'textarea',          0 ],
+    [ 'id',                 'id="name"'],
     )
 {
     tester( \%name_no_data, 'Name No Data', $nametest->[0], $nametest->[1] );

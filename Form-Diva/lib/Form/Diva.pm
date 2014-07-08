@@ -108,7 +108,7 @@ sub _input {
         $B{input_class} $B{placeholder} $B{extra} >$B{rawvalue}</TEXTAREA>|;
     }
     else {
-        $input .= qq|<INPUT $B{type} $B{name} $B{id}"
+        $input .= qq|<INPUT $B{type} $B{name} $B{id}
         $B{input_class} $B{placeholder} $B{extra} $B{value} >|;
     }
     $input =~ s/\s+/ /g;     # remove extra whitespace.
@@ -305,9 +305,17 @@ B<disabled>, B<readonly>, B<required>
 
 Should be placed in the extra field when needed.
 
-=head2 TextArea, Radio Button and CheckBox
+=head2 TextArea
 
-TextArea fields are handled the same as the text type. Radio Buttons and CheckBoxes are very similar to each other, and take an extra attribute 'values'. Form::Diva does not currently support multi-valued Radio Buttons and CheckBoxes, if a record's data has multiple values only one will be selected in the form.
+TextArea fields are handled the same as the text type. 
+
+=head2 Select
+
+The select input type didn't make it into the initial release but is at the top of the list for features to implement.
+
+=head2 Radio Button and CheckBox
+
+Radio Buttons and CheckBoxes are very similar to each other, and take an extra attribute 'values'. Form::Diva does not currently support multi-valued Radio Buttons and CheckBoxes, if a record's data has multiple values only one will be selected in the form.
 
 =head3 values
 

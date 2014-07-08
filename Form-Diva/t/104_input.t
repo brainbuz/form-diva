@@ -59,6 +59,8 @@ like( $name_no_data_tr, qr/ placeholder="Your Name"/,
     'PlaceHolder is set: placeholder="Your Name"');
 unlike( $name_no_data_tr, qr/placeholder="placeholder/, 
     'Bug Test: this should not be: placeholder="placeholder' );
+unlike( $name_no_data_tr, qr/"\w""/, 
+    'Bug Test: should never see two quotes like this: "\w""' );
 
 my $name_data1_tr = $diva1->_input( $fields[0], $data1) ;
 note( "Input Element for name_data1_tr: $name_data1_tr" );
