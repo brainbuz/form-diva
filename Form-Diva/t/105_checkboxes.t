@@ -48,7 +48,7 @@ my ($newform) = &Form::Diva::_expandshortcuts( $radio1->{form} );
 
 my $testradio1values = $newform->[0]{values};
 is( $newform->[0]{type}, 'radio', 
-		'check _expandshortcuts that r expanded to radio');
+		'input is radio');
 is( $testradio1values->[2], 'Canadian', 'Test _expandshortcuts for values' );
 
 my $radio_nodata_expected =<< 'RNDX' ;

@@ -7,8 +7,6 @@ use Storable qw(dclone);
 
 use_ok('Form::Diva');
 
-# need to test field level class over-ride in here.
-
 my $diva1 = Form::Diva->new(
     label_class => 'testclass',
     input_class => 'form-control',
@@ -29,7 +27,7 @@ my $diva1 = Form::Diva->new(
             type => 'TextArea',
             placeholder => 'Type some stuff here',
         },
-        {   name    => 'trivial' },         
+        {   name    => 'trivial', class => 'ignorable' },         
     ],
 );
 
@@ -87,6 +85,8 @@ note( "Input Element for textarea with data2 $textarea_data2_tr");
 like(   $textarea_data2_tr, 
         qr/>I typed things in here!<\/TEXTAREA>/, 
         'TextArea has value and closing tag');
+unlike(   $textarea_data2_tr, qr/"\w""/,  
+    'Bug Test: textarea should never have two quotes like this: "\w""' );
 
 note( 'Test a field where we only provided a name.');
 my $trivial_tr = $diva1->_input( $fields[5],  );
@@ -96,5 +96,11 @@ like(   $trivial_tr,
 like(   $trivial_tr, 
         qr/type="text"/, 
         'Input is a text field');
+like(   $trivial_tr, 
+        qr/class="ignorable"/, 
+        'class over-ride set class to ignorable');
+unlike( $trivial_tr, 
+        qr/form-control/, 
+        'the default class isnt in the input');
 
 done_testing;
