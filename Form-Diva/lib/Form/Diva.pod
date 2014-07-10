@@ -154,26 +154,18 @@ For RadioButtons the values attribute is a number and text seperated by a colon.
     n => 'myradio',
     v => [ '1:New York', '2:Philadelphia', '3:Boston' ] }
 
-=head2 Select and Datalist
+=head2 Select
 
-The select input type didn't make it into the initial release but is at the top of the list for features to implement.
-
-Like Radio and Checkbox, Select and Datalist take a values argument. The values argument may be either a list to be used as both the value and the display value, or the values may the value from the display seperated by a colon : in each element of the array_ref.
+Like Radio and Checkbox, Select takes a values argument. The values argument may be either a list to be used as both the value and the display value, or the values may the value the display text seperated by a colon.
 
         {   name    => 'checktest',
             type    => 'select',
             default => 'French',
-            values  => [
-                qw /Argentinian American English Canadian French Irish Russian/
-            ]
+            values  => 
+              [ qw /Argentinian American English Canadian French Irish Russian/ ]
         }  
-
-Or if the values need to be different than what is displayed use a colon:
-    [ 'usa:United States of America', 'china:Peoples Republic of China']          
-
-head3 DataSet Support
-
-DataSet is at present not supported by Safari and Internet Explorer. DataSet is similar to Select in that it takes an Option group, however, it is actually a text input not a select input.
+To display different text than the values use a colon:
+              [ 'usa:United States of America', 'china:Peoples Republic of China']          
 
 =head1 AUTHOR
 

@@ -146,28 +146,6 @@ sub _radiocheck {            # field, input_class, data;
     return $output;
 }
 
-=pod
-
-<select name="browser">
-<option value="firefox">Firefox</option>
-<option value="ie">IE</option>
-  <optgroup label="Swedish Cars">
-    <option value="volvo">Volvo</option>
-    <option value="saab">Saab</option>
-  </optgroup>
-</select>
-
-Datalist-Option
-
-<input type=text list=browsers> # selected is value
-<datalist id=browsers>
-  <option value="Opera">
-  <option value="Safari">
-</datalist>
-
-=cut
-# also datalist.
-
 sub _select {            # field, input_class, data;
     my $self        = shift;
     my $field       = shift;
@@ -175,31 +153,18 @@ sub _select {            # field, input_class, data;
     my $class       = $self->_class_input( $field ) ;
     my $extra       = $field->{extra} || "";
     my @values      =  @{ $field->{values} };
-    my $is_datalist  = $field->{type} eq 'datalist' ? 1 : 0 ;
     my $default     = $field->{default}
         ? do { if ($data) {undef} else { $field->{default} } }
         : undef;
-    my $output = undef;
-    if ( $is_datalist ) {
-        my $value = '';
-        if ( $data ) { $value= qq|value="$data"| }
-        elsif ( $default )  { $value= qq|value="$default"| }
-        $output = qq|<INPUT list="$field->{name}" type="text" $extra $class $value />\n| .
-        qq|<DATALIST id="$field->{name}">\n|; 
-        }
-    else {
-        $output = qq|<SELECT name="$field->{name}" $extra $class>\n|; 
-        } 
+    my $output =  qq|<SELECT name="$field->{name}" $extra $class>\n|; 
     foreach my $val ( @{ $field->{values} } ) {
         my ( $value, $v_lab ) = ( split( /\:/, $val ), $val );
         my $selected = '';
-        if( $is_datalist ) { $selected = '' }
-        elsif    ( $data    eq $value ) { $selected = 'selected ' }
+        if    ( $data    eq $value ) { $selected = 'selected ' }
         elsif ( $default eq $value ) { $selected = 'selected ' }
         $output .= qq| <option value="$value" $selected>$v_lab</option>\n|;
     }
-    if ( $is_datalist ) { $output .= '</DATALIST>'; }
-    else { $output .= '</SELECT>'; }
+    $output .= '</SELECT>'; 
     return $output;
 }
 
