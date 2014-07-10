@@ -4,36 +4,19 @@
 % my $now = localtime;
 %# my $form_name = stash 'form_name';
 <h1>Form Diva. Test Form 1</h1>
-<form class="form-horizontal well col-md-8" role="form"
-  method="post" action="/form1" name="DIVA1" >  
-<input type="hidden" name="grand" value="poobah">
 
-<div class="form-group">
+<form role="form" method="post" action="/form1" name="DIVA1" >  
 % foreach my $field (@$form1) {
-	<%== $field->{'label'} %>
-    <div class="col-sm-8">
-		<%== $field->{'input'} %>
-	</div>
+  <div class="form-group">
+  <%== $field->{'label'} %>
+  <%== $field->{'input'} %>
+  </div>
 % }
-</div>
-
-<div class="form-group">
-    <div class="col-sm-offset-3 col-sm-8">
-      <input type="submit" class="btn btn-large btn-primary" 
-      name="submit" value="submit_me" >&nbsp;
-      <input type="reset" value="reset" class="btn btn-large btn-primary">&nbsp;
-      <a class="btn btn-large btn-primary" 
-          href="/form1">New</a>
-    </div>
-    </div>
+<button type="submit" class="btn btn-primary">Submit Me</button>
 </form>
+
 
 <pre>
 <%= $now->cdate %>
 <%=stash 'massage' %>
 </pre>
-
-<%#
-
-%>
-

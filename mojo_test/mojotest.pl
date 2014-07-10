@@ -4,12 +4,13 @@ use Form::Diva;
 
 # Documentation browser under "/perldoc"
 plugin 'PODRenderer';
+
 # Silence secrets warning.
-app->secrets(['My very secret passphrase.']);
+app->secrets( ['My very secret passphrase.'] );
 my $log = Mojo::Log->new;
 
 my $diva1 = Form::Diva->new(
-    label_class => 'col-sm-3 control-label',
+    label_class => 'control-label',
     input_class => 'form-control',
     form        => [
         { n => 'name', t => 'text', p => 'Your Name', l => 'Full Name' },
@@ -22,47 +23,58 @@ my $diva1 = Form::Diva->new(
         {   name    => 'our_id',
             type    => 'number',
             default => 57,
-            class => 'other-class shaded-green',
+            class   => 'other-class shaded-green',
         },
-        {   name    => 'trivial' },        
-        {   n => 'longtext',
-            type => 'TextArea',
+        { name => 'trivial' },
+        {   n           => 'longtext',
+            type        => 'TextArea',
             placeholder => 'Type some stuff here',
         },
-        { name => 'mycheckbox', type => 'checkbox', 
-                   values => [ qw /French Irish Russian/ ] },
-        { name => 'myradio', type => 'radio', default => 1,
-                values => [ 
-                    "1:Peruvian Music", 
-                    "2:Argentinian Dance",
-                    "3:Cuban" ] },        
+        {   name   => 'mycheckbox',
+            type   => 'checkbox',
+            values => [qw /French Irish Russian/]
+        },
+        {   name    => 'myradio',
+            type    => 'radio',
+            default => 1,
+            values => [ "1:Peruvian Music", "2:Argentinian Dance", "3:Cuban" ]
+        },
+        {   name    => 'slctst',
+            type    => 'select',
+            default => 'French',
+            values  => [
+                qw /Argentinian American English Canadian French Irish Russian/
+            ]
+        },
     ],
 );
 
 get '/' => sub {
-  my $c = shift;
-  $c->render('index');
+    my $c = shift;
+    $c->render('index');
 };
 
 get '/form1' => sub {
-  my $c = shift;
+    my $c = shift;
     $c->stash( form1 => $diva1->generate );
-  $c->render('form1');
+    $c->render('form1');
 };
 
 post '/form1' => sub {
-  my $c = shift;
-    my %data = ();
-    my @params = $c->param ;;
-    foreach my $pram ( $c->param ) { $data{$pram} = $c->req->param($pram) }  
-    if( $data{our_id} == 57 ) { 
-    	$data{our_id} = int(rand(10000)); 
+    my $c      = shift;
+    my %data   = ();
+    my @params = $c->param;
+    foreach my $pram ( $c->param ) { $data{$pram} = $c->req->param($pram) }
+    if ( $data{our_id} == 57 ) {
+        $data{our_id} = int( rand(10000) );
     }
-    $c->stash( 
-    		form1 => $diva1->generate( \%data ));
-    $c->stash( massage => "params @params \nid set to $data{our_id},\n
-        checkbox value $data{'mycheckbox'} radio value $data{myradio}" );
-  $c->render('form1');
+    $c->stash( form1 => $diva1->generate( \%data ) );
+    $c->stash(
+        massage => "params @params \nid set to $data{our_id},\n
+        checkbox value $data{'mycheckbox'} radio value $data{myradio}
+        selected : $data{slctst}"
+    );
+    $c->render('form1');
 };
 
 app->start;

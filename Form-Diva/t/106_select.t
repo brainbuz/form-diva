@@ -2,7 +2,9 @@
 use strict;
 use warnings;
 use Test::More;
-#use 5.014;
+
+#use 5.020;
+use experimental;
 use Storable qw(dclone);
 
 use_ok('Form::Diva');
@@ -16,18 +18,22 @@ my $select1 = Form::Diva->new(
     label_class => 'testclass',
     input_class => 'form-control',
     form        => [
-        { n => 'selecttest', t => 'select', 
-        v => [ qw /American English Canadian/ ] },
+        {   n => 'selecttest',
+            t => 'select',
+            v => [qw /American English Canadian/]
+        },
     ],
 );
 
-my $select2 = Form::Diva->new(
+my $datalist2 = Form::Diva->new(
     form_name   => 'DIVA110A',
     label_class => 'testclass',
     input_class => 'form-control',
     form        => [
-        { name => 'checktest', type => 'select', 
-        values => [ qw /American English Canadian French Irish Russian/ ] },
+        {   name   => 'checktest',
+            type   => 'datalist',
+            values => [qw /American English Canadian French Irish Russian/]
+        },
     ],
 );
 
@@ -35,97 +41,50 @@ my $select3 = Form::Diva->new(
     form_name   => 'DIVA110B',
     label_class => 'testclass',
     input_class => 'form-control',
-    form        => [ 
-           { name => 'checktest', type => 'select', default => 'French',
-        values => [ qw /Argentinian American English Canadian French Irish Russian/ ] },
-
+    form        => [
+        {   name    => 'checktest',
+            type    => 'select',
+            default => 'French',
+            values  => [
+                qw /Argentinian American English Canadian French Irish Russian/
+            ]
+        },
     ],
 );
 
 my ($newform) = &Form::Diva::_expandshortcuts( $select1->{form} );
 
-my $testselect1values = $newform->[0]{values};
-is( $newform->[0]{type}, 'select', 
-		'check _expandshortcuts type is select');
-is( $testselect1values->[2], 'Canadian', 'Test _expandshortcuts for values' );
+is( $newform->[0]{type}, 'select', 'check _expandshortcuts type is select' );
 
 TODO: {
-local $TODO = 'select is completely unimplimented';
+    local $TODO = 'select is completely unimplimented';
+
+    my $input_select3_default
+        = q |<SELECT name="checktest"  class="form-control">
+ <option value="Argentinian" >Argentinian</option>
+ <option value="American" >American</option>
+ <option value="English" >English</option>
+ <option value="Canadian" >Canadian</option>
+ <option value="French" selected >French</option>
+ <option value="Irish" >Irish</option>
+ <option value="Russian" >Russian</option>
+</SELECT>|;
 
 
+    unlike( $select1->_select( $select1->{form}[0], undef ),
+        qr/selected/,
+        'select1 does not have a default, with no data nothing is selected' );
+    like(
+        $select1->_select( $select1->{form}[0], 'English' ),
+        qr/English" selected/,
+        'select1 with English as data it is now selected'
+    );
 
-my $input = $select1->_select(
-                $select1->{form}[0],
-                $select1->_class_input($select1->{form}[0]),
-                undef,
-            );
-note( $input );
+    my $input2 = $datalist2->_select( $datalist2->{form}[0], 'Canadian', );
+    note($input2);
 
-
-my $select_nodata_expected =<< 'RNDX' ;
-<input type="select" class="form-control" name="selecttest" value="American">American<br>
-<input type="select" class="form-control" name="selecttest" value="English">English<br>
-<input type="select" class="form-control" name="selecttest" value="Canadian">Canadian<br>
-RNDX
-
-my $select1_data_expected =<< 'RDX' ;
-<input type="select" class="form-control" name="selecttest" value="American">American<br>
-<input type="select" class="form-control" name="selecttest" value="English">English<br>
-<input type="select" class="form-control" name="selecttest" value="Canadian" checked>Canadian<br>
-RDX
-
-my $check_nodata_expected =<< 'CNDX' ;
-<input type="checkbox" class="form-control" name="checktest" value="French">French<br>
-<input type="checkbox" class="form-control" name="checktest" value="Irish">Irish<br>
-<input type="checkbox" class="form-control" name="checktest" value="Russian">Russian<br>
-CNDX
-
-my $labels1_nodata_expected =<< 'NDDX';
-<input type="select" class="form-control" name="withlabels" value="1" checked>Peruvian Music<br>
-<input type="select" class="form-control" name="withlabels" value="2">Argentinian Dance<br>
-<input type="select" class="form-control" name="withlabels" value="3">Cuban<br>
-NDDX
-
-my $labels1_data_expected =<< 'NDDX1';
-<input type="select" class="form-control" name="withlabels" value="1">Peruvian Music<br>
-<input type="select" class="form-control" name="withlabels" value="2" checked>Argentinian Dance<br>
-<input type="select" class="form-control" name="withlabels" value="3">Cuban<br>
-NDDX1
-
-# my @select1_nodata = @{ $select1->generate };
-# note( $select1_nodata[0]->{input} ) ;
-
-# is( $select1_nodata[0]->{input}, $select_nodata_expected, 'generated as 3 select buttons.');
-
-# my @select1_data = @{ $select1->generate( { selecttest => 'Canadian' })} ;
-# is( $select1_data[0]->{input}, $select1_data_expected, 'Set select1 with Canadian Checked');
-# my @check1_nodata = @{ $select1->generate };
-# is( $check1_nodata[0]->{input}, $check_nodata_expected, 'generated as 3 checkboxes.');
-# my @labels1_nodata = @{ $select1->generate} ;
-# is( $labels1_nodata[0]->{input}, $labels1_nodata_expected , 
-# 	'Default checked is Peruvian Music');
-# my @labels1_data = @{ $select1->generate( { withlabels => 2 })} ;
-# is( $labels1_data[0]->{input}, $labels1_data_expected , 
-#     'With Data check Argentinian Dance instead.');
-
-my $classoverride1 = Form::Diva->new(
-    form_name   => 'override',
-    label_class => 'testclass',
-    input_class => 'form-control',
-    form        => [
-        { n => 'selecttest', t => 'select', c => 'not-default', extra =>'disabled',
-        v => [ qw /American English Canadian/ ] },
-    ],
-);
-
-# like( $labels1_nodata[0]->{input}, qr/class="form-control"/ ,
-# 		"The default class is being used." );
-# my @classoverridden = @{$classoverride1->generate};
-# like( $classoverridden[0]->{input}, qr/class="not-default"/ ,
-# 		"The default class has been overridden." );
-# like( $classoverridden[0]->{input}, qr/disabled/ ,
-# 		"Check the extra field, we set value to disabled." );
+    my $input3a = $select3->_select( $select3->{form}[0], undef, );
+    is( $input3a, $input_select3_default, 'A full example.' );
 
 }
-
 done_testing();

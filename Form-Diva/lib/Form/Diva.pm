@@ -24,7 +24,7 @@ sub _expandshortcuts {
     my %DivaShortMap = (
         qw /
             n name t type i id e extra x extra l label p placeholder
-            d default v values c class/
+            d default v values c class /
     );
     my %DivaLongMap = map { $DivaShortMap{$_}, $_ } keys(%DivaShortMap);
     my $FormHash    = {};
@@ -167,11 +167,12 @@ Datalist-Option
 
 =cut
 # also datalist.
+
 sub _select {            # field, input_class, data;
     my $self        = shift;
     my $field       = shift;
-    my $input_class = $self->{input_class} ;
     my $data        = shift;
+    my $class       = $self->_class_input( $field ) ;
     my $extra       = $field->{extra} || "";
     my @values      =  @{ $field->{values} };
     my $default     = $field->{default}
@@ -180,13 +181,13 @@ sub _select {            # field, input_class, data;
         else         { $field->{default} }
         }
         : undef;
-    my $output = qq|<SELECT name="$field->{name}" $input_class $extra>|;        
+    my $output = qq|<SELECT name="$field->{name}" $extra $class>\n|;        
     foreach my $val ( @{ $field->{values} } ) {
         my ( $value, $v_lab ) = ( split( /\:/, $val ), $val );
         my $selected = '';
         if    ( $data    eq $value ) { $selected = 'selected ' }
         elsif ( $default eq $value ) { $selected = 'selected ' }
-        $output .= qq|<option value="$value" $selected>$v_lab</option>\n|;
+        $output .= qq| <option value="$value" $selected>$v_lab</option>\n|;
     }
     $output .= '</SELECT>';
     return $output;
@@ -205,6 +206,11 @@ sub generate {
                 $self->_class_input($field),
                 $data->{ $field->{name} }
             );
+        }
+        elsif( $field->{type} eq 'select' || $field->{type} eq 'datalist' ) {
+            $input = $self->_select(
+                $field,
+                $data->{ $field->{name}});
         }
         else {
             $input = $self->_input( $field, $data );
