@@ -1,3 +1,4 @@
+
 =pod 
 
 =head1 NAME
@@ -135,10 +136,6 @@ Should be placed in the extra field when needed.
 
 TextArea fields are handled the same as the text type. 
 
-=head2 Select
-
-The select input type didn't make it into the initial release but is at the top of the list for features to implement.
-
 =head2 Radio Button and CheckBox
 
 Radio Buttons and CheckBoxes are very similar to each other, and take an extra attribute 'values'. Form::Diva does not currently support multi-valued Radio Buttons and CheckBoxes, if a record's data has multiple values only one will be selected in the form.
@@ -156,6 +153,27 @@ For RadioButtons the values attribute is a number and text seperated by a colon.
   { t => 'radio',
     n => 'myradio',
     v => [ '1:New York', '2:Philadelphia', '3:Boston' ] }
+
+=head2 Select and Datalist
+
+The select input type didn't make it into the initial release but is at the top of the list for features to implement.
+
+Like Radio and Checkbox, Select and Datalist take a values argument. The values argument may be either a list to be used as both the value and the display value, or the values may the value from the display seperated by a colon : in each element of the array_ref.
+
+        {   name    => 'checktest',
+            type    => 'select',
+            default => 'French',
+            values  => [
+                qw /Argentinian American English Canadian French Irish Russian/
+            ]
+        }  
+
+Or if the values need to be different than what is displayed use a colon:
+    [ 'usa:United States of America', 'china:Peoples Republic of China']          
+
+head3 DataSet Support
+
+DataSet is at present not supported by Safari and Internet Explorer. DataSet is similar to Select in that it takes an Option group, however, it is actually a text input not a select input.
 
 =head1 AUTHOR
 

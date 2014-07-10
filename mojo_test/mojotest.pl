@@ -25,25 +25,32 @@ my $diva1 = Form::Diva->new(
             default => 57,
             class   => 'other-class shaded-green',
         },
-        { name => 'trivial' },
-        {   n           => 'longtext',
-            type        => 'TextArea',
-            placeholder => 'Type some stuff here',
-        },
-        {   name   => 'mycheckbox',
-            type   => 'checkbox',
-            values => [qw /French Irish Russian/]
-        },
-        {   name    => 'myradio',
-            type    => 'radio',
-            default => 1,
-            values => [ "1:Peruvian Music", "2:Argentinian Dance", "3:Cuban" ]
-        },
+        # { name => 'trivial' },
+        # {   n           => 'longtext',
+        #     type        => 'TextArea',
+        #     placeholder => 'Type some stuff here',
+        # },
+        # {   name   => 'mycheckbox',
+        #     type   => 'checkbox',
+        #     values => [qw /French Irish Russian/]
+        # },
+        # {   name    => 'myradio',
+        #     type    => 'radio',
+        #     default => 1,
+        #     values => [ "1:Peruvian Music", "2:Argentinian Dance", "3:Cuban" ]
+        # },
         {   name    => 'slctst',
             type    => 'select',
             default => 'French',
             values  => [
                 qw /Argentinian American English Canadian French Irish Russian/
+            ]
+        },
+        {   name    => 'checktest',
+            type    => 'select',
+            default => 'French',
+            values  => [
+                qw /French Irish Russian Argentinian American English Canadian /
             ]
         },
     ],
@@ -72,7 +79,7 @@ post '/form1' => sub {
     $c->stash(
         massage => "params @params \nid set to $data{our_id},\n
         checkbox value $data{'mycheckbox'} radio value $data{myradio}
-        selected : $data{slctst}"
+        selected : $data{slctst} dalistselected : $data{checktest}"
     );
     $c->render('form1');
 };

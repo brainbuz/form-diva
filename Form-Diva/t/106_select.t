@@ -20,7 +20,7 @@ my $select1 = Form::Diva->new(
     form        => [
         {   n => 'selecttest',
             t => 'select',
-            v => [qw /American English Canadian/]
+            v => [qw /usa:American uk:English can:Canadian/]
         },
     ],
 );
@@ -74,11 +74,16 @@ TODO: {
     unlike( $select1->_select( $select1->{form}[0], undef ),
         qr/selected/,
         'select1 does not have a default, with no data nothing is selected' );
-    like(
-        $select1->_select( $select1->{form}[0], 'English' ),
-        qr/English" selected/,
-        'select1 with English as data it is now selected'
+    my $uk_selected = $select1->_select( $select1->{form}[0], 'uk' );
+    like( $uk_selected, qr/uk" selected/,
+        'select1 with uk as data English is now selected'
     );
+    like(
+        $uk_selected, 
+        qr/usa" >American/,
+        'select1 with uk as data "usa">American has tag and not selected'
+    );
+
 
     my $input2 = $datalist2->_select( $datalist2->{form}[0], 'Canadian', );
     note($input2);
