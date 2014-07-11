@@ -122,7 +122,7 @@ sub _input {
 # this needs to be implemented after data is being handled because
 # default is irrelevant if there is data.
 
-sub _radiocheck {            # field, input_class, data;
+sub _radiocheck {    # field, input_class, data;
     my $self        = shift;
     my $field       = shift;
     my $input_class = shift;
@@ -138,7 +138,7 @@ sub _radiocheck {            # field, input_class, data;
     foreach my $val ( @{ $field->{values} } ) {
         my ( $value, $v_lab ) = ( split( /\:/, $val ), $val );
         my $checked = '';
-        if    ( $data    eq $value ) { $checked = 'checked ' }
+        if    ( $data eq $value )    { $checked = 'checked ' }
         elsif ( $default eq $value ) { $checked = 'checked ' }
         $output
             .= qq!<input type="$field->{type}" $input_class $extra name="$field->{name}" value="$value" $checked>$v_lab<br>\n!;
@@ -146,25 +146,33 @@ sub _radiocheck {            # field, input_class, data;
     return $output;
 }
 
-sub _select {            # field, input_class, data;
-    my $self        = shift;
-    my $field       = shift;
-    my $data        = shift;
-    my $class       = $self->_class_input( $field ) ;
-    my $extra       = $field->{extra} || "";
-    my @values      =  @{ $field->{values} };
-    my $default     = $field->{default}
-        ? do { if ($data) {undef} else { $field->{default} } }
+sub _select {    # field, input_class, data;
+    my $self           = shift;
+    my $field          = shift;
+    my $data           = shift;
+    my $replace_fields = shift;
+    my $class          = $self->_class_input($field);
+    my $extra          = $field->{extra} || "";
+    my $id = $field->{id} ? qq!id="$field->{id}"! : qq!id="$field->{name}"!;
+    my @values
+        = $replace_fields
+        ? @{$replace_fields}
+        : @{ $field->{values} };
+    my $default = $field->{default}
+        ? do {
+        if   ($data) {undef}
+        else         { $field->{default} }
+        }
         : undef;
-    my $output =  qq|<SELECT name="$field->{name}" $extra $class>\n|; 
-    foreach my $val ( @{ $field->{values} } ) {
+    my $output = qq|<SELECT name="$field->{name}" $id $extra $class>\n|;
+    foreach my $val (@values) {
         my ( $value, $v_lab ) = ( split( /\:/, $val ), $val );
         my $selected = '';
-        if    ( $data    eq $value ) { $selected = 'selected ' }
+        if    ( $data eq $value )    { $selected = 'selected ' }
         elsif ( $default eq $value ) { $selected = 'selected ' }
         $output .= qq| <option value="$value" $selected>$v_lab</option>\n|;
     }
-    $output .= '</SELECT>'; 
+    $output .= '</SELECT>';
     return $output;
 }
 
@@ -182,10 +190,8 @@ sub generate {
                 $data->{ $field->{name} }
             );
         }
-        elsif( $field->{type} eq 'select' || $field->{type} eq 'datalist' ) {
-            $input = $self->_select(
-                $field,
-                $data->{ $field->{name}});
+        elsif ( $field->{type} eq 'select' || $field->{type} eq 'datalist' ) {
+            $input = $self->_select( $field, $data->{ $field->{name} } );
         }
         else {
             $input = $self->_input( $field, $data );
