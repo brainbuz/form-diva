@@ -1,6 +1,10 @@
 Revision history for Form::Diva
 
+0.05    11 July 2014
+	Implemented Select input type.
+	Implemented over-ride on values for inputs that require values.
+	Implemented clone method.
 0.04    8 July 2014 
-		Fixed bug where id was generated with extra quote.
+	Fixed bug where id was generated with extra quote.
 0.03    5 July 2014
         First released version uploaded to CPAN.

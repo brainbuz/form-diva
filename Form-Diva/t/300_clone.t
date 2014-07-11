@@ -23,8 +23,10 @@ my $diva2 = $diva1->clone({
     neworder => ['our_id', 'email'] });
 isa_ok($diva2, 'Form::Diva', 'New object is a Form::Diva');
 is( scalar @{$diva2->{FormMap}}, 2, 'new object only has 2 rows in form');
+$diva1->{FormHash} = undef;
 undef $diva1 ;
 note(  'deleting original obj should not affect subsequent tests');
+is( $diva1 , undef, 'the original object is now undefined' );
 is( $diva2->{FormMap}[1]{name}, 'email', 'last row in copy is email');
 #is( $diva2->form_name, 'diva1', 'The new obj inherited the old name');
 
