@@ -79,13 +79,30 @@ Create a new object from a Data Structure ().
 
 When called without arguments returns the blank form with placeholders and value set to default or null if there is no default.
 
-When provided an optional hashref it sets values based on the hashref and suppresses placeholder. 
+When provided an optional hashref of data it sets values based on the hashref and suppresses placeholder. 
 
 The data returned is in the form of an array reference with a hash reference for the label and input attributes.
 
-=head2 spawn
+A second optional hashref may be passed to override the values list for select, checkbox and radio button inputs, see below.
 
-Not yet implemented. The same as generate but specify which fields to include and or change field order.
+=head2 clone
+
+Copy a Form::Diva object optionally modifiying some of the values in the copy. This is useful if you have several similar forms, define a form diva object with all of the fields, then make copies for the shorter forms.
+
+ my $newdiva = $diva->clone({ 
+    neworder => [ qw / A B c D E /], });
+
+=head3 Arguments to clone
+
+Arguments to clone are passed as a hashref. All of the arguments are optional since if omitted the value of the original object is just copied. clone with no arguments would just make a copy of your original object. The arguments are:
+
+=head4 neworder
+
+An array ref of the names of the fields in your form. This will let you re-order fields and you do not need to include all of the fields. You cannot define new fields on a clone but you can omit them. 
+
+=head4 input_class, label_class
+
+Change these values for your copy.
 
 =head1 The Form::Diva Data Structure
 
@@ -100,6 +117,8 @@ Not yet implemented. The same as generate but specify which fields to include an
 =head2 label_class, input_class
 
 Specify the contents the label's class attribute and the input's class attribute. The input_class can be over-ridden for a single field by using the c/class attribute in a field definition.
+
+If you need to access these two values they both have accessor methods $diva->label_class() and $diva->input_class();.
 
 =head2 form
 
@@ -136,9 +155,9 @@ Should be placed in the extra field when needed.
 
 TextArea fields are handled the same as the text type. 
 
-=head2 Radio Button and CheckBox
+=head2 Select Radio Button and CheckBox
 
-Radio Buttons and CheckBoxes are very similar to each other, and take an extra attribute 'values'. Form::Diva does not currently support multi-valued Radio Buttons and CheckBoxes, if a record's data has multiple values only one will be selected in the form.
+Select, Radio Button and CheckBox Input types are similar to each other, and take an extra attribute 'values'. Form::Diva does not currently support multi-valued CheckBoxes, if a record's data has multiple values only one will be selected in the form.
 
 =head3 values
 
@@ -154,18 +173,17 @@ For RadioButtons the values attribute is a number and text seperated by a colon.
     n => 'myradio',
     v => [ '1:New York', '2:Philadelphia', '3:Boston' ] }
 
-=head2 Select
+For Select inputs there are two forms of values. If the value itself and the label are the same then values is just a list of those values which will also be used as the label. The second form requires the value and the label to be seperated by a colon.
 
-Like Radio and Checkbox, Select takes a values argument. The values argument may be either a list to be used as both the value and the display value, or the values may the value the display text seperated by a colon.
+  values => [ qw /pineapple persimmon nectarine ]
+  or 
+  values => [ 'item1:Pineapple', 'item2:Georgia Peach', 'item3:Naval Orange']
 
-        {   name    => 'checktest',
-            type    => 'select',
-            default => 'French',
-            values  => 
-              [ qw /Argentinian American English Canadian French Irish Russian/ ]
-        }  
-To display different text than the values use a colon:
-              [ 'usa:United States of America', 'china:Peoples Republic of China']          
+When using the first form of values the label is not CamelCased or otherwise changed, if you want that you'll need to use the second form. 
+
+=head3 Over-Riding Values
+
+It is possible to override values by passing an extra argument to generate. The override argument is a hashref { field_name => [ values ...]}. It is even possible to create your initial object with an empty values lists and pass a list every time you generate the form.
 
 =head1 AUTHOR
 

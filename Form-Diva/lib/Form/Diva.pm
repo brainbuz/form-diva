@@ -6,6 +6,8 @@ package Form::Diva;
 
 # ABSTRACT: Generate HTML5 form label and input fields
 
+use Storable qw(dclone);
+
 sub new {
     my $class = shift;
     my $self  = {@_};
@@ -16,6 +18,40 @@ sub new {
     ( $self->{FormMap}, $self->{FormHash} )
         = &_expandshortcuts( $self->{form} );
     return $self;
+}
+
+sub clone {
+    my $self = shift ;
+    my $args = shift ;
+    my $new = {};
+    my $class = 'Form::Diva';
+    $new->{FormHash}    = dclone $self->{FormHash};
+    $new->{input_class} = $args->{input_class} || $self->{input_class};
+    $new->{label_class} = $args->{label_class} || $self->{label_class};
+    $new->{form_name}   = $args->{form_name}   || $self->{form_name};
+    if( $args->{neworder} ){
+            my @reordered = map { $new->{FormHash}->{$_} } @{$args->{neworder}};
+            $new->{FormMap} = \@reordered ;
+        }
+    else { $new->{FormMap} = dclone $self->{FormMap} ; }        
+    bless $new, $class ;
+    return $new ;
+}
+
+# so far diva hasn't needed the form name
+# sub form_name {
+#     my $self = shift ;
+#     return $self->{form_name};
+# }
+
+sub input_class {
+    my $self = shift ;
+    return $self->{input_class};
+}
+
+sub label_class {
+    my $self = shift ;
+    return $self->{label_class};
 }
 
 # specification calls for single letter shortcuts on all fields
