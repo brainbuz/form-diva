@@ -117,7 +117,13 @@ like( $over_ride3, qr/apple/,
 like( $over_ride3, qr/<option value="pear" selected >/,
     'pear is selected in the Override select');
 
+my $over_ride4 = $select3->generate( 
+    { checktest  => 'banana' , pet => 'poodle' },
+    { checktest => [ qw / banana grape peach plum / ] } );
 
+like( $over_ride4->[0]{input} , qr/banana/,
+    'banana is in the new list from generate');
+unlike( $over_ride4->[0]{input} , qr/Canadian/, 'Canadian has been removed' );
 
 
 done_testing();

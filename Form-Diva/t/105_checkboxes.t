@@ -52,9 +52,9 @@ is( $newform->[0]{type}, 'radio',
 is( $testradio1values->[2], 'Canadian', 'Test _expandshortcuts for values' );
 
 my $radio_nodata_expected =<< 'RNDX' ;
-<input type="radio" class="form-control" name="radiotest" value="American">American<br>
-<input type="radio" class="form-control" name="radiotest" value="English">English<br>
-<input type="radio" class="form-control" name="radiotest" value="Canadian">Canadian<br>
+<input type="radio" class="form-control"  name="radiotest" value="American" >American<br>
+<input type="radio" class="form-control"  name="radiotest" value="English" >English<br>
+<input type="radio" class="form-control"  name="radiotest" value="Canadian" >Canadian<br>
 RNDX
 
 my $radio1_data_expected =<< 'RDX' ;
@@ -81,8 +81,9 @@ my $labels1_data_expected =<< 'NDDX1';
 <input type="radio" class="form-control" name="withlabels" value="3">Cuban<br>
 NDDX1
 
-my @radio1_nodata = @{ $radio1->generate };
-is( $radio1_nodata[0]->{input}, $radio_nodata_expected, 'generated as 3 radio buttons.');
+my $radio1_nodata = $radio1->_radiocheck( $radio1->{form}[0] );
+is( $radio1_nodata, $radio_nodata_expected, 'generated as 3 radio buttons.');
+
 my @radio1_data = @{ $radio1->generate( { radiotest => 'Canadian' })} ;
 is( $radio1_data[0]->{input}, $radio1_data_expected, 'Set Radio1 with Canadian Checked');
 my @check1_nodata = @{ $check1->generate };
@@ -112,4 +113,9 @@ like( $classoverridden[0]->{input}, qr/class="not-default"/ ,
 like( $classoverridden[0]->{input}, qr/disabled/ ,
 		"Check the extra field, we set value to disabled." );
 
+my $over_ride_checkbox = $classoverride1->generate( 
+    { radiotest => 'Venus' }, { radiotest => [ qw / Mars Venus Earth Jupiter /] } );
+like( $over_ride_checkbox->[0]{input} , qr/value="Venus" checked>Venus/,
+    'overridden checkbox Venus is selected');
+unlike( $over_ride_checkbox->[0]{input} , qr/Canadian/, 'overridden value is not present' );
 done_testing();

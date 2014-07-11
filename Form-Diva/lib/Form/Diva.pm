@@ -123,19 +123,24 @@ sub _input {
 # default is irrelevant if there is data.
 
 sub _radiocheck {    # field, input_class, data;
-    my $self        = shift;
-    my $field       = shift;
-    my $input_class = shift;
-    my $data        = shift;
-    my $output      = '';
-    my $extra       = $field->{extra} || "";
-    my $default     = $field->{default}
+    my $self           = shift;
+    my $field          = shift;
+    my $data           = shift;
+    my $replace_fields = shift;
+    my $output         = '';
+    my $input_class    = $self->_class_input($field);
+    my $extra          = $field->{extra} || "";
+    my $default        = $field->{default}
         ? do {
         if   ($data) {undef}
         else         { $field->{default} }
         }
         : undef;
-    foreach my $val ( @{ $field->{values} } ) {
+    my @values
+        = $replace_fields
+        ? @{$replace_fields}
+        : @{ $field->{values} };    
+    foreach my $val ( @values ) {
         my ( $value, $v_lab ) = ( split( /\:/, $val ), $val );
         my $checked = '';
         if    ( $data eq $value )    { $checked = 'checked ' }
@@ -177,8 +182,9 @@ sub _select {    # field, input_class, data;
 }
 
 sub generate {
-    my $self = shift;
-    my $data = shift;
+    my $self    = shift;
+    my $data    = shift;
+    my $overide = shift;
     unless ( keys %{$data} ) { $data = undef }
     my @generated = ();
     foreach my $field ( @{ $self->{FormMap} } ) {
@@ -186,12 +192,16 @@ sub generate {
         if ( $field->{type} eq 'radio' || $field->{type} eq 'checkbox' ) {
             $input = $self->_radiocheck(
                 $field,
-                $self->_class_input($field),
-                $data->{ $field->{name} }
+                $data->{ $field->{name} },
+                $overide->{ $field->{name} },
             );
         }
         elsif ( $field->{type} eq 'select' || $field->{type} eq 'datalist' ) {
-            $input = $self->_select( $field, $data->{ $field->{name} } );
+            $input = $self->_select(
+                $field,
+                $data->{ $field->{name} },
+                $overide->{ $field->{name} },
+            );
         }
         else {
             $input = $self->_input( $field, $data );
