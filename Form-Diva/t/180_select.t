@@ -55,19 +55,29 @@ is( $newform->[0]{type}, 'select', 'check _expandshortcuts type is select' );
 
 my $input_select3_default = 
  q |<SELECT name="checktest" id="checktest"  class="form-control">
- <option value="Argentinian" >Argentinian</option>
- <option value="American" >American</option>
- <option value="English" >English</option>
- <option value="Canadian" >Canadian</option>
- <option value="French" selected >French</option>
- <option value="Irish" >Irish</option>
- <option value="Russian" >Russian</option>
+ <option value="Argentinian" id="checktest_Argentinian" >Argentinian</option>
+ <option value="American" id="checktest_American" >American</option>
+ <option value="English" id="checktest_English" >English</option>
+ <option value="Canadian" id="checktest_Canadian" >Canadian</option>
+ <option value="French" id="checktest_French" selected >French</option>
+ <option value="Irish" id="checktest_Irish" >Irish</option>
+ <option value="Russian" id="checktest_Russian" >Russian</option>
 </SELECT>|;
 
-unlike( $select1->_select( $select1->{form}[0], undef ),
+#  <option value="Argentinian" id="checktest_Argentinian" >Argentinian</option>
+#  <option value="American" id="checktest_American" >American</option>
+#  <option value="English" id="checktest_English" >English</option>
+#  <option value="Canadian" id="checktest_Canadian" >Canadian</option>
+#  <option value="French" id="checktest_French" selected >French</option>
+#  <option value="Irish" id="checktest_Irish" >Irish</option>
+#  <option value="Russian" id="checktest_Russian" >Russian</option>
+
+
+
+unlike( $select1->_option_input( $select1->{form}[0], undef ),
     qr/selected/,
     'select1 does not have a default, with no data nothing is selected' );
-my $uk_selected = $select1->_select( $select1->{form}[0], 'uk' );
+my $uk_selected = $select1->_option_input( $select1->{form}[0], 'uk' );
 like(
     $uk_selected,
     qr/uk" selected/,
@@ -81,7 +91,7 @@ like(
 
 my $empty_input_nodata = 
     qq|<SELECT name="empty" id="empty"  class="form-control">\n</SELECT>|;
-is( $select2->_select( $select2->{form}[0] ) ,
+is( $select2->_option_input( $select2->{form}[0] ) ,
     $empty_input_nodata ,
     'select2 has no values provided and returns with no option elements');
 my $select2_no_data = $select2->generate ;
@@ -96,25 +106,30 @@ is( $generated_empty_input,
     $empty_input_nodata,
     'Generate returned input of a few tests ago, with some space removed' );
 
-my $input3a = $select3->_select( $select3->{form}[0], undef, );
+my $input3a = $select3->_option_input( $select3->{form}[0], undef, );
 is( $input3a, $input_select3_default, 
     'A select with different labels than values.' );
 
-my $over_ride2 = $select2->_select( 
+my $over_ride2 = $select2->_option_input( 
     $select2->{form}[0], undef, [ qw / yellow orange red / ] );
 like( $over_ride2, qr/red/, 
     'Empty Select with Override now has one of the new vaues' )   ;
 unlike( $over_ride2, qr/selected/, 
     'Empty Select with Override has no selected because it was given undef' )   ;
 
-my $over_ride3 = $select3->_select( 
+my $over_ride3 = $select3->_option_input( 
     $select3->{form}[0], 'pear', [ qw / apple orange pear / ] );
 unlike ( $over_ride3, qr/French/, 
     'Select with Override does not contain an original option value');
 like( $over_ride3, qr/apple/, 
     'Select with Override does contain one of the new values' )   ;
-like( $over_ride3, qr/<option value="pear" selected >/,
+like( $over_ride3, qr/<option value="pear" id="checktest_pear" selected >/,
     'pear is selected in the Override select');
+
+#  <option value="apple" id="checktest_apple" >apple</option>
+#  <option value="orange" id="checktest_orange" >orange</option>
+#  <option value="pear" id="checktest_pear" selected >pear</option>
+
 
 my $over_ride4 = $select3->generate( 
     { checktest  => 'banana' , pet => 'poodle' },

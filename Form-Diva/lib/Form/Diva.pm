@@ -8,6 +8,13 @@ package Form::Diva;
 
 use Storable qw(dclone);
 
+# The _option_id sub needs access to a variable for hashing the ids
+# in use, even though it is initialized at the beginning of generate,
+# it needs to both exist outside of the generate subroutines scope
+# and before before the _option_id sub is declared.
+my %id_uq = ( );
+sub _clear_id_uq { %id_uq = ( ) }
+
 sub new {
     my $class = shift;
     my $self  = {@_};
@@ -21,37 +28,52 @@ sub new {
 }
 
 sub clone {
-    my $self = shift ;
-    my $args = shift ;
-    my $new = {};
+    my $self  = shift;
+    my $args  = shift;
+    my $new   = {};
     my $class = 'Form::Diva';
     $new->{FormHash}    = dclone $self->{FormHash};
     $new->{input_class} = $args->{input_class} || $self->{input_class};
     $new->{label_class} = $args->{label_class} || $self->{label_class};
-    $new->{form_name}   = $args->{form_name}   || $self->{form_name};
-    if( $args->{neworder} ){
-            my @reordered = map { $new->{FormHash}->{$_} } @{$args->{neworder}};
-            $new->{FormMap} = \@reordered ;
-        }
-    else { $new->{FormMap} = dclone $self->{FormMap} ; }        
-    bless $new, $class ;
-    return $new ;
+    $new->{form_name}   = $args->{form_name} || $self->{form_name};
+    if ( $args->{neworder} ) {
+        my @reordered = map { $new->{FormHash}->{$_} } @{ $args->{neworder} };
+        $new->{FormMap} = \@reordered;
+    }
+    else { $new->{FormMap} = dclone $self->{FormMap}; }
+    bless $new, $class;
+    return $new;
 }
 
 # so far diva hasn't needed the form name
+# to use form='id of form' in the tags we would need the id not the name
 # sub form_name {
 #     my $self = shift ;
 #     return $self->{form_name};
 # }
 
 sub input_class {
-    my $self = shift ;
+    my $self = shift;
     return $self->{input_class};
 }
 
 sub label_class {
-    my $self = shift ;
+    my $self = shift;
     return $self->{label_class};
+}
+
+sub _option_id {
+    my $self  = shift;
+    my $id    = shift;
+    my $value = shift;
+    my $idv = $id . '_' . lc($value) ;
+    $idv =~ s/\s+/_/g;
+    while ( defined $id_uq{$idv} ) {
+        $id_uq{$idv}++;
+        $idv = $idv . $id_uq{$idv};
+    }
+    $id_uq{$idv} = 1;
+    return "id=\"$idv\"" ;
 }
 
 # specification calls for single letter shortcuts on all fields
@@ -74,6 +96,8 @@ sub _expandshortcuts {
         }
         unless ( $formfield->{type} ) { $formfield->{type} = 'text' }
         unless ( $formfield->{name} ) { die "fields must have names" }
+# needs test
+        unless ( $formfield->{id} ) { $formfield->{id} = $formfield->{name };}        
         $FormHash->{ $formfield->{name} } = $formfield;
     }
     return ( $FormMap, $FormHash );
@@ -154,66 +178,52 @@ sub _input {
     return $input;
 }
 
-# Note need to check default field and disable disabled fields
-# this needs to be implemented after data is being handled because
-# default is irrelevant if there is data.
-
-sub _radiocheck {    # field, input_class, data;
+sub _option_input {          # field, input_class, data;
     my $self           = shift;
-    my $field          = shift;
-    my $data           = shift;
-    my $replace_fields = shift;
+    my $field          = shift;    # field definition from FormMap or FormHash
+    my $data           = shift;    # scalar data for this form field
+    my $replace_fields = shift;    # valuelist to use instead of default
     my $output         = '';
-    my $input_class    = $self->_class_input($field);
-    my $extra          = $field->{extra} || "";
-    my $default        = $field->{default}
+    my $input_class = $self->_class_input($field);
+    my $extra       = $field->{extra} || "";
+    #my $id          = $field->{id} ? $field->{id} : $field->{name};
+    my $default     = $field->{default}
         ? do {
         if   ($data) {undef}
         else         { $field->{default} }
         }
         : undef;
-    my @values
-        = $replace_fields
-        ? @{$replace_fields}
-        : @{ $field->{values} };    
-    foreach my $val ( @values ) {
-        my ( $value, $v_lab ) = ( split( /\:/, $val ), $val );
-        my $checked = '';
-        if    ( $data eq $value )    { $checked = 'checked ' }
-        elsif ( $default eq $value ) { $checked = 'checked ' }
-        $output
-            .= qq!<input type="$field->{type}" $input_class $extra name="$field->{name}" value="$value" $checked>$v_lab<br>\n!;
-    }
-    return $output;
-}
-
-sub _select {    # field, input_class, data;
-    my $self           = shift;
-    my $field          = shift;
-    my $data           = shift;
-    my $replace_fields = shift;
-    my $class          = $self->_class_input($field);
-    my $extra          = $field->{extra} || "";
-    my $id = $field->{id} ? qq!id="$field->{id}"! : qq!id="$field->{name}"!;
     my @values
         = $replace_fields
         ? @{$replace_fields}
         : @{ $field->{values} };
-    my $default = $field->{default}
-        ? do {
-        if   ($data) {undef}
-        else         { $field->{default} }
+    if ( $field->{type} eq 'select' ) {
+        $output
+            = qq|<SELECT name="$field->{name}" id="$field->{id}" $extra $input_class>\n|;
+        foreach my $val (@values) {
+            my ( $value, $v_lab ) = ( split( /\:/, $val ), $val );
+            my $idf = "id=\"$field->{id}" . '_' . "$value\"";
+            $idf =~ s/\s+/_/g;
+            my $selected = '';
+            if    ( $data eq $value )    { $selected = 'selected ' }
+            elsif ( $default eq $value ) { $selected = 'selected ' }
+            $output
+                .= qq| <option value="$value" $idf $selected>$v_lab</option>\n|;
         }
-        : undef;
-    my $output = qq|<SELECT name="$field->{name}" $id $extra $class>\n|;
-    foreach my $val (@values) {
-        my ( $value, $v_lab ) = ( split( /\:/, $val ), $val );
-        my $selected = '';
-        if    ( $data eq $value )    { $selected = 'selected ' }
-        elsif ( $default eq $value ) { $selected = 'selected ' }
-        $output .= qq| <option value="$value" $selected>$v_lab</option>\n|;
+        $output .= '</SELECT>';
     }
-    $output .= '</SELECT>';
+    else {
+        foreach my $val (@values) {
+            my ( $value, $v_lab ) = ( split( /\:/, $val ), $val );
+            my $checked = '';
+            if    ( $data eq $value )    { $checked = 'checked ' }
+            elsif ( $default eq $value ) { $checked = 'checked ' }
+            my $idf = "id=\"$field->{id}" . '_' . "$value\"";
+            $idf =~ s/\s+/_/g;
+            $output
+                .= qq!<input type="$field->{type}" $input_class $extra name="$field->{name}" $idf value="$value" $checked>$v_lab<br>\n!;
+        }
+    }
     return $output;
 }
 
@@ -223,17 +233,14 @@ sub generate {
     my $overide = shift;
     unless ( keys %{$data} ) { $data = undef }
     my @generated = ();
+    $self->_clear_id_uq ;    # needs to be empty when form generation starts.
     foreach my $field ( @{ $self->{FormMap} } ) {
         my $input = undef;
-        if ( $field->{type} eq 'radio' || $field->{type} eq 'checkbox' ) {
-            $input = $self->_radiocheck(
-                $field,
-                $data->{ $field->{name} },
-                $overide->{ $field->{name} },
-            );
-        }
-        elsif ( $field->{type} eq 'select' || $field->{type} eq 'datalist' ) {
-            $input = $self->_select(
+        if (   $field->{type} eq 'radio'
+            || $field->{type} eq 'checkbox'
+            || $field->{type} eq 'select' )
+        {
+            $input = $self->_option_input(
                 $field,
                 $data->{ $field->{name} },
                 $overide->{ $field->{name} },

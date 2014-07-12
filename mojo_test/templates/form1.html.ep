@@ -12,9 +12,9 @@
   <%== $field->{'input'} %>
   </div>
 % }
+
 <button type="submit" class="btn btn-primary">Submit Me</button>
 </form>
-
 
 <pre>
 <%= $now->cdate %>

@@ -40,19 +40,25 @@ my $diva1 = Form::Diva->new(
         #     values => [ "1:Peruvian Music", "2:Argentinian Dance", "3:Cuban" ]
         # },
         {   name    => 'slctst',
-            type    => 'select',
+            type    => 'radio',
             default => 'French',
             values  => [
                 qw /Argentinian American English Canadian French Irish Russian/
             ]
         },
         {   name    => 'checktest',
-            type    => 'select',
+            type    => 'checkbox',
             default => 'French',
             values  => [
                 qw /French Irish Russian Argentinian American English Canadian /
             ]
         },
+        {
+            n => 'cars', type => 'select', 
+            values => [ 'saab:Saab', 'volvo:Volvo', 'mercedes:Mercedes', 'fiat:Fiat' ],
+        }
+
+
     ],
 );
 
@@ -79,7 +85,8 @@ post '/form1' => sub {
     $c->stash(
         massage => "params @params \nid set to $data{our_id},\n
         checkbox value $data{'mycheckbox'} radio value $data{myradio}
-        selected : $data{slctst} dalistselected : $data{checktest}"
+        selected : $data{slctst} dalistselected : $data{checktest}
+        selected : cars $data{cars}"
     );
     $c->render('form1');
 };

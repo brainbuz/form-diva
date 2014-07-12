@@ -185,6 +185,12 @@ When using the first form of values the label is not CamelCased or otherwise cha
 
 It is possible to override values by passing an extra argument to generate. The override argument is a hashref { field_name => [ values ...]}. It is even possible to create your initial object with an empty values lists and pass a list every time you generate the form.
 
+=head1 Miscellaneous
+
+=head2 id Tags
+
+Form::Diva strives to put an id tag everywhere it can. For the elements of CheckBox, Radio or Select the id tag is generated as $field_id_$option_name. Spaces are changed to underscore, no changes are made to the character case. If elements in a grouped input have the same name and differ only in whitespace or character case, they may
+
 =head1 AUTHOR
 
 John Karr, C<brainbuz at brainbuz.org>
