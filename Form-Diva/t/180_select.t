@@ -3,6 +3,8 @@ use strict;
 use warnings;
 use Test::More;
 use Storable qw(dclone);
+use Carp::Always;
+use Data::Printer;
 
 use_ok('Form::Diva');
 
@@ -42,6 +44,7 @@ my $select3 = Form::Diva->new(
         {   name    => 'checktest',
             type    => 'select',
             default => 'French',
+            id      => 'checktest',
             values  => [
                 qw /Argentinian American English Canadian French Irish Russian/
             ]
@@ -55,29 +58,27 @@ is( $newform->[0]{type}, 'select', 'check _expandshortcuts type is select' );
 
 my $input_select3_default = 
  q |<SELECT name="checktest" id="checktest"  class="form-control">
- <option value="Argentinian" id="checktest_Argentinian" >Argentinian</option>
- <option value="American" id="checktest_American" >American</option>
- <option value="English" id="checktest_English" >English</option>
- <option value="Canadian" id="checktest_Canadian" >Canadian</option>
- <option value="French" id="checktest_French" selected >French</option>
- <option value="Irish" id="checktest_Irish" >Irish</option>
- <option value="Russian" id="checktest_Russian" >Russian</option>
+ <option value="Argentinian" id="checktest_argentinian" >Argentinian</option>
+ <option value="American" id="checktest_american" >American</option>
+ <option value="English" id="checktest_english" >English</option>
+ <option value="Canadian" id="checktest_canadian" >Canadian</option>
+ <option value="French" id="checktest_french" selected >French</option>
+ <option value="Irish" id="checktest_irish" >Irish</option>
+ <option value="Russian" id="checktest_russian" >Russian</option>
 </SELECT>|;
 
-#  <option value="Argentinian" id="checktest_Argentinian" >Argentinian</option>
-#  <option value="American" id="checktest_American" >American</option>
-#  <option value="English" id="checktest_English" >English</option>
-#  <option value="Canadian" id="checktest_Canadian" >Canadian</option>
-#  <option value="French" id="checktest_French" selected >French</option>
-#  <option value="Irish" id="checktest_Irish" >Irish</option>
-#  <option value="Russian" id="checktest_Russian" >Russian</option>
-
-
-
+# %id_uq needs to be cleared before each test invoking _option_input.
+# normally generate would do this but when we're testing 
+# private methods this isn't happening.
+$select1->_clear_id_uq ; 
 unlike( $select1->_option_input( $select1->{form}[0], undef ),
     qr/selected/,
     'select1 does not have a default, with no data nothing is selected' );
-my $uk_selected = $select1->_option_input( $select1->{form}[0], 'uk' );
+
+$select1->_clear_id_uq ; 
+my $uk_selected = $select1->_option_input( 
+    $select1->{FormHash}{selecttest}, 'uk' );
+
 like(
     $uk_selected,
     qr/uk" selected/,
@@ -90,13 +91,15 @@ like(
 );
 
 my $empty_input_nodata = 
-    qq|<SELECT name="empty" id="empty"  class="form-control">\n</SELECT>|;
+    qq|<SELECT name="empty" id="formdiva_empty"  class="form-control">\n</SELECT>|;
+
+$select2->_clear_id_uq();    
 is( $select2->_option_input( $select2->{form}[0] ) ,
     $empty_input_nodata ,
     'select2 has no values provided and returns with no option elements');
 my $select2_no_data = $select2->generate ;
 is( $select2_no_data->[0]{label}, 
-    '<LABEL for="empty" class="testclass">Empty</LABEL>',
+    '<LABEL for="formdiva_empty" class="testclass">Empty</LABEL>',
     'Check the label on the empty one');
 # remove extra space because generate does.
 $empty_input_nodata =~ s/\s//g;
@@ -106,10 +109,12 @@ is( $generated_empty_input,
     $empty_input_nodata,
     'Generate returned input of a few tests ago, with some space removed' );
 
+$select3->_clear_id_uq;
 my $input3a = $select3->_option_input( $select3->{form}[0], undef, );
 is( $input3a, $input_select3_default, 
     'A select with different labels than values.' );
 
+$select2->_clear_id_uq;
 my $over_ride2 = $select2->_option_input( 
     $select2->{form}[0], undef, [ qw / yellow orange red / ] );
 like( $over_ride2, qr/red/, 
@@ -117,6 +122,7 @@ like( $over_ride2, qr/red/,
 unlike( $over_ride2, qr/selected/, 
     'Empty Select with Override has no selected because it was given undef' )   ;
 
+$select3->_clear_id_uq;
 my $over_ride3 = $select3->_option_input( 
     $select3->{form}[0], 'pear', [ qw / apple orange pear / ] );
 unlike ( $over_ride3, qr/French/, 
@@ -125,11 +131,6 @@ like( $over_ride3, qr/apple/,
     'Select with Override does contain one of the new values' )   ;
 like( $over_ride3, qr/<option value="pear" id="checktest_pear" selected >/,
     'pear is selected in the Override select');
-
-#  <option value="apple" id="checktest_apple" >apple</option>
-#  <option value="orange" id="checktest_orange" >orange</option>
-#  <option value="pear" id="checktest_pear" selected >pear</option>
-
 
 my $over_ride4 = $select3->generate( 
     { checktest  => 'banana' , pet => 'poodle' },

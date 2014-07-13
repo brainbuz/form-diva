@@ -76,7 +76,7 @@ foreach my $nametest (
     [ 'rawvalue',          '' ],
     [ 'value',             'value=""' ],
     [ 'textarea',          0 ],
-    [ 'id',                 'id="name"'],
+    [ 'id',                 'id="formdiva_name"'],
     )
 {
     tester( \%name_no_data, 'Name No Data', $nametest->[0], $nametest->[1] );
@@ -130,7 +130,7 @@ foreach my $emailtest (
 foreach my $emailtest2 (
     [ 'type',        'type="email"' ],
     [ 'placeholder', '' ],
-    [ 'id',          'id="email"' ],
+    [ 'id',          'id="formdiva_email"' ],
     [ 'name',        'name="email"' ],
     [ 'rawvalue',    'salami@yapc.org' ],
     [ 'value',       'value="salami@yapc.org"' ],

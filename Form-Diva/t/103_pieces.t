@@ -18,7 +18,7 @@ my $diva1 = Form::Diva->new(
         {   name  => 'phone',
             type  => 'tel',
             extra => 'required',
-            id    => 'not name',
+            id    => 'phonefield_setid',
         },
         {qw / n email t email l Email c form-email placeholder doormat/},
         {   name    => 'our_id',
@@ -52,6 +52,11 @@ is( $diva1->_class_input( $diva1->{form}[1] ), 'class="form-control"',
     'with field that uses default class' );
 is( $diva1->_class_input( $diva1->{form}[2] ), 'class="form-email"',
     'with field that uses over-ride class' );
+note( 'testing that id prefers a set id and defaults to formdiva_%fieldname');
+is( $diva1->{FormHash}{email}{id}, 'formdiva_email', 
+    'Email field\'s id was created for us by form diva as formdiva_email' );
+is( $diva1->{FormHash}{phone}{id}, 'phonefield_setid', 
+    'Phone field id is as specified');
 
 note( 'Testing _option_id');
 

@@ -45,37 +45,6 @@ sub clone {
     return $new;
 }
 
-# so far diva hasn't needed the form name
-# to use form='id of form' in the tags we would need the id not the name
-# sub form_name {
-#     my $self = shift ;
-#     return $self->{form_name};
-# }
-
-sub input_class {
-    my $self = shift;
-    return $self->{input_class};
-}
-
-sub label_class {
-    my $self = shift;
-    return $self->{label_class};
-}
-
-sub _option_id {
-    my $self  = shift;
-    my $id    = shift;
-    my $value = shift;
-    my $idv = $id . '_' . lc($value) ;
-    $idv =~ s/\s+/_/g;
-    while ( defined $id_uq{$idv} ) {
-        $id_uq{$idv}++;
-        $idv = $idv . $id_uq{$idv};
-    }
-    $id_uq{$idv} = 1;
-    return "id=\"$idv\"" ;
-}
-
 # specification calls for single letter shortcuts on all fields
 # these all need to expand to the long form.
 sub _expandshortcuts {
@@ -96,11 +65,29 @@ sub _expandshortcuts {
         }
         unless ( $formfield->{type} ) { $formfield->{type} = 'text' }
         unless ( $formfield->{name} ) { die "fields must have names" }
-# needs test
-        unless ( $formfield->{id} ) { $formfield->{id} = $formfield->{name };}        
-        $FormHash->{ $formfield->{name} } = $formfield;
+        unless ( $formfield->{id} ) { 
+            $formfield->{id} = 'formdiva_' . $formfield->{name };}
+        # dclone because otherwise it would be a ref into FormMap
+        $FormHash->{ $formfield->{name} } = dclone $formfield;
     }
     return ( $FormMap, $FormHash );
+}
+
+# so far diva hasn't needed the form name
+# to use form='id of form' in the tags we would need the id not the name
+# sub form_name {
+#     my $self = shift ;
+#     return $self->{form_name};
+# }
+
+sub input_class {
+    my $self = shift;
+    return $self->{input_class};
+}
+
+sub label_class {
+    my $self = shift;
+    return $self->{label_class};
 }
 
 # given a field returns either the default field class="string"
@@ -150,12 +137,14 @@ sub _field_bits {
 }
 
 sub _label {
+    # an id does not get put in label because the spec does not say either
+    # the id attribute or global attributes are supported.
+    # http://www.w3.org/TR/html5/forms.html#the-label-element
     my $self        = shift;
     my $field       = shift;
-    my $fname       = $field->{name};
     my $label_class = $self->{label_class};
-    my $label_tag   = $field->{label} || ucfirst($fname);
-    return qq|<LABEL for="$fname" class="$label_class">|
+    my $label_tag   = $field->{label} || ucfirst($field->{name});
+    return qq|<LABEL for="$field->{id}" class="$label_class">|
         . qq|$label_tag</LABEL>|;
 }
 
@@ -178,6 +167,20 @@ sub _input {
     return $input;
 }
 
+sub _option_id {
+    my $self  = shift;
+    my $id    = shift;
+    my $value = shift;
+    my $idv = $id . '_' . lc($value) ;
+    $idv =~ s/\s+/_/g;
+    while ( defined $id_uq{$idv} ) {
+        $id_uq{$idv}++;
+        $idv = $idv . $id_uq{$idv};
+    }
+    $id_uq{$idv} = 1;
+    return "id=\"$idv\"" ;
+}
+
 sub _option_input {          # field, input_class, data;
     my $self           = shift;
     my $field          = shift;    # field definition from FormMap or FormHash
@@ -186,7 +189,6 @@ sub _option_input {          # field, input_class, data;
     my $output         = '';
     my $input_class = $self->_class_input($field);
     my $extra       = $field->{extra} || "";
-    #my $id          = $field->{id} ? $field->{id} : $field->{name};
     my $default     = $field->{default}
         ? do {
         if   ($data) {undef}
@@ -196,14 +198,16 @@ sub _option_input {          # field, input_class, data;
     my @values
         = $replace_fields
         ? @{$replace_fields}
-        : @{ $field->{values} };
+        : @{ $field->{values} };  
     if ( $field->{type} eq 'select' ) {
         $output
             = qq|<SELECT name="$field->{name}" id="$field->{id}" $extra $input_class>\n|;
         foreach my $val (@values) {
-            my ( $value, $v_lab ) = ( split( /\:/, $val ), $val );
-            my $idf = "id=\"$field->{id}" . '_' . "$value\"";
-            $idf =~ s/\s+/_/g;
+#return "val $val"            ;
+            my ( $value, $v_lab ) = ( split( /\:/, $val ), $val ); 
+# return $value ;
+# return " $field->{id} $value" ; 
+            my $idf = $self->_option_id( $field->{id}, $value ) ;
             my $selected = '';
             if    ( $data eq $value )    { $selected = 'selected ' }
             elsif ( $default eq $value ) { $selected = 'selected ' }

@@ -5,6 +5,8 @@ use Test::More 1.00;
 #use 5.014;
 use Storable qw(dclone);
 use Test::Exception 0.32;
+use Data::Printer;
+use Data::Dump;
 
 use_ok('Form::Diva');
 
@@ -13,7 +15,7 @@ my $diva1 = Form::Diva->new(
     input_class => 'form-control',
     form        => [
         { n => 'name', t => 'text', p => 'Your Name', l => 'Full Name' },
-        { name => 'phone', type => 'tel', extra => 'required' },
+        { name => 'phone', type => 'tel', extra => 'required', id => 'phonefield' },
         {qw / n email t email l Email c form-email placeholder doormat/},
         { name => 'our_id', type => 'number', extra => 'disabled' },
     ],
@@ -56,11 +58,13 @@ is( $newform->[2]{placeholder},
 is( $newform->[3]{name}, 'our_id', 'last record in test is named our_id' );
 is( $newform->[3]{extra},
     'disabled', 'last record extra field is: disabled' );
+
 my $form2 = $diva2->{form};
 is( $form2->[0]{name}, 'something', 
     'Second form has a name: something');
 is( $form2->[0]{type}, 'text', 
     'Second form: field type defaulted to text');
+
 
 
 done_testing();

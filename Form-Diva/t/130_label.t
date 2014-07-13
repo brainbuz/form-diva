@@ -15,7 +15,7 @@ my $diva1 = Form::Diva->new(
         {   name  => 'phone',
             type  => 'tel',
             extra => 'required',
-            id    => 'not name',
+            id    => 'phonefieldid',
         },
         {qw / n email t email l Email c form-email placeholder doormat/},
         {   name    => 'our_id',
@@ -41,19 +41,19 @@ my @fields      = @{ $diva1->{FormMap} };
 my @radiofields = @{ $diva2->{FormMap} };
 foreach my $test (
     [   $diva1->_label( $fields[0] ),
-        '<LABEL for="fullname" class="testclass">Full Name</LABEL>'
+        '<LABEL for="formdiva_fullname" class="testclass">Full Name</LABEL>'
     ],
     [   $diva1->_label( $fields[1] ),
-        '<LABEL for="phone" class="testclass">Phone</LABEL>'
+        '<LABEL for="phonefieldid" class="testclass">Phone</LABEL>'
     ],
     [   $diva1->_label( $fields[2] ),
-        '<LABEL for="email" class="testclass">Email</LABEL>'
+        '<LABEL for="formdiva_email" class="testclass">Email</LABEL>'
     ],
     [   $diva1->_label( $fields[3] ),
-        '<LABEL for="our_id" class="testclass">Our_id</LABEL>'
+        '<LABEL for="formdiva_our_id" class="testclass">Our_id</LABEL>'
     ],
     [   $diva2->_label( $radiofields[0] ),
-        '<LABEL for="radiotest" class="testclass">Radiotest</LABEL>'
+        '<LABEL for="formdiva_radiotest" class="testclass">Radiotest</LABEL>'
     ],
     )
 {
