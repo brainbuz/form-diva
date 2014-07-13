@@ -167,6 +167,12 @@ sub _input {
     return $input;
 }
 
+# generates the id= for option items.
+# uses global %id_uq to insure uniqueness in generated ids.
+# It might be cleaner to make this a sub ref under _option_input
+# and put the hash there too, but potentially the global hash
+# protects against a wider (though unlikely) range of collisions,
+# also putting the code_ref in _option_id would make it that much longer.
 sub _option_id {
     my $self  = shift;
     my $id    = shift;
@@ -203,10 +209,7 @@ sub _option_input {          # field, input_class, data;
         $output
             = qq|<SELECT name="$field->{name}" id="$field->{id}" $extra $input_class>\n|;
         foreach my $val (@values) {
-#return "val $val"            ;
             my ( $value, $v_lab ) = ( split( /\:/, $val ), $val ); 
-# return $value ;
-# return " $field->{id} $value" ; 
             my $idf = $self->_option_id( $field->{id}, $value ) ;
             my $selected = '';
             if    ( $data eq $value )    { $selected = 'selected ' }
@@ -219,11 +222,10 @@ sub _option_input {          # field, input_class, data;
     else {
         foreach my $val (@values) {
             my ( $value, $v_lab ) = ( split( /\:/, $val ), $val );
+            my $idf = $self->_option_id( $field->{id}, $value ) ;
             my $checked = '';
             if    ( $data eq $value )    { $checked = 'checked ' }
             elsif ( $default eq $value ) { $checked = 'checked ' }
-            my $idf = "id=\"$field->{id}" . '_' . "$value\"";
-            $idf =~ s/\s+/_/g;
             $output
                 .= qq!<input type="$field->{type}" $input_class $extra name="$field->{name}" $idf value="$value" $checked>$v_lab<br>\n!;
         }

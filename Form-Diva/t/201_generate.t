@@ -65,11 +65,12 @@ my $diva_html_types = Form::Diva->new(
     input_class => 'form-control',
     form        => dclone( \@html_types ),
 );
+
 my @html_field_types_form = @{ $diva_html_types->generate() };
 for ( my $i = 0; $i < scalar(@html_types); $i++ ) {
     my %data = %{ $html_types[$i] };
     my %res  = %{ $html_field_types_form[$i] };
-    my $labelStr = qq!<LABEL for="$data{n}"!;
+    my $labelStr = qq!<LABEL for="formdiva_$data{n}"!;
     like( $res{label},
         qr/$labelStr/,
         "Label $labelStr generated for $data{t}"
@@ -77,7 +78,7 @@ for ( my $i = 0; $i < scalar(@html_types); $i++ ) {
     my $inptStr = qq!<INPUT type="$data{t}" name="$data{n}"!;
     like( $res{input},
         qr/$inptStr/,
-        "Input Field validated for $data{t} -- $inptStr"
+        "Input Field for $data{t} -- $inptStr"
     );
 }
 

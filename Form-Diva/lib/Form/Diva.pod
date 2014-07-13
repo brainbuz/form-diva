@@ -13,6 +13,10 @@ uglier Perl Code in your Controller.
 
 Drastically reduce form clutter in your View Templates with small Data Structures.
 
+=head1 PROJECT STATUS IS RELEASE CANDIDATE
+
+Most of Form::Diva is unlikely to change, but hasn't been road-tested enough to know for sure that mistakes haven't been made, either in the code or in interpretation of HTML5 standards. It is also possible that there are html5 elements that should be baked in rather than left for the 'extra' field. 
+
 =head1 DESCRIPTION
 
 Create a new instance of Form::Diva from an array_ref of hash_refs describing each field of your form. The most common attributes have a single letter abbreviation to reduce typing.
@@ -81,20 +85,20 @@ When called without arguments returns the blank form with placeholders and value
 
 When provided an optional hashref of data it sets values based on the hashref and suppresses placeholder. 
 
-The data returned is in the form of an array reference with a hash reference for the label and input attributes.
-
 A second optional hashref may be passed to override the values list for select, checkbox and radio button inputs, see below.
+
+The data returned is in the form of an array reference where each element of the array is two hashreferences: label and input.
 
 =head2 clone
 
-Copy a Form::Diva object optionally modifiying some of the values in the copy. This is useful if you have several similar forms, define a form diva object with all of the fields, then make copies for the shorter forms.
+Copy a Form::Diva object optionally modifying some of the values in the copy. This is useful if you have several similar forms, define a form diva object with all of the fields, then make copies for the shorter forms.
 
  my $newdiva = $diva->clone({ 
     neworder => [ qw / A B c D E /], });
 
 =head3 Arguments to clone
 
-Arguments to clone are passed as a hashref. All of the arguments are optional since if omitted the value of the original object is just copied. clone with no arguments would just make a copy of your original object. The arguments are:
+Arguments to clone are passed as a hashref. All of the arguments are optional since if omitted the original object is just copied. clone with no arguments would just make a copy of your original object. The arguments are:
 
 =head4 neworder
 
@@ -118,7 +122,7 @@ Change these values for your copy.
 
 Specify the contents the label's class attribute and the input's class attribute. The input_class can be over-ridden for a single field by using the c/class attribute in a field definition.
 
-If you need to access these two values they both have accessor methods $diva->label_class() and $diva->input_class();.
+If you need to access these two values in code they both have accessor methods $diva->label_class() and $diva->input_class();.
 
 =head2 form
 
@@ -126,7 +130,7 @@ Form::Diva knows about the most frequently needed attributes in HTML5 label and 
 
 The only required value in a field definition is name. When not specified type defaults to text. 
 
-Multivalued fields are not currently supported, but may be in the future.
+Multivalued fields (checkboxes, select) are not currently supported, but may be in the future.
 
 Supported attributes and their shortcuts
 
@@ -153,11 +157,11 @@ Should be placed in the extra field when needed.
 
 =head2 TextArea
 
-TextArea fields are handled the same as the text type. 
+TextArea fields are treated by the Form::Diva structure as a regular input type, but <TextArea... is what gets generated. 
 
 =head2 Select Radio Button and CheckBox
 
-Select, Radio Button and CheckBox Input types are similar to each other, and take an extra attribute 'values'. Form::Diva does not currently support multi-valued CheckBoxes, if a record's data has multiple values only one will be selected in the form.
+Select, Radio Button and CheckBox Input types are similar to each other, and take an extra attribute 'values'. Form::Diva does not currently support multi-valued.
 
 =head3 values
 
@@ -183,13 +187,27 @@ When using the first form of values the label is not CamelCased or otherwise cha
 
 =head3 Over-Riding Values
 
-It is possible to override values by passing an extra argument to generate. The override argument is a hashref { field_name => [ values ...]}. It is even possible to create your initial object with an empty values lists and pass a list every time you generate the form.
+It is possible to override values by passing an extra argument to generate. The override argument is a hashref C<{ field_name =E<gt> [ values ...] } >. It is even possible to create your initial object with an empty values lists and pass a list every time you generate the form.
 
 =head1 Miscellaneous
 
 =head2 id Tags
 
-Form::Diva strives to put an id tag everywhere it can. For the elements of CheckBox, Radio or Select the id tag is generated as $field_id_$option_name. Spaces are changed to underscore, no changes are made to the character case. If elements in a grouped input have the same name and differ only in whitespace or character case, they may
+Form::Diva strives to put an id tag everywhere it can. When you define a field you can specify an id, if you don't Form::Diva generates one by prepending 'formdiva_' to the value for name. 
+
+For the elements of CheckBox, Radio or Select the id tag is generated as $field_id_$option_name. To insure uniqueness it is lowercased, and in the case of a duplicate a number is appended. This insures that the generated ids are unique but predictable. 
+
+=head1 FAQ
+
+=head2 Why Doesn't Form::Diva generate an entire form?
+
+Form::Diva is intented to be used with Templating systems, the HTML stuff is best left to the templating system. Telling form diva what you need in the Form Tag and whether you prefer to use a submit input or a button and what junk goes in them is only going to make it more complex, and make your application less readable because you will have replaced HTML with abstract perl code but not saved any space or labor. Or just use one of the other Form::Modules on CPAN. 
+
+=head2 Where I use Form::Diva, in my Model, View or Controller?
+
+Use it wherever works best for your coding style. 
+
+You can put all of the diva code into a Perl Macro in Template::Toolkit or just use it as Embedded Perl in Mojo::Template. You can then use the include directive for your templating system to move that code to a shared file. Or define your form elements in the Controller if that is where it makes sense. Or 
 
 =head1 AUTHOR
 
@@ -197,7 +215,7 @@ John Karr, C<brainbuz at brainbuz.org>
 
 =head1 BUGS
 
-Please report any bugs or feature requests through the web interface at L<https://bitbucket.org/brainbuz/formdiva/issues>.  I will be notified, and then you'll automatically be notified of progress on your bug as I make changes.
+Please report any bugs or feature requests through the web interface at L<https://bitbucket.org/brainbuz/formdiva/issues>. I will be notified, and then you'll automatically be notified of progress on your bug as I make changes.
 
 =head1 SUPPORT
 

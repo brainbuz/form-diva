@@ -5,8 +5,6 @@ use Test::More 1.00;
 #use 5.014;
 use Storable qw(dclone);
 use Test::Exception 0.32;
-use Data::Printer;
-use Data::Dump;
 
 use_ok('Form::Diva');
 
@@ -64,7 +62,5 @@ is( $form2->[0]{name}, 'something',
     'Second form has a name: something');
 is( $form2->[0]{type}, 'text', 
     'Second form: field type defaulted to text');
-
-
 
 done_testing();

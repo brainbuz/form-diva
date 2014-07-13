@@ -3,12 +3,15 @@ use strict;
 use warnings;
 use Test::More;
 use Storable qw(dclone);
-use Carp::Always;
-use Data::Printer;
-
 use_ok('Form::Diva');
 
 =pod Test Select Inputs
+
+Reminder when writing/modifying tests involving _option_input:
+
+%id_uq needs to be cleared before each test invoking _option_input.
+normally generate would do this but when we're testing 
+private methods this isn't happening.
 
 =cut
 
@@ -67,9 +70,6 @@ my $input_select3_default =
  <option value="Russian" id="checktest_russian" >Russian</option>
 </SELECT>|;
 
-# %id_uq needs to be cleared before each test invoking _option_input.
-# normally generate would do this but when we're testing 
-# private methods this isn't happening.
 $select1->_clear_id_uq ; 
 unlike( $select1->_option_input( $select1->{form}[0], undef ),
     qr/selected/,
