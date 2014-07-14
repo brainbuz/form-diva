@@ -1,5 +1,8 @@
 Revision history for Form::Diva
 
+0.06    13 July 2014
+	setup of new object also defaults id on all of the fields.
+	fixed labels generation, which was using name instead of id.
 0.05    11 July 2014
 	Implemented Select input type.
 	Implemented over-ride on values for inputs that require values.

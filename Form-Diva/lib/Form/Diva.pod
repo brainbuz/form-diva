@@ -13,9 +13,9 @@ uglier Perl Code in your Controller.
 
 Drastically reduce form clutter in your View Templates with small Data Structures.
 
-=head1 PROJECT STATUS IS RELEASE CANDIDATE
+=head1 PROJECT STATUS IS BETA
 
-Most of Form::Diva is unlikely to change, but hasn't been road-tested enough to know for sure that mistakes haven't been made, either in the code or in interpretation of HTML5 standards. It is also possible that there are html5 elements that should be baked in rather than left for the 'extra' field. 
+Most of Form::Diva is unlikely to change, but hasn't been road-tested enough to know for sure that mistakes haven't been made, either in the code or in interpretation of HTML5 standards. It is also possible that there are html5 elements that should be baked in rather than left for the 'extra' field. Every time I think I'm done and start trying to do work I still discover things that are needed.
 
 =head1 DESCRIPTION
 
@@ -159,6 +159,10 @@ Should be placed in the extra field when needed.
 
 TextArea fields are treated by the Form::Diva structure as a regular input type, but <TextArea... is what gets generated. 
 
+=head2 Hidden Fields
+
+Hidden fields always return a comment for the label C<E<lt>!-- formdivahiddenfield --E<gt>> and the input field will not contain class or placeholder. This is because hidden fields do not display. If as is likely the case including hidden fields causes gaps in your form, you can use a conditional against the expected value of the label or in the input type="hidden" to skip surrounding formatting for lines with hidden fields.
+
 =head2 Select Radio Button and CheckBox
 
 Select, Radio Button and CheckBox Input types are similar to each other, and take an extra attribute 'values'. Form::Diva does not currently support multi-valued.
@@ -201,13 +205,13 @@ For the elements of CheckBox, Radio or Select the id tag is generated as $field_
 
 =head2 Why Doesn't Form::Diva generate an entire form?
 
-Form::Diva is intented to be used with Templating systems, the HTML stuff is best left to the templating system. Telling form diva what you need in the Form Tag and whether you prefer to use a submit input or a button and what junk goes in them is only going to make it more complex, and make your application less readable because you will have replaced HTML with abstract perl code but not saved any space or labor. Or just use one of the other Form::Modules on CPAN. 
+Form::Diva is intented to be used with Templating systems, the HTML generation is best left to the templating system. Telling form diva what you need in the Form Tag and whether you prefer to use a submit input or a button and what goes in them is only going to make it more complex, and make your application less readable because you will have replaced HTML with abstract perl code but not saved any space or labor. If you don't agree there are plenty of other Form Modules on CPAN that try to generate the whole form. 
 
-=head2 Where I use Form::Diva, in my Model, View or Controller?
+=head2 Where do I use Form::Diva, in my Model, View or Controller?
 
 Use it wherever works best for your coding style. 
 
-You can put all of the diva code into a Perl Macro in Template::Toolkit or just use it as Embedded Perl in Mojo::Template. You can then use the include directive for your templating system to move that code to a shared file. Or define your form elements in the Controller if that is where it makes sense. Or 
+You can put all of the diva code into a Perl Macro in Template::Toolkit or just use it as Embedded Perl in Mojo::Template. You can then use the include directive for your templating system to move that code to a shared file. Or define your form elements in the Controller if that is where it makes sense. 
 
 =head1 AUTHOR
 

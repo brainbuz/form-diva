@@ -34,6 +34,7 @@ my $diva2 = Form::Diva->new(
             t => 'radio',
             v => [qw /American English Canadian/]
         },
+        { qw/ n secret t hidden /},
     ],
 );
 
@@ -55,6 +56,9 @@ foreach my $test (
     [   $diva2->_label( $radiofields[0] ),
         '<LABEL for="formdiva_radiotest" class="testclass">Radiotest</LABEL>'
     ],
+    [   $diva2->_label( $radiofields[1] ),
+        '<!-- formdivahiddenfield -->',
+        ],
     )
 {
     is( $test->[0], $test->[1], "$test->[1]" );

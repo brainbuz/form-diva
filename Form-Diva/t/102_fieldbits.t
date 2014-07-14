@@ -30,7 +30,8 @@ my $diva1 = Form::Diva->new(
         {   n => 'longtext',
             type => 'TextArea',
             placeholder => 'Type some stuff here',
-        }        
+        },
+        { qw/ n secret t hidden /},
     ],
 );
 
@@ -60,6 +61,8 @@ my %ourid_data1   = $diva1->_field_bits( $fields[3], $data1 );
 my %ourid_data2   = $diva1->_field_bits( $fields[3], $data2 );
 my %TextArea      = $diva1->_field_bits( $fields[4] );
 my %TextAreaData2 = $diva1->_field_bits( $fields[4], $data2 );
+my %Hidden        = $diva1->_field_bits( $fields[5] );
+my %HiddenData2   = $diva1->_field_bits( $fields[5], $data2 );
 
 sub tester {
     my $test_results = shift;
@@ -152,6 +155,17 @@ foreach my $ouridtest (
     tester( \%ourid_no_data, 'OurId No Data',
         $ouridtest->[0], $ouridtest->[1] );
 }
+foreach my $hidtest (
+    [ 'type',     'type="hidden"' ],
+    [ 'name',     'name="secret"' ],
+    [ 'value',    'value=""' ],
+    [ 'hidden',     1 ],
+    )
+{
+    tester( \%Hidden, 'OurId No Data',
+        $hidtest->[0], $hidtest->[1] );
+}
+
 tester( \%ourid_data2, 'ourid_data2', 'rawvalue', 91 );
 tester( \%ourid_data2, 'ourid_data2', 'value',    'value="91"' );
 tester( \%TextArea, 'textarea', 'textarea', 1 );

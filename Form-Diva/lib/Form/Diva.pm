@@ -111,7 +111,6 @@ sub _field_bits {
     $out{input_class} = $self->_class_input($field_ref);
     $out{name}        = qq!name="$in{name}"!;
     $out{id}          = $in{id} ? qq!id="$in{id}"! : qq!id="$in{name}"!;
-
     if ( lc( $in{type} ) eq 'textarea' ) {
         $out{type}     = 'textarea';
         $out{textarea} = 1;
@@ -119,6 +118,7 @@ sub _field_bits {
     else {
         $out{type}     = qq!type="$in{type}"!;
         $out{textarea} = 0;
+        if ( $in{type} eq 'hidden') { $out{hidden}=1 }
     }
     if ($data) {
         $out{placeholder} = '';
@@ -142,6 +142,8 @@ sub _label {
     # http://www.w3.org/TR/html5/forms.html#the-label-element
     my $self        = shift;
     my $field       = shift;
+    if( $field->{type} eq 'hidden' ) {
+        return '<!-- formdivahiddenfield -->' ; }
     my $label_class = $self->{label_class};
     my $label_tag   = $field->{label} || ucfirst($field->{name});
     return qq|<LABEL for="$field->{id}" class="$label_class">|
@@ -157,6 +159,11 @@ sub _input {
     if ( $B{textarea} ) {
         $input = qq|<TEXTAREA $B{name} $B{id}
         $B{input_class} $B{placeholder} $B{extra} >$B{rawvalue}</TEXTAREA>|;
+    }
+    #hidden fields don't get a class or a placeholder
+    elsif ( $B{hidden}) {
+        $input .= qq|<INPUT $B{type} $B{name} $B{id}
+        $B{extra} $B{value} >|;        
     }
     else {
         $input .= qq|<INPUT $B{type} $B{name} $B{id}
