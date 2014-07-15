@@ -1,5 +1,7 @@
 Revision history for Form::Diva
 
+0.07    15 July 2014
+	Implemented hidden fields.
 0.06    13 July 2014
 	setup of new object also defaults id on all of the fields.
 	fixed labels generation, which was using name instead of id.

@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Test::More;
-use Data::Printer;
+#use Data::Printer;
 
 #use 5.014;
 use Storable qw(dclone);
