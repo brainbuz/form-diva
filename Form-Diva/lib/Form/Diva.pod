@@ -89,6 +89,12 @@ A second optional hashref may be passed to override the values list for select, 
 
 The data returned is in the form of an array reference where each element of the array is two hashreferences: label and input.
 
+=head2 hidden
+
+Generate the hidden fields in the data structure. The generated hidden tags are returned as a singular block of text since no formatting is applicable and they just need to be included somewhere in the form.
+
+  $c->stash( hidden => $diva->hidden( $data_hashref ) );
+
 =head2 clone
 
 Copy a Form::Diva object optionally modifying some of the values in the copy. This is useful if you have several similar forms, define a form diva object with all of the fields, then make copies for the shorter forms.
@@ -116,6 +122,10 @@ Change these values for your copy.
         { name => 'some_field_name', ... },
         ...
    ],
+   hidden       => [ 
+        { name => 'some_hidden_field_name', ... },
+        ...
+   ],
  }
 
 =head2 label_class, input_class
@@ -137,7 +147,7 @@ Supported attributes and their shortcuts
  c       class        over-ride input_class for this field
  d       default      sets value for an empty form
  e,x     extra        any other attribute(s)
- i       id           defaults to name
+ i       id           defaults to formdiva_$field{name}
  l       label        defaults to ucfirst(name)
  n       name         field name -- required
  p       placeholder  placeholder to show in an empty form
@@ -155,13 +165,13 @@ B<disabled>, B<readonly>, B<required>
 
 Should be placed in the extra field when needed.
 
+=head2 hidden fields
+
+Hidden fields are specified with a seperate hash reference in the data structure. They take a subset of the same options as normal fields. The relevant options are name (which is mandatory), id, extra, and default.
+
 =head2 TextArea
 
 TextArea fields are treated by the Form::Diva structure as a regular input type, but <TextArea... is what gets generated. 
-
-=head2 Hidden Fields
-
-Hidden fields always return a comment for the label C<E<lt>!-- formdivahiddenfield --E<gt>> and the input field will not contain class or placeholder. This is because hidden fields do not display. If as is likely the case including hidden fields causes gaps in your form, you can use a conditional against the expected value of the label or in the input type="hidden" to skip surrounding formatting for lines with hidden fields.
 
 =head2 Select Radio Button and CheckBox
 
@@ -209,9 +219,7 @@ Form::Diva is intented to be used with Templating systems, the HTML generation i
 
 =head2 Where do I use Form::Diva, in my Model, View or Controller?
 
-Use it wherever works best for your coding style. 
-
-You can put all of the diva code into a Perl Macro in Template::Toolkit or just use it as Embedded Perl in Mojo::Template. You can then use the include directive for your templating system to move that code to a shared file. Or define your form elements in the Controller if that is where it makes sense. 
+Wherever works best for you. Think of it as preparing your data for the View.
 
 =head1 AUTHOR
 

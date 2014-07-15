@@ -256,7 +256,6 @@ sub generate {
     my $self    = shift;
     my $data    = shift;
     my $overide = shift;
-    unless ( keys %{$data} ) { $data = undef }
     my @generated = ();
     $self->_clear_id_uq ;    # needs to be empty when form generation starts.
     foreach my $field ( @{ $self->{FormMap} } ) {
@@ -283,6 +282,16 @@ sub generate {
             };
     }
     return \@generated;
+}
+
+sub hidden {
+    my $self    = shift;
+    my $data    = shift;
+    my $output = '';
+    foreach my $field ( @{ $self->{HiddenMap} } ) {    
+        $output .= $self->_input_hidden( $field, $data ) . "\n" ;
+        }
+    return $output ;
 }
 
 1;
