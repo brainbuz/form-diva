@@ -5,6 +5,7 @@ use Test::More 1.00;
 #use 5.014;
 use Storable qw(dclone);
 use Test::Exception 0.32;
+#use Data::Printer;
 
 use_ok('Form::Diva');
 
@@ -16,6 +17,10 @@ my $diva1 = Form::Diva->new(
         { name => 'phone', type => 'tel', extra => 'required', id => 'phonefield' },
         {qw / n email t email l Email c form-email placeholder doormat/},
         { name => 'our_id', type => 'number', extra => 'disabled' },
+    ],
+    hidden      => [
+        { n => 'secret' },
+        { n => 'hush', default => 'very secret'},
     ],
 );
 
@@ -46,7 +51,14 @@ dies_ok(
     form        => [{qw /t email n Email /}, ],
     ) }, 'Dies: Not providing input_class is fatal' );
 
-my ($newform) = &Form::Diva::_expandshortcuts( $diva1->{form} );
+my ($newform, $newmap) = &Form::Diva::_expandshortcuts( $diva1->{form} );
+my ($newhid, $hidmap)  = &Form::Diva::_expandshortcuts( $diva1->{hidden} );
+
+is( scalar( keys %$newmap), scalar(@$newform), 
+    '_expandshortcuts check that returned hash and array are same size ');
+is( scalar( keys %$hidmap), scalar(@$newhid), 
+    '_expandshortcuts check the same for hidden ');    
+
 is( $newform->[0]{label}, 'Full Name', 'record 0 label is Full Name' );
 is( $newform->[0]{p},     undef,       'record 0 p is undef' );
 is( $newform->[0]{placeholder},
@@ -56,7 +68,9 @@ is( $newform->[2]{placeholder},
 is( $newform->[3]{name}, 'our_id', 'last record in test is named our_id' );
 is( $newform->[3]{extra},
     'disabled', 'last record extra field is: disabled' );
-
+is( $newhid->[0]{name}, 'secret', 'hidden fields 0 name is secret' );
+is( $newhid->[1]{default}, 
+    'very secret', 'hidden fields 1 default is \'very secret\'' );
 my $form2 = $diva2->{form};
 is( $form2->[0]{name}, 'something', 
     'Second form has a name: something');

@@ -2,6 +2,8 @@
 use strict;
 use warnings;
 use Test::More;
+use Carp::Always;
+
 #use 5.014;
 use Storable qw(dclone);
 
@@ -25,26 +27,30 @@ my $diva1 = Form::Diva->new(
             type    => 'number',
             extra   => 'disabled',
             default => 57,
-            class => 'other-class shaded-green',
+            class   => 'other-class shaded-green',
         },
-        {   n => 'longtext',
-            type => 'TextArea',
+        {   n           => 'longtext',
+            type        => 'TextArea',
             placeholder => 'Type some stuff here',
         },
-        { qw/ n secret t hidden /},
     ],
+    hidden =>
+        [ { n => 'secret' }, 
+        { n => 'hush', default => 'very secret' }, ],
 );
 
-my @fields = @{ $diva1->{FormMap} };
-my $data1  = {
+my @fields  = @{ $diva1->{FormMap} };
+my @hiddens = @{ $diva1->{HiddenMap} };
+my $data1   = {
     name  => 'Baloney',
     phone => '232-432-2744',
 };
 my $data2 = {
-    name   => 'Salami',
-    email  => 'salami@yapc.org',
-    our_id => 91,
+    name     => 'Salami',
+    email    => 'salami@yapc.org',
+    our_id   => 91,
     longtext => 'I typed things in here!',
+    hush     => 'Let me Tell You',
 };
 
 my %name_no_data  = $diva1->_field_bits( $fields[0] );
@@ -61,8 +67,11 @@ my %ourid_data1   = $diva1->_field_bits( $fields[3], $data1 );
 my %ourid_data2   = $diva1->_field_bits( $fields[3], $data2 );
 my %TextArea      = $diva1->_field_bits( $fields[4] );
 my %TextAreaData2 = $diva1->_field_bits( $fields[4], $data2 );
-my %Hidden        = $diva1->_field_bits( $fields[5] );
-my %HiddenData2   = $diva1->_field_bits( $fields[5], $data2 );
+
+my %secret      = $diva1->_field_bits( $hiddens[0] );
+my %secretData2 = $diva1->_field_bits( $hiddens[0], $data2 );
+my %hush        = $diva1->_field_bits( $hiddens[1] );
+my %hushData2   = $diva1->_field_bits( $hiddens[1], $data2 );
 
 sub tester {
     my $test_results = shift;
@@ -74,22 +83,22 @@ sub tester {
 }
 
 foreach my $nametest (
-    [ 'input_class',       'class="form-control"' ],
-    [ 'placeholder',       'placeholder="Your Name"' ],
-    [ 'rawvalue',          '' ],
-    [ 'value',             'value=""' ],
-    [ 'textarea',          0 ],
-    [ 'id',                 'id="formdiva_name"'],
+    [ 'input_class', 'class="form-control"' ],
+    [ 'placeholder', 'placeholder="Your Name"' ],
+    [ 'rawvalue',    '' ],
+    [ 'value',       'value=""' ],
+    [ 'textarea',    0 ],
+    [ 'id',          'id="formdiva_name"' ],
     )
 {
     tester( \%name_no_data, 'Name No Data', $nametest->[0], $nametest->[1] );
 }
 
 foreach my $test (
-    [ 'input_class',       'class="form-control"' ],
-    [ 'placeholder',       '' ],
-    [ 'rawvalue',          'Baloney' ],
-    [ 'value',             'value="Baloney"' ],
+    [ 'input_class', 'class="form-control"' ],
+    [ 'placeholder', '' ],
+    [ 'rawvalue',    'Baloney' ],
+    [ 'value',       'value="Baloney"' ],
     )
 {
     tester( \%name_data1, 'name_data1', $test->[0], $test->[1] );
@@ -104,10 +113,10 @@ foreach my $test (
 }
 
 foreach my $phonetest (
-    [ 'type',              'type="tel"' ],
-    [ 'extra',             'required' ],
-    [ 'name',              'name="phone"' ],
-    [ 'id',                'id="not name"' ],
+    [ 'type',  'type="tel"' ],
+    [ 'extra', 'required' ],
+    [ 'name',  'name="phone"' ],
+    [ 'id',    'id="not name"' ],
     )
 {
     tester( \%phone_no_data, 'Phone No Data',
@@ -144,34 +153,44 @@ foreach my $emailtest2 (
 }
 
 foreach my $ouridtest (
-    [ 'type',     'type="number"' ],
-    [ 'extra',    'disabled' ],
-    [ 'name',     'name="our_id"' ],
-    [ 'rawvalue', 57 ],
-    [ 'value',    'value="57"' ],
+    [ 'type',        'type="number"' ],
+    [ 'extra',       'disabled' ],
+    [ 'name',        'name="our_id"' ],
+    [ 'rawvalue',    57 ],
+    [ 'value',       'value="57"' ],
     [ 'input_class', 'class="other-class shaded-green"' ],
     )
 {
     tester( \%ourid_no_data, 'OurId No Data',
         $ouridtest->[0], $ouridtest->[1] );
 }
-foreach my $hidtest (
-    [ 'type',     'type="hidden"' ],
-    [ 'name',     'name="secret"' ],
-    [ 'value',    'value=""' ],
-    [ 'hidden',     1 ],
-    )
+
+foreach my $hidtest ( [ 'name', 'name="secret"' ], [ 'value', 'value=""' ], )
 {
-    tester( \%Hidden, 'OurId No Data',
+    tester( \%secret, 'Hidden - Secret', $hidtest->[0], $hidtest->[1] );
+}
+
+foreach my $hidtest ( [ 'name', 'name="hush"' ],
+    [ 'value', 'value="very secret"' ], )
+{
+    tester( \%hush, 'Hidden - Hush Default', $hidtest->[0], $hidtest->[1] );
+}
+
+foreach my $hidtest ( [ 'name', 'name="hush"' ],
+    [ 'value', 'value="Let me Tell You"' ], )
+{
+    tester( \%hushData2, 'Hidden - Hush with data',
         $hidtest->[0], $hidtest->[1] );
 }
 
 tester( \%ourid_data2, 'ourid_data2', 'rawvalue', 91 );
 tester( \%ourid_data2, 'ourid_data2', 'value',    'value="91"' );
-tester( \%TextArea, 'textarea', 'textarea', 1 );
-tester( \%TextArea, 'textarea', 'placeholder', 
+tester( \%TextArea,    'textarea',    'textarea', 1 );
+tester( \%TextArea, 'textarea', 'placeholder',
     'placeholder="Type some stuff here"' );
-tester( \%TextAreaData2, 'textarea data2', 'rawvalue', 
-    'I typed things in here!' );
+tester(
+    \%TextAreaData2, 'textarea data2',
+    'rawvalue',      'I typed things in here!'
+);
 
 done_testing;

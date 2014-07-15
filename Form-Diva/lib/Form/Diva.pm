@@ -22,8 +22,10 @@ sub new {
     $self->{class} = $class;
     unless ( $self->{input_class} ) { die 'input_class is required.' }
     unless ( $self->{label_class} ) { die 'label_class is required.' }
+    ( $self->{HiddenMap}, $self->{HiddenHash} )
+        = &_expandshortcuts( $self->{hidden} );  
     ( $self->{FormMap}, $self->{FormHash} )
-        = &_expandshortcuts( $self->{form} );
+        = &_expandshortcuts( $self->{form} );      
     return $self;
 }
 
@@ -33,6 +35,8 @@ sub clone {
     my $new   = {};
     my $class = 'Form::Diva';
     $new->{FormHash}    = dclone $self->{FormHash};
+    $new->{HiddenHash}    = dclone $self->{HiddenHash};
+    $new->{HiddenMap}    = dclone $self->{HiddenMap};
     $new->{input_class} = $args->{input_class} || $self->{input_class};
     $new->{label_class} = $args->{label_class} || $self->{label_class};
     $new->{form_name}   = $args->{form_name} || $self->{form_name};
@@ -160,15 +164,23 @@ sub _input {
         $input = qq|<TEXTAREA $B{name} $B{id}
         $B{input_class} $B{placeholder} $B{extra} >$B{rawvalue}</TEXTAREA>|;
     }
-    #hidden fields don't get a class or a placeholder
-    elsif ( $B{hidden}) {
-        $input .= qq|<INPUT $B{type} $B{name} $B{id}
-        $B{extra} $B{value} >|;        
-    }
     else {
         $input .= qq|<INPUT $B{type} $B{name} $B{id}
         $B{input_class} $B{placeholder} $B{extra} $B{value} >|;
     }
+    $input =~ s/\s+/ /g;     # remove extra whitespace.
+    $input =~ s/\s+>/>/g;    # cleanup space before closing >
+    return $input;
+}
+
+sub _input_hidden {
+    my $self  = shift;
+    my $field = shift;
+    my $data  = shift;
+    my %B     = $self->_field_bits( $field, $data );
+    #hidden fields don't get a class or a placeholder
+    my $input .= qq|<INPUT type="hidden" $B{name} $B{id}
+        $B{extra} $B{value} >|;
     $input =~ s/\s+/ /g;     # remove extra whitespace.
     $input =~ s/\s+>/>/g;    # cleanup space before closing >
     return $input;

@@ -15,7 +15,9 @@ my $diva1 = Form::Diva->new(
         { name => 'phone', type => 'tel', extra => 'required' },
         {qw / n email t email l Email c form-email placeholder doormat/},
         { name => 'our_id', type => 'number', extra => 'disabled' },
-    ],
+    ],    hidden =>
+        [ { n => 'secret' }, 
+        { n => 'hush', default => 'very secret' }, ],
 );
 
 isa_ok($diva1, 'Form::Diva', 'Original object is a Form::Diva');
@@ -28,7 +30,6 @@ undef $diva1 ;
 note(  'deleting original obj should not affect subsequent tests');
 is( $diva1 , undef, 'the original object is now undefined' );
 is( $diva2->{FormMap}[1]{name}, 'email', 'last row in copy is email');
-#is( $diva2->form_name, 'diva1', 'The new obj inherited the old name');
 
 my $diva3 = $diva2->clone({ 
     neworder => ['phone', 'name'],
@@ -38,5 +39,7 @@ is( $diva3->{FormMap}[1]{name}, 'name', 'our next copy has name as a field');
 #is( $diva3->form_name, 'newform', 'The new form has the new name');
 is( $diva3->input_class, 'different', 'The new input_class is in effect');
 is( $diva3->label_class, 'testclass', 'but we didnt change label_class');
+is( $diva3->{HiddenMap}[1]{name},'hush', 
+    'Check a hidden field to make sure it was cloned.');
 
 done_testing();

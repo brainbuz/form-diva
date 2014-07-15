@@ -2,4 +2,4 @@
 *.tgz
 blib/
 .build
-
+pod2htmd.tmp
