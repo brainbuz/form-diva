@@ -2,11 +2,11 @@
 =pod 
 
 =head1 NAME
- 
+
 Form::Diva - Generate HTML5 form label and input fields
 
 =head1 SYNOPSIS
- 
+
 Generate Form Label and Input Tags from a simple data structure.
 Simplify form code in your views without replacing it without a lot of even
 uglier Perl Code in your Controller. 
@@ -100,15 +100,16 @@ Generate the hidden fields in the data structure. The generated hidden tags are 
 Copy a Form::Diva object optionally modifying some of the values in the copy. This is useful if you have several similar forms, define a form diva object with all of the fields, then make copies for the shorter forms.
 
  my $newdiva = $diva->clone({ 
-    neworder => [ qw / A B c D E /], });
+    neworder => [ qw / A B c D E /], 
+    newhidden   => [ 'X' , 'Zebra']});
 
 =head3 Arguments to clone
 
 Arguments to clone are passed as a hashref. All of the arguments are optional since if omitted the original object is just copied. clone with no arguments would just make a copy of your original object. The arguments are:
 
-=head4 neworder
+=head4 neworder, newhidden
 
-An array ref of the names of the fields in your form. This will let you re-order fields and you do not need to include all of the fields. You cannot define new fields on a clone but you can omit them. 
+Array refs of the names of the fields in your form. This will let you re-order fields and you do not need to include all of the fields. You cannot define new fields on a clone but you can omit them. You can change fields between hidden and visible, fields originally defined as hidden become text fields.
 
 =head4 input_class, label_class
 
@@ -132,7 +133,7 @@ Change these values for your copy.
 
 Specify the contents the label's class attribute and the input's class attribute. The input_class can be over-ridden for a single field by using the c/class attribute in a field definition.
 
-If you need to access these two values in code they both have accessor methods $diva->label_class() and $diva->input_class();.
+If you need to access these two values in code they both have accessor methods $diva-E<gt>label_class() and $divaE<gt>input_class();.
 
 =head2 form
 
@@ -211,6 +212,10 @@ Form::Diva strives to put an id tag everywhere it can. When you define a field y
 
 For the elements of CheckBox, Radio or Select the id tag is generated as $field_id_$option_name. To insure uniqueness it is lowercased, and in the case of a duplicate a number is appended. This insures that the generated ids are unique but predictable. 
 
+=head2 Errors
+
+Form::Diva doesn't do a huge amount of Error Checking or validation, but it does check that you don't use a field more than once on both C<new> and C<clone methods>. 
+
 =head1 FAQ
 
 =head2 Why Doesn't Form::Diva generate an entire form?
@@ -237,7 +242,7 @@ You can find documentation for this module with the perldoc command.
 
 You can also look for information at:
 
-=head1 ACKNOWLEDGEMENTS
+#=head1 ACKNOWLEDGEMENTS
 
 =head1 LICENSE AND COPYRIGHT
 

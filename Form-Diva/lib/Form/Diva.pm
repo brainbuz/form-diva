@@ -12,8 +12,8 @@ use Storable qw(dclone);
 # in use, even though it is initialized at the beginning of generate,
 # it needs to both exist outside of the generate subroutines scope
 # and before before the _option_id sub is declared.
-my %id_uq = ( );
-sub _clear_id_uq { %id_uq = ( ) }
+my %id_uq = ();
+sub _clear_id_uq { %id_uq = () }
 
 sub new {
     my $class = shift;
@@ -22,11 +22,25 @@ sub new {
     $self->{class} = $class;
     unless ( $self->{input_class} ) { die 'input_class is required.' }
     unless ( $self->{label_class} ) { die 'label_class is required.' }
-    ( $self->{HiddenMap}, $self->{HiddenHash} )
-        = &_expandshortcuts( $self->{hidden} );  
-    ( $self->{FormMap}, $self->{FormHash} )
-        = &_expandshortcuts( $self->{form} );      
+    ( $self->{HiddenMap}, my $HHash ) = &_expandshortcuts( $self->{hidden} );
+    ( $self->{FormMap},   my $FHash ) = &_expandshortcuts( $self->{form} );
+    $self->{FormHash} = { %{$HHash}, %{$FHash} };
+    $self->_field_once;
     return $self;
+}
+
+# True if all fields are used no more than once, if not it dies.
+sub _field_once {
+    my $self   = shift;
+    my @fields = ( @{ $self->{FormMap} }, @{ $self->{HiddenMap} } );
+    my %hash   = ();
+    foreach my $field (@fields) {
+        if ( $hash{ $field->{name} } ) {
+            die "$field->{name} would appear more than once";
+        }
+        else { $hash{ $field->{name} } = 1; }
+    }
+    return 1;
 }
 
 sub clone {
@@ -35,8 +49,6 @@ sub clone {
     my $new   = {};
     my $class = 'Form::Diva';
     $new->{FormHash}    = dclone $self->{FormHash};
-    $new->{HiddenHash}    = dclone $self->{HiddenHash};
-    $new->{HiddenMap}    = dclone $self->{HiddenMap};
     $new->{input_class} = $args->{input_class} || $self->{input_class};
     $new->{label_class} = $args->{label_class} || $self->{label_class};
     $new->{form_name}   = $args->{form_name} || $self->{form_name};
@@ -45,7 +57,13 @@ sub clone {
         $new->{FormMap} = \@reordered;
     }
     else { $new->{FormMap} = dclone $self->{FormMap}; }
+    if ( $args->{newhidden} ) {
+        my @hidden = map { $self->{FormHash}{$_} } @{ $args->{newhidden} };
+        $new->{HiddenMap} = \@hidden;
+    }
+    else { $new->{HiddenMap} = dclone $self->{HiddenMap}; }
     bless $new, $class;
+    $self->_field_once;
     return $new;
 }
 
@@ -69,20 +87,15 @@ sub _expandshortcuts {
         }
         unless ( $formfield->{type} ) { $formfield->{type} = 'text' }
         unless ( $formfield->{name} ) { die "fields must have names" }
-        unless ( $formfield->{id} ) { 
-            $formfield->{id} = 'formdiva_' . $formfield->{name };}
+        unless ( $formfield->{id} ) {
+            $formfield->{id} = 'formdiva_' . $formfield->{name};
+        }
+
         # dclone because otherwise it would be a ref into FormMap
         $FormHash->{ $formfield->{name} } = dclone $formfield;
     }
     return ( $FormMap, $FormHash );
 }
-
-# so far diva hasn't needed the form name
-# to use form='id of form' in the tags we would need the id not the name
-# sub form_name {
-#     my $self = shift ;
-#     return $self->{form_name};
-# }
 
 sub input_class {
     my $self = shift;
@@ -115,6 +128,7 @@ sub _field_bits {
     $out{input_class} = $self->_class_input($field_ref);
     $out{name}        = qq!name="$in{name}"!;
     $out{id}          = $in{id} ? qq!id="$in{id}"! : qq!id="$in{name}"!;
+
     if ( lc( $in{type} ) eq 'textarea' ) {
         $out{type}     = 'textarea';
         $out{textarea} = 1;
@@ -122,7 +136,7 @@ sub _field_bits {
     else {
         $out{type}     = qq!type="$in{type}"!;
         $out{textarea} = 0;
-        if ( $in{type} eq 'hidden') { $out{hidden}=1 }
+        if ( $in{type} eq 'hidden' ) { $out{hidden} = 1 }
     }
     if ($data) {
         $out{placeholder} = '';
@@ -141,15 +155,17 @@ sub _field_bits {
 }
 
 sub _label {
+
     # an id does not get put in label because the spec does not say either
     # the id attribute or global attributes are supported.
     # http://www.w3.org/TR/html5/forms.html#the-label-element
-    my $self        = shift;
-    my $field       = shift;
-    if( $field->{type} eq 'hidden' ) {
-        return '<!-- formdivahiddenfield -->' ; }
+    my $self  = shift;
+    my $field = shift;
+    if ( $field->{type} eq 'hidden' ) {
+        return '<!-- formdivahiddenfield -->';
+    }
     my $label_class = $self->{label_class};
-    my $label_tag   = $field->{label} || ucfirst($field->{name});
+    my $label_tag = $field->{label} || ucfirst( $field->{name} );
     return qq|<LABEL for="$field->{id}" class="$label_class">|
         . qq|$label_tag</LABEL>|;
 }
@@ -178,6 +194,7 @@ sub _input_hidden {
     my $field = shift;
     my $data  = shift;
     my %B     = $self->_field_bits( $field, $data );
+
     #hidden fields don't get a class or a placeholder
     my $input .= qq|<INPUT type="hidden" $B{name} $B{id}
         $B{extra} $B{value} >|;
@@ -196,17 +213,17 @@ sub _option_id {
     my $self  = shift;
     my $id    = shift;
     my $value = shift;
-    my $idv = $id . '_' . lc($value) ;
+    my $idv   = $id . '_' . lc($value);
     $idv =~ s/\s+/_/g;
     while ( defined $id_uq{$idv} ) {
         $id_uq{$idv}++;
         $idv = $idv . $id_uq{$idv};
     }
     $id_uq{$idv} = 1;
-    return "id=\"$idv\"" ;
+    return "id=\"$idv\"";
 }
 
-sub _option_input {          # field, input_class, data;
+sub _option_input {    # field, input_class, data;
     my $self           = shift;
     my $field          = shift;    # field definition from FormMap or FormHash
     my $data           = shift;    # scalar data for this form field
@@ -223,15 +240,15 @@ sub _option_input {          # field, input_class, data;
     my @values
         = $replace_fields
         ? @{$replace_fields}
-        : @{ $field->{values} };  
+        : @{ $field->{values} };
     if ( $field->{type} eq 'select' ) {
         $output
             = qq|<SELECT name="$field->{name}" id="$field->{id}" $extra $input_class>\n|;
         foreach my $val (@values) {
-            my ( $value, $v_lab ) = ( split( /\:/, $val ), $val ); 
-            my $idf = $self->_option_id( $field->{id}, $value ) ;
+            my ( $value, $v_lab ) = ( split( /\:/, $val ), $val );
+            my $idf = $self->_option_id( $field->{id}, $value );
             my $selected = '';
-            if    ( $data eq $value )    { $selected = 'selected ' }
+            if    ( $data    eq $value ) { $selected = 'selected ' }
             elsif ( $default eq $value ) { $selected = 'selected ' }
             $output
                 .= qq| <option value="$value" $idf $selected>$v_lab</option>\n|;
@@ -241,9 +258,9 @@ sub _option_input {          # field, input_class, data;
     else {
         foreach my $val (@values) {
             my ( $value, $v_lab ) = ( split( /\:/, $val ), $val );
-            my $idf = $self->_option_id( $field->{id}, $value ) ;
+            my $idf = $self->_option_id( $field->{id}, $value );
             my $checked = '';
-            if    ( $data eq $value )    { $checked = 'checked ' }
+            if    ( $data    eq $value ) { $checked = 'checked ' }
             elsif ( $default eq $value ) { $checked = 'checked ' }
             $output
                 .= qq!<input type="$field->{type}" $input_class $extra name="$field->{name}" $idf value="$value" $checked>$v_lab<br>\n!;
@@ -253,11 +270,11 @@ sub _option_input {          # field, input_class, data;
 }
 
 sub generate {
-    my $self    = shift;
-    my $data    = shift;
-    my $overide = shift;
+    my $self      = shift;
+    my $data      = shift;
+    my $overide   = shift;
     my @generated = ();
-    $self->_clear_id_uq ;    # needs to be empty when form generation starts.
+    $self->_clear_id_uq;    # needs to be empty when form generation starts.
     foreach my $field ( @{ $self->{FormMap} } ) {
         my $input = undef;
         if (   $field->{type} eq 'radio'
@@ -285,13 +302,13 @@ sub generate {
 }
 
 sub hidden {
-    my $self    = shift;
-    my $data    = shift;
+    my $self   = shift;
+    my $data   = shift;
     my $output = '';
-    foreach my $field ( @{ $self->{HiddenMap} } ) {    
-        $output .= $self->_input_hidden( $field, $data ) . "\n" ;
-        }
-    return $output ;
+    foreach my $field ( @{ $self->{HiddenMap} } ) {
+        $output .= $self->_input_hidden( $field, $data ) . "\n";
+    }
+    return $output;
 }
 
 1;

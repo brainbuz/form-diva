@@ -2,8 +2,6 @@
 use strict;
 use warnings;
 use Test::More;
-
-#use 5.014;
 use Storable qw(dclone);
 
 use_ok('Form::Diva');

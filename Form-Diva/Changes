@@ -1,5 +1,7 @@
 Revision history for Form::Diva
 
+0.08	16 July 2014
+	Very minor changes (like removing spaces from empty lines in pod)
 0.07    15 July 2014
 	Implemented hidden fields.
 0.06    13 July 2014

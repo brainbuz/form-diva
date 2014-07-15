@@ -2,10 +2,8 @@
 use strict;
 use warnings;
 use Test::More 1.00;
-#use 5.014;
 use Storable qw(dclone);
 use Test::Exception 0.32;
-#use Data::Printer;
 
 use_ok('Form::Diva');
 

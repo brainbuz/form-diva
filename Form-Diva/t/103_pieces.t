@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Test::More;
-#use 5.014;
+use Test::Exception;
 use Storable qw(dclone);
 
 use_ok('Form::Diva');
@@ -86,4 +86,14 @@ is ( scalar( keys %results), scalar( @testoptionid),
     "All ids generated were unique: \n" .
     "The number of unique results is the same as the number of tests: " .
     scalar( @testoptionid) );
+
+note( 'testing _field_once');
+
+is ( $diva1->_field_once, 1, 
+    'our test used each field no more than once.' );
+my $divaX = $diva1->clone ;
+$divaX->{HiddenMap} = dclone $divaX->{FormMap} ;
+dies_ok {$divaX->_field_once} 
+    'Made HiddenMap identical to FormMap and _field_once died';
+
 done_testing;
