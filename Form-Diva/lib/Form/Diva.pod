@@ -101,7 +101,7 @@ Copy a Form::Diva object optionally modifying some of the values in the copy. Th
 
  my $newdiva = $diva->clone({ 
     neworder => [ qw / A B c D E /], 
-    newhidden   => [ 'X' , 'Zebra']});
+    newhidden   => [ 'X' , 'Zebra'] });
 
 =head3 Arguments to clone
 
@@ -109,7 +109,7 @@ Arguments to clone are passed as a hashref. All of the arguments are optional si
 
 =head4 neworder, newhidden
 
-Array refs of the names of the fields in your form. This will let you re-order fields and you do not need to include all of the fields. You cannot define new fields on a clone but you can omit them. You can change fields between hidden and visible, fields originally defined as hidden become text fields.
+Array refs of the names of fields in your form. This will let you re-order fields and you do not need to include all of the fields. You cannot define new fields on a clone but you can omit them. You can change fields between hidden and visible, fields originally defined as hidden become text fields, unless you defined a type for them.
 
 =head4 input_class, label_class
 
@@ -168,7 +168,7 @@ Should be placed in the extra field when needed.
 
 =head2 hidden fields
 
-Hidden fields are specified with a seperate hash reference in the data structure. They take a subset of the same options as normal fields. The relevant options are name (which is mandatory), id, extra, and default.
+Hidden fields are specified with a seperate hash reference in the data structure. They use a subset of the same options as normal fields. The relevant options are name (which is mandatory), id, extra, and default. If you define type for a hidden field and then later in a clone make it visible it will be that type, otherwise it would be text.
 
 =head2 TextArea
 
@@ -214,7 +214,7 @@ For the elements of CheckBox, Radio or Select the id tag is generated as $field_
 
 =head2 Errors
 
-Form::Diva doesn't do a huge amount of Error Checking or validation, but it does check that you don't use a field more than once on both C<new> and C<clone methods>. 
+Form::Diva doesn't do a huge amount of Error Checking or validation, but it does check that you don't use a field more than once on both C<new> and C<clone> methods. 
 
 =head1 FAQ
 
@@ -222,7 +222,7 @@ Form::Diva doesn't do a huge amount of Error Checking or validation, but it does
 
 Form::Diva is intented to be used with Templating systems, the HTML generation is best left to the templating system. Telling form diva what you need in the Form Tag and whether you prefer to use a submit input or a button and what goes in them is only going to make it more complex, and make your application less readable because you will have replaced HTML with abstract perl code but not saved any space or labor. If you don't agree there are plenty of other Form Modules on CPAN that try to generate the whole form. 
 
-=head2 Where do I use Form::Diva, in my Model, View or Controller?
+=head2 Where do I use Form::Diva? in my Model, View or Controller?
 
 Wherever works best for you. Think of it as preparing your data for the View.
 
@@ -241,8 +241,6 @@ You can find documentation for this module with the perldoc command.
     perldoc Form::Diva
 
 You can also look for information at:
-
-#=head1 ACKNOWLEDGEMENTS
 
 =head1 LICENSE AND COPYRIGHT
 

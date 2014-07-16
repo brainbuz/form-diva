@@ -10,24 +10,10 @@ use Storable qw(dclone);
 
 # The _option_id sub needs access to a variable for hashing the ids
 # in use, even though it is initialized at the beginning of generate,
-# it needs to both exist outside of the generate subroutines scope
+# it needs to exist outside of the generate subroutines scope
 # and before before the _option_id sub is declared.
 my %id_uq = ();
 sub _clear_id_uq { %id_uq = () }
-
-sub new {
-    my $class = shift;
-    my $self  = {@_};
-    bless $self, $class;
-    $self->{class} = $class;
-    unless ( $self->{input_class} ) { die 'input_class is required.' }
-    unless ( $self->{label_class} ) { die 'label_class is required.' }
-    ( $self->{HiddenMap}, my $HHash ) = &_expandshortcuts( $self->{hidden} );
-    ( $self->{FormMap},   my $FHash ) = &_expandshortcuts( $self->{form} );
-    $self->{FormHash} = { %{$HHash}, %{$FHash} };
-    $self->_field_once;
-    return $self;
-}
 
 # True if all fields are used no more than once, if not it dies.
 sub _field_once {
@@ -41,6 +27,20 @@ sub _field_once {
         else { $hash{ $field->{name} } = 1; }
     }
     return 1;
+}
+
+sub new {
+    my $class = shift;
+    my $self  = {@_};
+    bless $self, $class;
+    $self->{class} = $class;
+    unless ( $self->{input_class} ) { die 'input_class is required.' }
+    unless ( $self->{label_class} ) { die 'label_class is required.' }
+    ( $self->{HiddenMap}, my $HHash ) = &_expandshortcuts( $self->{hidden} );
+    ( $self->{FormMap},   my $FHash ) = &_expandshortcuts( $self->{form} );
+    $self->{FormHash} = { %{$HHash}, %{$FHash} };
+    $self->_field_once;
+    return $self;
 }
 
 sub clone {
@@ -155,7 +155,6 @@ sub _field_bits {
 }
 
 sub _label {
-
     # an id does not get put in label because the spec does not say either
     # the id attribute or global attributes are supported.
     # http://www.w3.org/TR/html5/forms.html#the-label-element

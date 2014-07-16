@@ -17,7 +17,9 @@ my $diva1 = Form::Diva->new(
         { name => 'our_id', type => 'number', extra => 'disabled' },
     ],    hidden =>
         [ { n => 'secret' }, 
-        { n => 'hush', default => 'very secret' }, ],
+        { n => 'hush', default => 'very secret' },
+        { n => 'mystery', id => 'mystery_site_url', 
+          extra => 'custom="bizarre"', type => "url"} ],
 );
 
 isa_ok($diva1, 'Form::Diva', 'Original object is a Form::Diva');
@@ -43,7 +45,7 @@ is( $diva3->{HiddenMap}[1]{name},'hush',
     'Check a hidden field to make sure it was cloned.');
 
 my $diva4 = $diva2->clone({ 
-    neworder => ['phone', 'name', 'secret'],
+    neworder => ['phone', 'name', 'secret', 'mystery', ],
     newhidden   => [ 'our_id', 'hush'],
     form_name => 'newform',
     input_class => 'different' });
@@ -53,6 +55,12 @@ is( $diva4->{FormMap}[1]{name}, 'name', 'where one field moved');
 is( $diva4->{FormMap}[2]{name}, 'secret', 'from hidden to normal');
 is( $diva4->{HiddenMap}[0]{name}, 'our_id', 'and another got hid');
 is( $diva4->{HiddenMap}[1]{name}, 'hush', '...');
+is( $diva4->{FormMap}[3]{extra}, 'custom="bizarre"', 
+    'test extra attribute of hidden converted to other type');
+is( $diva4->{FormMap}[3]{type}, 'url', 
+    'test type of hidden converted to other type');
+is( $diva4->{FormMap}[3]{id}, 'mystery_site_url', 
+    'test id of hidden converted to other type');
 
 my $generated4 = $diva4->generate ;
 is( $generated4->[2]{input},
@@ -61,7 +69,14 @@ is( $generated4->[2]{input},
 is( $generated4->[2]{label},
    '<LABEL for="formdiva_secret" class="testclass">Secret</LABEL>',
    'label for previously hidden secret field' );
-
-
+like( $generated4->[3]{input},
+   qr/id="mystery_site_url"/,
+   'id for previously hidden field in generated input' );
+like( $generated4->[3]{input},
+   qr/type="url"/,
+   'type for previously hidden field in generated input' );
+like( $generated4->[3]{input},
+   qr/custom="bizarre"/,
+   'extra for previously hidden field in generated input' );
 
 done_testing();
