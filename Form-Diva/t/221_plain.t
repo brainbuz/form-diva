@@ -35,7 +35,11 @@ is( scalar( @$nodata), 4, 'nodata form returned 4 rows');
 is( scalar( @$withdata), 4, 'withdata form returned 4 rows');
 is( scalar( @$skipempty), 3, 'skipempty nodata form returned 3 rows');
 is( $skipempty->[2]{value}, 41, 'skipempty last row value is 41');
-
 is( $withdata->[2]{value}, 'dinner@food.food', 'withdata provided value for email');
+
+is( $nodata->[0]{label}, 'Full_Name', 'nodata label is correct');
+is( $withdata->[3]{label}, 'Our_id', 'withdata label was created from name');
+is( $skipempty->[1]{label}, 'Email', 'skipempty field 1 is Email because a record was deliberately skipped');
+
 
 done_testing();

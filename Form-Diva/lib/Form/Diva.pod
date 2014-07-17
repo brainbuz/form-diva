@@ -95,6 +95,15 @@ Generate the hidden fields in the data structure. The generated hidden tags are 
 
   $c->stash( hidden => $diva->hidden( $data_hashref ) );
 
+=head2 plain
+
+Returns a an array ref of the fields in order where the elements of the referenced array are each a hashref to any of these fields: name, type, extra, label, and if passed a hashref of data, value. This applies only to visible fields, if you want hidden fields you'll need to clone the object and make them visible.
+
+There are two optional parameters: data and 'skipempty' which suppress returning fields with no data, when used without data it is necessary to pass an empty hashref.
+
+  my $plain = $diva->plain( undef, 'skipempty');
+  print $plain->[2]{value};
+
 =head2 clone
 
 Copy a Form::Diva object optionally modifying some of the values in the copy. This is useful if you have several similar forms, define a form diva object with all of the fields, then make copies for the shorter forms.
