@@ -5,7 +5,6 @@ use strict;
 use warnings;
 use Test::More;
 use Storable qw(dclone);
-use Data::Printer;
 
 use_ok('Form::Diva');
 
