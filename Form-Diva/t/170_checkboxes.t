@@ -17,7 +17,6 @@ private methods this isn't happening.
 =cut
 
 my $radio1 = Form::Diva->new(
-    form_name   => 'DIVA110',
     label_class => 'testclass',
     input_class => 'form-control',
     form        => [
@@ -27,7 +26,6 @@ my $radio1 = Form::Diva->new(
 );
 
 my $check1 = Form::Diva->new(
-    form_name   => 'DIVA110A',
     label_class => 'testclass',
     input_class => 'form-control',
     form        => [
@@ -37,7 +35,6 @@ my $check1 = Form::Diva->new(
 );
 
 my $labels1 = Form::Diva->new(
-    form_name   => 'DIVA110B',
     label_class => 'testclass',
     input_class => 'form-control',
     form        => [
