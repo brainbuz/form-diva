@@ -311,9 +311,9 @@ sub hidden {
     return $output;
 }
 
-sub plain {
+sub datavalues {
     my ( $self, $data, $arg ) = @_;
-    my @plain = ();
+    my @datavalues = ();
 PLAINLOOP:
     foreach my $field ( @{ $self->{FormMap} } ) {
         if ( $arg eq 'skipempty' ) {
@@ -326,9 +326,9 @@ PLAINLOOP:
             value => $data->{$field->{name}}, );
         $row{label} = $field->{label} || ucfirst( $field->{name} );
         $row{id}    = $field->{id} ? $field->{id} : 'formdiva_' . $field->{name}; 
-        push @plain, \%row ;
+        push @datavalues, \%row ;
     }
-    return \@plain;
+    return \@datavalues;
 }
 
 1;

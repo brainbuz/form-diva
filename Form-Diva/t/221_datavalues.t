@@ -23,9 +23,9 @@ my $data1 = {
     email  => 'dinner@food.food',
 };
 
-my $nodata = $diva->plain ;
-my $withdata = $diva->plain( $data1 ) ;
-my $skipempty = $diva->plain( $data1, 'skipempty' );
+my $nodata = $diva->datavalues ;
+my $withdata = $diva->datavalues( $data1 ) ;
+my $skipempty = $diva->datavalues( $data1, 'skipempty' );
 
 is ( $nodata->[0]{name}, 'foodname', 'checked name of 0 row');
 is( $nodata->[1]{type}, 'tel', 'row 1 type');
