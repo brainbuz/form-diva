@@ -16,13 +16,18 @@ my %id_uq = ();
 sub _clear_id_uq { %id_uq = () }
 
 # True if all fields are used no more than once, if not it dies.
+# Form::Diva->{FormHash} stores all the fields a duplicated fieldname
+# would replace the previous value.
 sub _field_once {
     my $self   = shift;
     my @fields = ( @{ $self->{FormMap} }, @{ $self->{HiddenMap} } );
     my %hash   = ();
     foreach my $field (@fields) {
         if ( $hash{ $field->{name} } ) {
-            die "$field->{name} would appear more than once";
+            die "$field->{name} would appear more than once or " .
+            "is in both hidden and visible field lists. Not " .
+            "only would this cause strange behaviour in your form " .
+            "but it could internally corrupt Form::Diva";
         }
         else { $hash{ $field->{name} } = 1; }
     }
