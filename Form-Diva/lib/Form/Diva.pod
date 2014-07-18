@@ -249,9 +249,7 @@ Wherever works best for you. Think of it as preparing your data for the View.
 
 Here are a few other Form Modules on CPAN: HTML::Form::Fu, Form::Sensible, Form::Factory, Form::Toolkit
 
-Catalyst, Mojolicious and Dancer are frameworks for creating web applications you should use one of them. 
-
-Form::Diva is meant to be used with a Templating System, Template::Alloy is compatible with Template::Toolkit, Mojo::Template is a Perl reimplemenation of ERB.
+Form::Diva is meant to be used with a Templating System. Template::Toolkit is the default templating system for Catalyst and Dancer. Template::Alloy is a drop in replacement for TemplateToolkit. Mojo::Template is a Perl reimplemenation of ERB and the default for Mojolicious.
 
 =head1 AUTHOR
 
