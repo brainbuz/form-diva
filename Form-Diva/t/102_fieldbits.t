@@ -2,9 +2,6 @@
 use strict;
 use warnings;
 use Test::More;
-use Carp::Always;
-
-#use 5.014;
 use Storable qw(dclone);
 
 use_ok('Form::Diva');

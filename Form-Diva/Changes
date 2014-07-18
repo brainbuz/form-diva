@@ -1,5 +1,8 @@
 Revision history for Form::Diva
 
+0.09    17 July 2014
+	Fixed bug in Id generation
+	Implemented DataValues Method
 0.08	16 July 2014
 	Clone fully supports hidden fields and can change fields between
 	normal and hidden!
