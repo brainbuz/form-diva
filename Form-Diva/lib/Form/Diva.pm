@@ -312,20 +312,33 @@ sub hidden {
 }
 
 sub datavalues {
-    my ( $self, $data, $arg ) = @_;
+    my $self = shift;
+    my $data = shift ;
+    my $skipempty = 0;
+    my $moredata = 0;
+    for (@_ ){
+        if ( $_ eq 'skipempty') { $skipempty =1 }
+        if ( $_ eq 'moredata')   { $moredata =1 }
+    }
     my @datavalues = ();
 PLAINLOOP:
     foreach my $field ( @{ $self->{FormMap} } ) {
-        if ( $arg eq 'skipempty' ) {
+        if ( $skipempty ) {
             unless ( $data->{$field->{name}} ) { next PLAINLOOP }
         }
         my %row = ( 
             name  => $field->{name},
             type  => $field->{type},
-            extra => $field->{extra},
             value => $data->{$field->{name}}, );
         $row{label} = $field->{label} || ucfirst( $field->{name} );
         $row{id}    = $field->{id} ? $field->{id} : 'formdiva_' . $field->{name}; 
+        if ( $moredata ) {
+            $row{extra} = $field->{extra};
+            $row{values} = $field->{values};
+            $row{default} = $field->{default};
+            $row{placeholder} = $field->{placeholder};
+            $row{class} = $field->{class} || $self->{input_class};
+        }
         push @datavalues, \%row ;
     }
     return \@datavalues;

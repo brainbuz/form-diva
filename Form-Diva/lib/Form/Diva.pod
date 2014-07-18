@@ -15,7 +15,7 @@ Drastically reduce form clutter in your View Templates with small Data Structure
 
 =head1 PROJECT STATUS IS BETA
 
-Most of Form::Diva is unlikely to change, but hasn't been road-tested enough to know for sure that mistakes haven't been made, either in the code or in interpretation of HTML5 standards. It is also possible that there are html5 elements that should be baked in rather than left for the 'extra' field. Every time I think I'm done and start trying to do work I still discover things that are needed.
+Most of Form::Diva is unlikely to change, but hasn't been road-tested enough to know for sure. While you are encouraged to start using Form::Diva, please be aware that there is a small possibility of changes that break compatibility.
 
 =head1 DESCRIPTION
 
@@ -95,15 +95,6 @@ Generate the hidden fields in the data structure. The generated hidden tags are 
 
   $c->stash( hidden => $diva->hidden( $data_hashref ) );
 
-=head2 datavalues
-
-Returns a an array ref of the fields in order where the elements of the referenced array are each a hashref to any of these fields: name, type, extra, label, and if passed a hashref of data, value. This applies only to visible fields, if you want hidden fields you'll need to clone the object and make them visible.
-
-There are two optional parameters: data and 'skipempty' which suppress returning fields with no data, when used without data it is necessary to pass an empty hashref.
-
-  my $datavalues = $diva->datavalues( undef, 'skipempty');
-  print $datavalues->[2]{value};
-
 =head2 clone
 
 Copy a Form::Diva object optionally modifying some of the values in the copy. This is useful if you have several similar forms, define a form diva object with all of the fields, then make copies for the shorter forms.
@@ -123,6 +114,25 @@ Array refs of the names of fields in your form. This will let you re-order field
 =head4 input_class, label_class
 
 Change these values for your copy.
+
+=head2 datavalues
+
+Returns the data that would be used by generate as an array_ref of hashrefs for: name, type, label, and value. This applies only to visible fields, if you want hidden fields you'll need to clone the object and make them visible.
+
+There are two optional parameters: 'moredata' and 'skipempty'.
+
+skipempty suppresses returning fields with no data. Without data skipempty returns an empty array_ref, this might become an exception in the future.
+
+moredata returns all internal data defined for each row including placeholder and default which are meaningless when there is data.
+When these parameters are used without data it is necessary to pass undef in place of data. 
+
+  my $datavalues = $diva->datavalues( undef, 'moredata');
+  say $datavalues->[2]{name};
+
+  my $dv = $diva->datavalues( { user => 'me', password = 'secret' } );
+  foreach my $row ( @{$dv} ) { say "$row->{name} = $row->{value}" }
+    output : user = me
+             password = secret
 
 =head1 The Form::Diva Data Structure
 
@@ -229,11 +239,19 @@ Form::Diva doesn't do a huge amount of Error Checking or validation, but it does
 
 =head2 Why Doesn't Form::Diva generate an entire form?
 
-Form::Diva is intented to be used with Templating systems, the HTML generation is best left to the templating system. Telling form diva what you need in the Form Tag and whether you prefer to use a submit input or a button and what goes in them is only going to make it more complex, and make your application less readable because you will have replaced HTML with abstract perl code but not saved any space or labor. If you don't agree there are plenty of other Form Modules on CPAN that try to generate the whole form. 
+Form::Diva is intented to be used with Templating systems, the HTML generation is best left to the templating system. Telling form diva what you need in the Form Tag and whether you prefer to use a submit input or a button instead and what goes in them is only going to make it more complex, and make your application less readable because you will have replaced HTML with abstract perl code but not saved any space or labor. If you really want to generate your whole form in Perl, there are plenty of other Form Modules on CPAN. 
 
 =head2 Where do I use Form::Diva? in my Model, View or Controller?
 
-Wherever works best for you. Think of it as preparing your data for the View.
+Wherever works best for you. Think of it as preparing your data for the View. 
+
+=head1 SEE ALSO
+
+Here are a few other Form Modules on CPAN: HTML::Form::Fu, Form::Sensible, Form::Factory, Form::Toolkit
+
+Catalyst, Mojolicious and Dancer are frameworks for creating web applications you should use one of them. 
+
+Form::Diva is meant to be used with a Templating System, Template::Alloy is compatible with Template::Toolkit, Mojo::Template is a Perl reimplemenation of ERB.
 
 =head1 AUTHOR
 
