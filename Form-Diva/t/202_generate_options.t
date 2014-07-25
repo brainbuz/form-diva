@@ -4,8 +4,6 @@ use warnings;
 use Test::More;
 use Storable qw(dclone);
 
-use 5.020;
-
 use_ok('Form::Diva');
 
 # Test Generate with the option inputs
