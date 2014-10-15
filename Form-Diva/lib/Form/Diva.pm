@@ -6,7 +6,7 @@ package Form::Diva;
 
 # ABSTRACT: Generate HTML5 form label and input fields
 
-use Storable qw(dclone);
+use Storable 2.51 qw(dclone);
 
 # The _option_id sub needs access to a variable for hashing the ids
 # in use, even though it is initialized at the beginning of generate,
