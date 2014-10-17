@@ -4,7 +4,7 @@
 <head>
 <title></title>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<link rev="made" href="mailto:brainbuz@qianna.(none)" />
+<link rev="made" href="mailto:brainbuz@petra.bz" />
 </head>
 
 <body>
@@ -12,6 +12,8 @@
 
 
 <ul id="index">
+  <li><a href="#NAME">NAME</a></li>
+  <li><a href="#VERSION">VERSION</a></li>
   <li><a href="#DESCRIPTION">DESCRIPTION</a></li>
   <li><a href="#PROJECT-STATUS-IS-BETA">PROJECT STATUS IS BETA</a></li>
   <li><a href="#USAGE">USAGE</a></li>
@@ -69,15 +71,23 @@
   <li><a href="#BUGS">BUGS</a></li>
   <li><a href="#SUPPORT">SUPPORT</a></li>
   <li><a href="#LICENSE-AND-COPYRIGHT">LICENSE AND COPYRIGHT</a></li>
+  <li><a href="#AUTHOR1">AUTHOR</a></li>
+  <li><a href="#COPYRIGHT-AND-LICENSE">COPYRIGHT AND LICENSE</a></li>
 </ul>
 
-<p># =head1 NAME</p>
+<h1 id="NAME">NAME</h1>
 
-<p># Form::Diva - Generate HTML5 form label and input fields</p>
+<p>Form::Diva - Generate HTML5 form label and input fields</p>
+
+<h1 id="VERSION">VERSION</h1>
+
+<p>version 0.13</p>
 
 <h1 id="DESCRIPTION">DESCRIPTION</h1>
 
 <p>Generate Form Label and Input Tags from a simple data structure. Simplify form code in your views without replacing it without a lot of even uglier Perl Code in your Controller.</p>
+
+<p># weirdness with podweaver also creating a NAME, but autoversion wants it. #=head1 NAME Form::Diva</p>
 
 <h1 id="PROJECT-STATUS-IS-BETA">PROJECT STATUS IS BETA</h1>
 
@@ -272,7 +282,7 @@ Or in Mojo::Template
 
 <p>For Select inputs there are two forms of values. If the value itself and the label are the same then values is just a list of those values which will also be used as the label. The second form requires the value and the label to be seperated by a colon.</p>
 
-<pre><code>  values =&gt; [ qw /pineapple persimmon nectarine ]
+<pre><code>  values =&gt; [ qw / pineapple persimmon nectarine / ]
   or 
   values =&gt; [ &#39;item1:Pineapple&#39;, &#39;item2:Georgia Peach&#39;, &#39;item3:Naval Orange&#39;]</code></pre>
 
@@ -316,7 +326,7 @@ Or in Mojo::Template
 
 <h1 id="BUGS">BUGS</h1>
 
-<p>Please report any bugs or feature requests through the web interface at <a href="https://bitbucket.org/brainbuz/formdiva/issues">https://bitbucket.org/brainbuz/formdiva/issues</a>. I will be notified, and then you&#39;ll automatically be notified of progress on your bug as I make changes.</p>
+<p>Please report any bugs or feature requests through the web interface at <a href="https://github.com/brainbuz/form-diva/issues">https://github.com/brainbuz/form-diva/issues</a>. I will be notified, and then you&#39;ll automatically be notified of progress on your bug as I make changes.</p>
 
 <h1 id="SUPPORT">SUPPORT</h1>
 
@@ -335,6 +345,18 @@ Or in Mojo::Template
 <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
 
 <p>You should have received a copy of the GNU General Public License along with this program. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p>
+
+<h1 id="AUTHOR1">AUTHOR</h1>
+
+<p>John Karr &lt;brainbuz@brainbuz.org&gt;</p>
+
+<h1 id="COPYRIGHT-AND-LICENSE">COPYRIGHT AND LICENSE</h1>
+
+<p>This software is Copyright (c) 2014 by John Karr.</p>
+
+<p>This is free software, licensed under:</p>
+
+<pre><code>  The GNU General Public License, Version 3, June 2007</code></pre>
 
 
 </body>

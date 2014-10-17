@@ -4,19 +4,16 @@ Form::Diva - Generate HTML5 form label and input fields
 
 # VERSION
 
-version 0.12
+version 0.14
 
 # DESCRIPTION
-
-# NAME Form::Diva
-
-# VERSION
-
-version 0.12
 
 Generate Form Label and Input Tags from a simple data structure.
 Simplify form code in your views without replacing it without a lot of even
 uglier Perl Code in your Controller. 
+
+\# weirdness with podweaver also creating a NAME, but autoversion wants it.
+\#=head1 NAME Form::Diva
 
 # PROJECT STATUS IS BETA
 
@@ -40,6 +37,7 @@ Most of Form::Diva is unlikely to change, but hasn't been road-tested enough to 
 
     my $fields = $diva->generate;
     my $filledfields = $diva->generate( $hashref_of_data );
+    my $filledfields = $diva->generate( $DBIx::Class::Row );
 
 Once you send this to your stash or directly to the templating system the form might look like:
 
@@ -82,7 +80,7 @@ Create a new object from a Data Structure ().
 
 When called without arguments returns the blank form with placeholders and value set to default or null if there is no default.
 
-When provided an optional hashref of data it sets values based on the hashref and suppresses placeholder. 
+When provided an optional hashref of data it sets values based on the hashref and suppresses placeholder. A DBIx::Class::Row may be used in place of the hashref.
 
 A second optional hashref may be passed to override the values list for select, checkbox and radio button inputs, see below.
 

@@ -274,10 +274,20 @@ sub _option_input {    # field, input_class, data;
     return $output;
 }
 
+# check if $data is a hashref or a dbic result row and inflate it.
+sub _checkdatadbic {
+    my $data = shift ;
+    if ( ref $data eq 'HASH' ) { return $data }
+    elsif ( eval {$data->isa( 'DBIx::Class::Row' )} ) {
+        return { $data->get_inflated_columns } ;
+    }
+    else { return {} }
+}
+
 sub generate {
-    my $self      = shift;
-    my $data      = shift;
-    my $overide   = shift;
+    my $self      = shift @_ ;
+    my $data      = _checkdatadbic( shift @_ );
+    my $overide   = shift@_ ;
     my @generated = ();
     $self->_clear_id_uq;    # needs to be empty when form generation starts.
     foreach my $field ( @{ $self->{FormMap} } ) {
@@ -331,13 +341,13 @@ PLAINLOOP:
         if ( $skipempty ) {
             unless ( $data->{$field->{name}} ) { next PLAINLOOP }
         }
-        my %row = ( 
+            my %row = (
             name  => $field->{name},
             type  => $field->{type},
             value => $data->{$field->{name}}, );
         $row{label} = $field->{label} || ucfirst( $field->{name} );
-        $row{id}    = $field->{id} ? $field->{id} : 'formdiva_' . $field->{name}; 
-        if ( $moredata ) {
+        $row{id}    = $field->{id} ? $field->{id} : 'formdiva_' . $field->{name};
+            if ( $moredata ) {
             $row{extra} = $field->{extra};
             $row{values} = $field->{values};
             $row{default} = $field->{default};

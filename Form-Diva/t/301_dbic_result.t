@@ -1,101 +1,82 @@
 use strict;
 use warnings;
+
+package DBIx::Class::Row;
+
+sub new {
+    my $class = shift;
+    my $self = { @_, data => { fname => 'mocdbic', purpose => 'testing' } };
+    bless $self, $class;
+    return $self;
+}
+
+sub get_inflated_columns {
+    my $self = shift;
+    return %{ $self->{data} };
+}
+
+package TestThing;
+use strict;
+use warnings;
 use Test::More;
+use Test::Exception;
 
 use_ok('Form::Diva');
 
-my $diva1 = Form::Diva->new(
+my $notdbic = {
+    fname   => 'realhash',
+    purpose => 'comparison',
+};
+
+my $mocdbic = DBIx::Class::Row->new;
+
+isa_ok( $mocdbic, 'DBIx::Class::Row',
+    'moc dbic object looks like a dbix::class object' );
+my %inflated = $mocdbic->get_inflated_columns();
+is( $inflated{fname}, 'mocdbic',
+    'moc object returns data for ->get_inflated_columns' );
+
+my $rehashnotdbic = Form::Diva::_checkdatadbic($notdbic);
+is( eq_hash( $rehashnotdbic, $notdbic ),
+    1, "_checkdatadbic returns the original with a plain hashref" );
+
+my $rehashdbic = Form::Diva::_checkdatadbic($mocdbic);
+is( eq_hash( $rehashdbic, { fname => 'mocdbic', purpose => 'testing' } ),
+    1, "_checkdatadbic returns the data with a dbic row" );
+
+is( eq_hash( 
+        Form::Diva::_checkdatadbic( [qw / not valid data /] ),
+        {} ),
+    1, 
+    'sending an array_ref to _checkdatadbic returns empty hashref' );
+
+my $diva = Form::Diva->new(
     label_class => 'testclass',
     input_class => 'form-control',
-    form_name => 'diva1',
-    form        => [
-        { n => 'name', t => 'text', p => 'Your Name', l => 'Full Name' },
-        { name => 'phone', type => 'tel', extra => 'required' },
-        {qw / n email t email l Email c form-email placeholder doormat/},
-        { name => 'our_id', type => 'number', extra => 'disabled' },
-    ],    hidden =>
-        [ { n => 'secret' }, 
-        { n => 'hush', default => 'very secret' },
-        { n => 'mystery', id => 'mystery_site_url', 
-          extra => 'custom="bizarre"', type => "url"} ],
+    form_name   => 'diva1',
+    form        => [ { n => 'fname' }, { name => 'purpose' }, ],
 );
 
-require_ok( 'DBIx::Class');
+my $results_plain = $diva->generate($notdbic);
 
-    SKIP: {
-        eval { 
-          require DBIx::Class;
-          require DBD::SQLite  
-          };
+like( $results_plain->[1]{label},
+    qr/for="formdiva_purpose"/, 'plain hash generates label for purpose' );
+like(
+    $results_plain->[0]{input},
+    qr/ value="realhash"/,
+    'plain hash generates value fname field'
+);
+like( $results_plain->[1]{input},
+    qr/comparison"/,
+    'plain hash generates input tag with value of purpose field' );
 
-        skip "HTML::Lint not installed", 1 if $@;
-
-        my $lint = new DBIx::Class;
-        isa_ok( $lint, "DBIx::Class" );
-
-        # $lint->parse( $html );
-        # is( $lint->errors, 0, "No errors found in HTML" );
-    }
-
-
-done_testing();
-
-=pod
-isa_ok($diva1, 'Form::Diva', 'Original object is a Form::Diva');
-my $diva2 = $diva1->clone({ 
-    neworder => ['our_id', 'email'] });
-isa_ok($diva2, 'Form::Diva', 'New object is a Form::Diva');
-is( scalar @{$diva2->{FormMap}}, 2, 'new object only has 2 rows in form');
-$diva1->{FormHash} = undef;
-undef $diva1 ;
-note(  'deleting original obj should not affect subsequent tests');
-is( $diva1 , undef, 'the original object is now undefined' );
-is( $diva2->{FormMap}[1]{name}, 'email', 'last row in copy is email');
-
-my $diva3 = $diva2->clone({ 
-    neworder => ['phone', 'name'],
-    form_name => 'newform',
-    input_class => 'different' });
-is( $diva3->{FormMap}[1]{name}, 'name', 'our next copy has name as a field');
-#is( $diva3->form_name, 'newform', 'The new form has the new name');
-is( $diva3->input_class, 'different', 'The new input_class is in effect');
-is( $diva3->label_class, 'testclass', 'but we didnt change label_class');
-is( $diva3->{HiddenMap}[1]{name},'hush', 
-    'Check a hidden field to make sure it was cloned.');
-
-my $diva4 = $diva2->clone({ 
-    neworder => ['phone', 'name', 'secret', 'mystery', ],
-    newhidden   => [ 'our_id', 'hush'],
-    form_name => 'newform',
-    input_class => 'different' });
-
-is( $diva4->{FormMap}[0]{name}, 'phone', 'successfully crossmapped');
-is( $diva4->{FormMap}[1]{name}, 'name', 'where one field moved');
-is( $diva4->{FormMap}[2]{name}, 'secret', 'from hidden to normal');
-is( $diva4->{HiddenMap}[0]{name}, 'our_id', 'and another got hid');
-is( $diva4->{HiddenMap}[1]{name}, 'hush', '...');
-is( $diva4->{FormMap}[3]{extra}, 'custom="bizarre"', 
-    'test extra attribute of hidden converted to other type');
-is( $diva4->{FormMap}[3]{type}, 'url', 
-    'test type of hidden converted to other type');
-is( $diva4->{FormMap}[3]{id}, 'mystery_site_url', 
-    'test id of hidden converted to other type');
-
-my $generated4 = $diva4->generate ;
-is( $generated4->[2]{input},
-    '<INPUT type="text" name="secret" id="formdiva_secret" class="different" value="">',
-    'previously hidden field is now a textfield'     );
-is( $generated4->[2]{label},
-   '<LABEL for="formdiva_secret" class="testclass">Secret</LABEL>',
-   'label for previously hidden secret field' );
-like( $generated4->[3]{input},
-   qr/id="mystery_site_url"/,
-   'id for previously hidden field in generated input' );
-like( $generated4->[3]{input},
-   qr/type="url"/,
-   'type for previously hidden field in generated input' );
-like( $generated4->[3]{input},
-   qr/custom="bizarre"/,
-   'extra for previously hidden field in generated input' );
+my $results_dbic = $diva->generate($mocdbic);
+like( $results_dbic->[1]{label},
+    qr/for="formdiva_purpose"/, 'dbic result generates label for purpose' );
+like( $results_dbic->[0]{input},
+    qr/value="mocdbic"/, 'dbic result generates value for fname field' );
+like( $results_dbic->[1]{input},
+    qr/testing"/,
+    'dbic result generates input tag with value of purpose field' );
 
 done_testing();
