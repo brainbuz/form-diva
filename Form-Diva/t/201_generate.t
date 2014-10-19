@@ -41,13 +41,9 @@ like( $processed1->[2]{input}, qr/value="dinner\@food\.food"/,
     'Row 2 has a value like the email address.');
 
 is( $processed1->[0]{comment}, undef, 'first field has no comment' );
-TODO: {
-    local $TODO ='adding comment';
-    use Data::Printer;
-  #  p( $processed1);
 is( $processed1->[1]{comment}, 
     'phoney phooey', 'second field has comment of \'phoney phooey\'' );
-}
+
 
 note( 'a few example tests with no data.');
 my $processed2 = $diva1->generate();

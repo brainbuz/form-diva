@@ -231,17 +231,17 @@ sub _option_id {
 sub _option_input {    # field, input_class, data;
     my $self           = shift;
     my $field          = shift;    # field definition from FormMap or FormHash
-    my $data           = shift;    # scalar data for this form field
+    my $data           = shift;    # data for this form field
     my $replace_fields = shift;    # valuelist to use instead of default
+    my $datavalue      = $data->{ $field->{name} };
     my $output         = '';
     my $input_class = $self->_class_input($field);
     my $extra       = $field->{extra} || "";
     # in case default is 0, it must be checked in a string context
     my $default     = length ($field->{default}) 
         ? do {
-
-        if   ( $data) {undef}
-        else         { $field->{default} }
+        if   ( keys %{$data} ) {undef}
+        else { $field->{default} }
         }
         : undef;
     my @values
@@ -255,8 +255,8 @@ sub _option_input {    # field, input_class, data;
             my ( $value, $v_lab ) = ( split( /\:/, $val ), $val );
             my $idf = $self->_option_id( $field->{id}, $value );
             my $selected = '';
-            if    ( $data eq $value )    { $selected = 'selected ' }
-            elsif ( $default eq $value ) { $selected = 'selected ' }
+            if    ( $datavalue eq $value )  { $selected = 'selected ' }
+            elsif ( $default eq $value )    { $selected = 'selected ' }
             $output
                 .= qq| <option value="$value" $idf $selected>$v_lab</option>\n|;
         }
@@ -267,7 +267,7 @@ sub _option_input {    # field, input_class, data;
             my ( $value, $v_lab ) = ( split( /\:/, $val ), $val );
             my $idf = $self->_option_id( $field->{id}, $value );
             my $checked = '';
-            if    ( $data eq $value )    { 
+            if    ( $datavalue eq $value )    { 
                 $checked = q !checked="checked" ! }
             elsif ( $default eq $value ) { 
                 $checked = q !checked="checked" ! }
@@ -302,7 +302,7 @@ sub generate {
         {
             $input = $self->_option_input(
                 $field,
-                $data->{ $field->{name} },
+                $data,
                 $overide->{ $field->{name} },
             );
         }

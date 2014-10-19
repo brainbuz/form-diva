@@ -4,6 +4,7 @@ use warnings;
 use Test::More;
 use Storable qw(dclone);
 use_ok('Form::Diva');
+# use Carp::Always;
 
 =pod Test Select Inputs
 
@@ -76,8 +77,10 @@ unlike( $select1->_option_input( $select1->{form}[0], undef ),
     'select1 does not have a default, with no data nothing is selected' );
 
 $select1->_clear_id_uq ; 
+
 my $uk_selected = $select1->_option_input( 
-    $select1->{FormHash}{selecttest}, 'uk' );
+    $select1->{FormHash}{selecttest}, 
+        { selecttest => 'uk' });
 
 like(
     $uk_selected,
@@ -124,7 +127,9 @@ unlike( $over_ride2, qr/selected/,
 
 $select3->_clear_id_uq;
 my $over_ride3 = $select3->_option_input( 
-    $select3->{form}[0], 'pear', [ qw / apple orange pear / ] );
+    $select3->{form}[0], 
+    { checktest => 'pear' }, 
+    [ qw / apple orange pear / ] );
 unlike ( $over_ride3, qr/French/, 
     'Select with Override does not contain an original option value');
 like( $over_ride3, qr/apple/, 
