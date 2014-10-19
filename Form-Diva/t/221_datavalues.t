@@ -18,7 +18,7 @@ my $diva = Form::Diva->new(
             l => 'Full_Name',
             d => 'Delicious'
         },
-        { name => 'phone', type => 'tel', extra => 'required' },
+        { name => 'phone', type => 'tel', extra => 'required', comment => 'phone comment' },
         {qw / n email t email l Email c form-email placeholder doormat/},
         { name => 'our_id', type => 'number', extra => 'disabled' },
     ],
@@ -36,8 +36,10 @@ my $data1 = {
     my $skipempty = $diva->datavalues( $data1, 'skipempty' );
 
     is( $nodata->[0]{name}, 'foodname', 'checked name of 0 row' );
+    is( $nodata->[0]{comment}, undef, 'checked comment of 0 row is undef' );    
     is( $nodata->[1]{type}, 'tel',      'row 1 type' );
-
+    is( $nodata->[1]{comment}, 'phone comment',  'row 1 comment' );
+    
     is( scalar(@$nodata),       4,  'nodata form returned 4 rows' );
     is( scalar(@$withdata),     4,  'withdata form returned 4 rows' );
     is( scalar(@$skipempty),    3,  'skipempty nodata form returned 3 rows' );

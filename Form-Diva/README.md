@@ -4,20 +4,13 @@ Form::Diva - Generate HTML5 form label and input fields
 
 # VERSION
 
-version 0.14
+version 0.15
 
 # DESCRIPTION
 
 Generate Form Label and Input Tags from a simple data structure.
 Simplify form code in your views without replacing it without a lot of even
 uglier Perl Code in your Controller. 
-
-\# weirdness with podweaver also creating a NAME, but autoversion wants it.
-\#=head1 NAME Form::Diva
-
-# PROJECT STATUS IS BETA
-
-Most of Form::Diva is unlikely to change, but hasn't been road-tested enough to know for sure. While you are encouraged to start using Form::Diva, please be aware that there is a small possibility of changes that break compatibility.
 
 # USAGE
 
@@ -30,7 +23,7 @@ Most of Form::Diva is unlikely to change, but hasn't been road-tested enough to 
            { n => 'name', t => 'text', p => 'Your Name', l => 'Full Name' },
            { name => 'phone', type => 'tel', extra => 'required' },
            { qw / n email t email l Email c form-email placeholder doormat/},
-           { name => 'myradio', type => 'radio', default => 1,
+           { name => 'myradio', type => 'radio', default => 1, 
               values => [ "1:Yes", "2:No", "3:Maybe" ] },   
        ],
     );
@@ -84,11 +77,11 @@ When provided an optional hashref of data it sets values based on the hashref an
 
 A second optional hashref may be passed to override the values list for select, checkbox and radio button inputs, see below.
 
-The data returned is in the form of an array reference where each element of the array is two hashreferences: label and input.
+The data returned is in the form of an array reference where each element of the array three  hashreferences: label, input and comment. 
 
 ## hidden
 
-Generate the hidden fields in the data structure. The generated hidden tags are returned as a singular block of text since no formatting is applicable and they just need to be included somewhere in the form.
+Generate the hidden fields in the data structure. The generated hidden tags are returned as a singular block of text since no formatting is applicable and they just need to be included somewhere in the form. 
 
     $c->stash( hidden => $diva->hidden( $data_hashref ) );
 
@@ -155,7 +148,7 @@ If you need to access these two values in code they both have accessor methods $
 
 Form::Diva knows about the most frequently needed attributes in HTML5 label and input tags. The attribute extra is provided to handle valueless attributes like required and attributes that are not explicitly supported by Form::Diva. Each supported tag has a single character shortcut. When no values in a field definition require spaces the shortcuts make it extremely compact to describe a field using qw/. 
 
-The only required value in a field definition is name. When not specified type defaults to text. 
+The only required value in a field definition is name. When not specified type defaults to text. Comments may be added to fields and are returned by generate as a seperate hash element. Comments on hidden fields are not returned by the hidden method. 
 
 Multivalued fields (checkboxes, select) are not currently supported, but may be in the future.
 
@@ -171,6 +164,9 @@ Supported attributes and their shortcuts
     t       type         checkbox, radio, textarea or any input types
                          type defaults to text input type
     v       values       for radio and checkbox inputs only
+
+            comment      comment has no shortcut and is not included in the input tag
+                         or label it is instead returned as a seperate element by generate.
 
 ## extra attribute
 

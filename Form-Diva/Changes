@@ -1,6 +1,7 @@
 Revision history for Form::Diva
 
-0.14	16 October 2014. Add support for passing dbic result row to generate.
+0.15    18 October 2014. update radio/checkbox to add ="checked" when checked.
+0.14	17 October 2014. Add comment support.
 0.13	16 October 2014. Add support for passing dbic result row to generate.
 0.12	15 October 2014. Very Minor Pod Correction.
 0.11    19 August 2014

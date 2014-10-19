@@ -62,7 +62,7 @@ RNDX
 my $radio1_data_expected =<< 'RDX' ;
 <input type="radio" class="form-control" name="radiotest" id="formdiva_radiotest_american" value="American">American<br>
 <input type="radio" class="form-control" name="radiotest" id="formdiva_radiotest_english" value="English">English<br>
-<input type="radio" class="form-control" name="radiotest" id="formdiva_radiotest_canadian" value="Canadian" checked>Canadian<br>
+<input type="radio" class="form-control" name="radiotest" id="formdiva_radiotest_canadian" value="Canadian" checked="checked">Canadian<br>
 RDX
 
 my $check_nodata_expected =<< 'CNDX' ;
@@ -72,14 +72,14 @@ my $check_nodata_expected =<< 'CNDX' ;
 CNDX
 
 my $labels1_nodata_expected =<< 'NDDX';
-<input type="radio" class="form-control" name="withlabels" id="formdiva_withlabels_1" value="1" checked>Peruvian Music<br>
+<input type="radio" class="form-control" name="withlabels" id="formdiva_withlabels_1" value="1" checked="checked">Peruvian Music<br>
 <input type="radio" class="form-control" name="withlabels" id="formdiva_withlabels_2" value="2">Argentinian Dance<br>
 <input type="radio" class="form-control" name="withlabels" id="formdiva_withlabels_3" value="3">Cuban<br>
 NDDX
 
 my $labels1_data_expected =<< 'NDDX1';
 <input type="radio" class="form-control" name="withlabels" id="formdiva_withlabels_1" value="1">Peruvian Music<br>
-<input type="radio" class="form-control" name="withlabels" id="formdiva_withlabels_2" value="2" checked>Argentinian Dance<br>
+<input type="radio" class="form-control" name="withlabels" id="formdiva_withlabels_2" value="2" checked="checked">Argentinian Dance<br>
 <input type="radio" class="form-control" name="withlabels" id="formdiva_withlabels_3" value="3">Cuban<br>
 NDDX1
 
@@ -119,7 +119,7 @@ like( $classoverridden[0]->{input}, qr/disabled/ ,
 
 my $over_ride_checkbox = $classoverride1->generate( 
     { radiotest => 'Venus' }, { radiotest => [ qw / Mars Venus Earth Jupiter /] } );
-like( $over_ride_checkbox->[0]{input} , qr/value="Venus" checked>Venus/,
+like( $over_ride_checkbox->[0]{input} , qr/value="Venus" checked="checked">Venus/,
     'overridden checkbox Venus is selected');
 unlike( $over_ride_checkbox->[0]{input} , qr/Canadian/, 'overridden value is not present' );
 done_testing();

@@ -12,10 +12,7 @@
 
 
 <ul id="index">
-  <li><a href="#NAME">NAME</a></li>
-  <li><a href="#VERSION">VERSION</a></li>
   <li><a href="#DESCRIPTION">DESCRIPTION</a></li>
-  <li><a href="#PROJECT-STATUS-IS-BETA">PROJECT STATUS IS BETA</a></li>
   <li><a href="#USAGE">USAGE</a></li>
   <li><a href="#METHODS">METHODS</a>
     <ul>
@@ -71,27 +68,11 @@
   <li><a href="#BUGS">BUGS</a></li>
   <li><a href="#SUPPORT">SUPPORT</a></li>
   <li><a href="#LICENSE-AND-COPYRIGHT">LICENSE AND COPYRIGHT</a></li>
-  <li><a href="#AUTHOR1">AUTHOR</a></li>
-  <li><a href="#COPYRIGHT-AND-LICENSE">COPYRIGHT AND LICENSE</a></li>
 </ul>
-
-<h1 id="NAME">NAME</h1>
-
-<p>Form::Diva - Generate HTML5 form label and input fields</p>
-
-<h1 id="VERSION">VERSION</h1>
-
-<p>version 0.13</p>
 
 <h1 id="DESCRIPTION">DESCRIPTION</h1>
 
 <p>Generate Form Label and Input Tags from a simple data structure. Simplify form code in your views without replacing it without a lot of even uglier Perl Code in your Controller.</p>
-
-<p># weirdness with podweaver also creating a NAME, but autoversion wants it. #=head1 NAME Form::Diva</p>
-
-<h1 id="PROJECT-STATUS-IS-BETA">PROJECT STATUS IS BETA</h1>
-
-<p>Most of Form::Diva is unlikely to change, but hasn&#39;t been road-tested enough to know for sure. While you are encouraged to start using Form::Diva, please be aware that there is a small possibility of changes that break compatibility.</p>
 
 <h1 id="USAGE">USAGE</h1>
 
@@ -104,13 +85,14 @@
         { n =&gt; &#39;name&#39;, t =&gt; &#39;text&#39;, p =&gt; &#39;Your Name&#39;, l =&gt; &#39;Full Name&#39; },
         { name =&gt; &#39;phone&#39;, type =&gt; &#39;tel&#39;, extra =&gt; &#39;required&#39; },
         { qw / n email t email l Email c form-email placeholder doormat/},
-        { name =&gt; &#39;myradio&#39;, type =&gt; &#39;radio&#39;, default =&gt; 1,
+        { name =&gt; &#39;myradio&#39;, type =&gt; &#39;radio&#39;, default =&gt; 1, 
            values =&gt; [ &quot;1:Yes&quot;, &quot;2:No&quot;, &quot;3:Maybe&quot; ] },   
     ],
  );
 
  my $fields = $diva-&gt;generate;
- my $filledfields = $diva-&gt;generate( $hashref_of_data );</code></pre>
+ my $filledfields = $diva-&gt;generate( $hashref_of_data );
+ my $filledfields = $diva-&gt;generate( $DBIx::Class::Row );</code></pre>
 
 <p>Once you send this to your stash or directly to the templating system the form might look like:</p>
 
@@ -153,11 +135,11 @@ Or in Mojo::Template
 
 <p>When called without arguments returns the blank form with placeholders and value set to default or null if there is no default.</p>
 
-<p>When provided an optional hashref of data it sets values based on the hashref and suppresses placeholder.</p>
+<p>When provided an optional hashref of data it sets values based on the hashref and suppresses placeholder. A DBIx::Class::Row may be used in place of the hashref.</p>
 
 <p>A second optional hashref may be passed to override the values list for select, checkbox and radio button inputs, see below.</p>
 
-<p>The data returned is in the form of an array reference where each element of the array is two hashreferences: label and input.</p>
+<p>The data returned is in the form of an array reference where each element of the array three hashreferences: label, input and comment.</p>
 
 <h2 id="hidden">hidden</h2>
 
@@ -227,7 +209,7 @@ Or in Mojo::Template
 
 <p>Form::Diva knows about the most frequently needed attributes in HTML5 label and input tags. The attribute extra is provided to handle valueless attributes like required and attributes that are not explicitly supported by Form::Diva. Each supported tag has a single character shortcut. When no values in a field definition require spaces the shortcuts make it extremely compact to describe a field using qw/.</p>
 
-<p>The only required value in a field definition is name. When not specified type defaults to text.</p>
+<p>The only required value in a field definition is name. When not specified type defaults to text. Comments may be added to fields and are returned by generate as a seperate hash element. Comments on hidden fields are not returned by the hidden method.</p>
 
 <p>Multivalued fields (checkboxes, select) are not currently supported, but may be in the future.</p>
 
@@ -242,7 +224,10 @@ Or in Mojo::Template
  p       placeholder  placeholder to show in an empty form
  t       type         checkbox, radio, textarea or any input types
                       type defaults to text input type
- v       values       for radio and checkbox inputs only</code></pre>
+ v       values       for radio and checkbox inputs only
+
+         comment      comment has no shortcut and is not included in the input tag
+                      or label and is instead returned as a seperate element by generate.</code></pre>
 
 <h2 id="extra-attribute">extra attribute</h2>
 
@@ -345,18 +330,6 @@ Or in Mojo::Template
 <p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
 
 <p>You should have received a copy of the GNU General Public License along with this program. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p>
-
-<h1 id="AUTHOR1">AUTHOR</h1>
-
-<p>John Karr &lt;brainbuz@brainbuz.org&gt;</p>
-
-<h1 id="COPYRIGHT-AND-LICENSE">COPYRIGHT AND LICENSE</h1>
-
-<p>This software is Copyright (c) 2014 by John Karr.</p>
-
-<p>This is free software, licensed under:</p>
-
-<pre><code>  The GNU General Public License, Version 3, June 2007</code></pre>
 
 
 </body>

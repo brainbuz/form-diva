@@ -2,4 +2,16 @@
 % title 'Welcome';
 <h1>Welcome to the Mojolicious real-time web framework!</h1>
 <p>This Page Generated from a template file.</p>
-
+<p>
+% my $i = 2; 
+% if( $i ) 
+% { $i =7; }
+%= $i * 2
+</p>
+<ul>
+% my $items = [ qw / 7 balone baseball frogs 11 / ];
+% for ( @$items) { #( qw / 7 balone baseball frogs 11 / ) {
+    <li><%= $_ %></li>
+% }
+<li>Count items in the list: <%= scalar( @{$items}); %>
+</ul>

@@ -12,9 +12,11 @@ my $diva1 = Form::Diva->new(
     form_name => 'diva1',
     form        => [
         { n => 'name', t => 'text', p => 'Your Name', l => 'Full Name' },
-        { name => 'phone', type => 'tel', extra => 'required' },
+        { name => 'phone', type => 'tel', extra => 'required', 
+            comment => 'phoney phooey', default => 'say Hello' },
         {qw / n email t email l Email c form-email placeholder doormat/},
         { name => 'our_id', type => 'number', extra => 'disabled' },
+        {  name => 'onemore' },
     ],
 );
 
@@ -33,11 +35,36 @@ like( $processed1->[2]{input}, qr/class="form-email"/,
     'Row 2 has over-ridden class tag.');    
 like( $processed1->[0]{input}, qr/value="spaghetti"/, 
     'Row 0 has value of spaghetti.');
-like( $processed1->[1]{input}, qr/value=""/, 
-    'Row 1 has empty value set.');
+like( $processed1->[4]{input}, qr/value=""/, 
+    'Row 4 has empty value set.');
 like( $processed1->[2]{input}, qr/value="dinner\@food\.food"/, 
     'Row 2 has a value like the email address.');
 
+is( $processed1->[0]{comment}, undef, 'first field has no comment' );
+TODO: {
+    local $TODO ='adding comment';
+    use Data::Printer;
+  #  p( $processed1);
+is( $processed1->[1]{comment}, 
+    'phoney phooey', 'second field has comment of \'phoney phooey\'' );
+}
+
+note( 'a few example tests with no data.');
+my $processed2 = $diva1->generate();
+like( $processed2->[3]{input}, qr/name="our_id"/, 'Check row3 name in input tag.');
+like( $processed2->[0]{input}, qr/class="form-control"/, 
+    'Row 0 has default class tag.');
+like( $processed2->[2]{input}, qr/class="form-email"/, 
+    'Row 2 has over-ridden class tag.');    
+like( $processed2->[1]{input}, qr/value="say Hello"/, 
+    'Row 1 has default value set.');
+like( $processed2->[2]{input}, qr/value=""/, 
+    'Row 2 has empty value set.');
+like( $processed2->[3]{input}, qr/value=""/, 
+    'Check row3 has empty value set.');
+like( $processed2->[2]{input}, qr/placeholder="doormat"/, 
+    'Row 2 has placeholder set.');
+ 
 my @html_types = (
     {qw / n color t color l Colour /},
     {qw / n date   t date   l Date /},

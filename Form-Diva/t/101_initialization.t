@@ -11,14 +11,14 @@ my $diva1 = Form::Diva->new(
     label_class => 'testclass',
     input_class => 'form-control',
     form        => [
-        { n => 'name', t => 'text', p => 'Your Name', l => 'Full Name' },
+        { n => 'name', t => 'text', p => 'Your Name', l => 'Full Name', comment => 'yes' },
         { name => 'phone', type => 'tel', extra => 'required', id => 'phonefield' },
         {qw / n email t email l Email c form-email placeholder doormat/},
         { name => 'our_id', type => 'number', extra => 'disabled' },
     ],
     hidden      => [
         { n => 'secret' },
-        { n => 'hush', default => 'very secret'},
+        { n => 'hush', default => 'very secret', comment => 'very secret comment'},
     ],
 );
 
@@ -69,6 +69,10 @@ is( $newform->[3]{extra},
 is( $newhid->[0]{name}, 'secret', 'hidden fields 0 name is secret' );
 is( $newhid->[1]{default}, 
     'very secret', 'hidden fields 1 default is \'very secret\'' );
+is( $newform->[0]{comment}, 'yes', 'fields 0 has comment of \'yes\'');
+is( $newhid->[1]{comment}, 
+    'very secret comment', 'hidden fields 1 the comment is  \'very secret comment\'' );
+
 my $form2 = $diva2->{form};
 is( $form2->[0]{name}, 'something', 
     'Second form has a name: something');

@@ -30,7 +30,14 @@ my $diva = Form::Diva->new(
             type => 'radio',
             default => 2,
             values => [ '1:This', '2:That', '3:Something Else'],
-        }
+        },
+        { 
+            name => 'defaultzero',
+            type => 'radio',
+            default => 0,
+            label => 'Pick A Number',
+            values => [ '0:Zero', '1:One', '2:Two', ],
+        },
     ],
 );
 
@@ -61,9 +68,12 @@ like( $basic->[2]{input}, qr/type="radio"/,
     'radiotest is a radio');
 like( $basic->[2]{input}, qr/value="2" checked/, 
     'Value 2 is checked');
+like( $basic->[3]{input},
+    qr/value="0" checked="checked"/,
+    "defaultzero value 0 is checked");
 
 my $data1 = {
-     checktest   => 'Canadian',
+    checktest   => 'Canadian',
     radiotest => 1 } ;
 
 note( 'repeat the last generation with some data');
@@ -74,6 +84,9 @@ like( $basic_data->[1]{input}, qr/value="Canadian" checked/,
     'Canadian is now checked');
 like( $basic_data->[2]{input}, qr/value="1" checked/, 
     'Value 1 is now checked in the radio');
+unlike( $basic_data->[3]{input},
+    qr/value="0" checked="checked"/,
+    "defaultzero value is not checked because there was data for other fields");
 
 note( 'override the empty list in the select');
 my $over = $diva->generate( {empty => 'dog'}, { 
@@ -83,6 +96,5 @@ like( $over->[0]{input}, qr/rabbit/,
     'rabbit now has an entry in select');
 like( $over->[0]{input}, qr/selected>dog/, 
     'selected dog in the data and dog is now selected');
-
 
 done_testing();
