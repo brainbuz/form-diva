@@ -145,15 +145,19 @@ sub _field_bits {
         if ( $in{type} eq 'hidden' ) { $out{hidden} = 1 }
     }
     if (keys %{$data}) {
+die "there is data here!\n"        ;
         $out{placeholder} = '';
         $out{rawvalue} = $data->{$fname} || '';
     }
     else {
+warn "making placeholder\n"        ;
         if ( $in{placeholder} ) {
             $out{placeholder} = qq!placeholder="$in{placeholder}"!;
         }
         else { $out{placeholder} = '' }
-        if   ( $in{default} ) { $out{rawvalue} = $in{default}; }
+        if   ( $in{default} ) { $out{rawvalue} = $in{default}; 
+warn "defaault is now $in{default}\n"        ;
+}
         else                  { $out{rawvalue} = '' }
     }
     $out{value} = qq!value="$out{rawvalue}"!;
@@ -289,11 +293,16 @@ sub _checkdatadbic {
     else { return {} }
 }
 
+*** goodnight. the error is that generate is using FormMap
+*** instead of Hash.
+
 sub generate {
     my $self      = shift @_;
     my $data      = _checkdatadbic( shift @_ );
     my $overide   = shift @_;
-    my @generated = ();
+     my @generated = ();
+# p( $self->{FormHash} ) ; 
+# die "exit here\n";    
     $self->_clear_id_uq;    # needs to be empty when form generation starts.
     foreach my $field ( @{ $self->{FormMap} } ) {
         my $input = undef;
@@ -336,9 +345,9 @@ warn "$iname -- $self->{FormHash}{$iname}{default} +++  $self->{FormHash}{$iname
 warn "$iname ++ $data->{$iname} = $self->{FormHash}{$iname}{default} *****************"   ;         
         }
     }
-p( $self->{FormHash} ) ;           
+ #p( $self->{FormHash} ) ;           
 
-    my $generated        = $self->generate( {}, $overide);
+    my $generated        = $self->generate( undef, $overide);
     $self->{FormHash} = dclone $oriFormHash;  
     return $generated ;  
 }

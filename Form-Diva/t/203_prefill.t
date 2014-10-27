@@ -27,11 +27,11 @@ my $data1 = {
     email  => 'dinner@food.food',
 };
 
-my $nodatagenerate = $diva1->generate ;
-my $nodataprefill = $diva1->prefill ;
+# my $nodatagenerate = $diva1->generate ;
+# my $nodataprefill = $diva1->prefill ;
 
-is_deeply( $nodataprefill, $nodatagenerate, 
-    "With no data prefill and generate return the same" );
+# is_deeply( $nodataprefill, $nodatagenerate, 
+#     "With no data prefill and generate return the same" );
 
 TODO: {
     local $TODO = 'Prefill';
