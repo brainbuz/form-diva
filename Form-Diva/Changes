@@ -1,8 +1,16 @@
 Revision history for Form::Diva
 
-0.15    18 October 2014. update radio/checkbox to add ="checked" when checked.
-0.14	17 October 2014. Add comment support.
-0.13	16 October 2014. Add support for passing dbic result row to generate.
+0.16    26 October 2014 add prefill method.
+0.15    22 October 2014. 
+		radio/checkbox now sets checked="checked" instead of just checked. 
+		Bugs fixed: 
+		* Options given partial data sometimes defaulted.
+		* Bug introduced in 0.13 (on perl critic advice) where defaults and placeholders were not being set.
+		* A default value of '0' was ignored because it is false, now evaluating as string.
+0.14	17 October 2014. 
+		Add comment to field definition and ->generate() results.
+0.13	16 October 2014. 
+		Add support for passing dbic result row to generate.
 0.12	15 October 2014. Very Minor Pod Correction.
 0.11    19 August 2014
 	Change to github.

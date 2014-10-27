@@ -3,6 +3,7 @@ use warnings;
 no warnings 'uninitialized';
 
 package Form::Diva;
+use Data::Printer;
 
 # ABSTRACT: Generate HTML5 form label and input fields
 
@@ -319,6 +320,27 @@ sub generate {
             };
     }
     return \@generated;
+}
+
+sub prefill {
+    my $self             = shift @_;
+    my $data             = _checkdatadbic( shift @_ );
+    my $overide          = shift @_;
+    my $oriFormHash      =  dclone $self->{FormHash};
+    foreach my $item ( @{$self->{FormMap }}) {
+        my $iname = $item->{name};
+        if ( $data->{$iname}) { 
+warn "$iname -- $self->{FormHash}{$iname}{default} +++  $self->{FormHash}{$iname}{placeholder}******************"  ;          
+            $self->{FormHash}{$iname}{default} = $data->{$iname};
+            delete $self->{FormHash}{$iname}{placeholder} ;            
+warn "$iname ++ $data->{$iname} = $self->{FormHash}{$iname}{default} *****************"   ;         
+        }
+    }
+p( $self->{FormHash} ) ;           
+
+    my $generated        = $self->generate( {}, $overide);
+    $self->{FormHash} = dclone $oriFormHash;  
+    return $generated ;  
 }
 
 sub hidden {
