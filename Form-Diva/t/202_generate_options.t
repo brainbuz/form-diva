@@ -42,10 +42,6 @@ my $diva = Form::Diva->new(
 );
 
 my $basic = $diva->generate;
-# for (@$basic) {
-#     note( $_->{label} );
-#     note( $_->{input});
-# }
 
 is( $basic->[0]{label},
     '<LABEL for="formdiva_empty" class="testclass">Empty</LABEL>',

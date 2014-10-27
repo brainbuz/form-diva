@@ -144,20 +144,16 @@ sub _field_bits {
         $out{textarea} = 0;
         if ( $in{type} eq 'hidden' ) { $out{hidden} = 1 }
     }
-    if (keys %{$data}) {
-die "there is data here!\n"        ;
+    if (keys %{$data}) {   ;
         $out{placeholder} = '';
         $out{rawvalue} = $data->{$fname} || '';
     }
     else {
-warn "making placeholder\n"        ;
         if ( $in{placeholder} ) {
             $out{placeholder} = qq!placeholder="$in{placeholder}"!;
         }
         else { $out{placeholder} = '' }
-        if   ( $in{default} ) { $out{rawvalue} = $in{default}; 
-warn "defaault is now $in{default}\n"        ;
-}
+        if   ( $in{default} ) { $out{rawvalue} = $in{default}; }
         else                  { $out{rawvalue} = '' }
     }
     $out{value} = qq!value="$out{rawvalue}"!;
@@ -293,9 +289,6 @@ sub _checkdatadbic {
     else { return {} }
 }
 
-*** goodnight. the error is that generate is using FormMap
-*** instead of Hash.
-
 sub generate {
     my $self      = shift @_;
     my $data      = _checkdatadbic( shift @_ );
@@ -335,20 +328,16 @@ sub prefill {
     my $self             = shift @_;
     my $data             = _checkdatadbic( shift @_ );
     my $overide          = shift @_;
-    my $oriFormHash      =  dclone $self->{FormHash};
+    my $oriFormMap      =  dclone $self->{FormMap};
     foreach my $item ( @{$self->{FormMap }}) {
         my $iname = $item->{name};
         if ( $data->{$iname}) { 
-warn "$iname -- $self->{FormHash}{$iname}{default} +++  $self->{FormHash}{$iname}{placeholder}******************"  ;          
-            $self->{FormHash}{$iname}{default} = $data->{$iname};
-            delete $self->{FormHash}{$iname}{placeholder} ;            
-warn "$iname ++ $data->{$iname} = $self->{FormHash}{$iname}{default} *****************"   ;         
+            $item->{default} = $data->{$iname};
+            delete $item->{placeholder} ;            
         }
-    }
- #p( $self->{FormHash} ) ;           
-
+    }         
     my $generated        = $self->generate( undef, $overide);
-    $self->{FormHash} = dclone $oriFormHash;  
+    $self->{FormMap} = dclone $oriFormMap;  
     return $generated ;  
 }
 
