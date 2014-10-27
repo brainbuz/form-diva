@@ -3,7 +3,7 @@ use warnings;
 no warnings 'uninitialized';
 
 package Form::Diva;
-use Data::Printer;
+# use Data::Printer;
 
 # ABSTRACT: Generate HTML5 form label and input fields
 

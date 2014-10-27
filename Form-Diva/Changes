@@ -1,6 +1,6 @@
 Revision history for Form::Diva
 
-0.16    26 October 2014 add prefill method.
+0.17    28 October 2014 add prefill method.
 0.15    22 October 2014. 
 		radio/checkbox now sets checked="checked" instead of just checked. 
 		Bugs fixed: 
