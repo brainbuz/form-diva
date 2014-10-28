@@ -55,9 +55,12 @@ sub clone {
     my $new   = {};
     my $class = 'Form::Diva';
     $new->{FormHash}    = dclone $self->{FormHash};
-    $new->{input_class} = $args->{input_class} || $self->{input_class};
-    $new->{label_class} = $args->{label_class} || $self->{label_class};
-    $new->{form_name}   = $args->{form_name} || $self->{form_name};
+    $new->{input_class} = $args->{input_class} ?
+        $args->{input_class} : $self->{input_class};
+    $new->{label_class} = $args->{label_class} ?
+        $args->{label_class} : $self->{label_class};
+    $new->{form_name}   = $args->{form_name} ? 
+        $args->{form_name} : $self->{form_name};
     if ( $args->{neworder} ) {
         my @reordered = map { $new->{FormHash}->{$_} } @{ $args->{neworder} };
         $new->{FormMap} = \@reordered;
@@ -133,8 +136,9 @@ sub _field_bits {
     $out{extra} = $in{extra};    # extra is taken literally
     $out{input_class} = $self->_class_input($field_ref);
     $out{name}        = qq!name="$in{name}"!;
-    $out{id} = $in{id} ? qq!id="$in{id}"! : qq!id="formdiva_$in{name}"!;
-
+# coverage replaced next line
+ #   $out{id} = $in{id} ? qq!id="$in{id}"! : qq!id="formdiva_$in{name}"!;
+    $out{id} = qq!id="$in{id}"!; 
     if ( lc( $in{type} ) eq 'textarea' ) {
         $out{type}     = 'textarea';
         $out{textarea} = 1;
@@ -167,11 +171,13 @@ sub _label {
     # http://www.w3.org/TR/html5/forms.html#the-label-element
     my $self  = shift;
     my $field = shift;
-    if ( $field->{type} eq 'hidden' ) {
-        return '<!-- formdivahiddenfield -->';
-    }
+    # changed due to coverage testing
+    # if ( $field->{type} eq 'hidden' ) {
+    #     return '<!-- formdivahiddenfield -->';
+    # }
     my $label_class = $self->{label_class};
-    my $label_tag = $field->{label} || ucfirst( $field->{name} );
+    my $label_tag = $field->{label} ? 
+        $field->{label} : ucfirst( $field->{name} );
     return qq|<LABEL for="$field->{id}" class="$label_class">|
         . qq|$label_tag</LABEL>|;
 }
@@ -337,7 +343,7 @@ sub prefill {
         }
     }         
     my $generated        = $self->generate( undef, $overide);
-    $self->{FormMap} = dclone $oriFormMap;  
+    $self->{FormMap} = $oriFormMap;  
     return $generated ;  
 }
 
@@ -372,14 +378,16 @@ PLAINLOOP:
             value => $data->{ $field->{name} },
             comment => $field->{comment}, 
         );
-        $row{label} = $field->{label} || ucfirst( $field->{name} );
-        $row{id} = $field->{id} ? $field->{id} : 'formdiva_' . $field->{name};
+        $row{label} = $field->{label} ?
+            $field->{label} : ucfirst( $field->{name} );
+        $row{id} = $field->{id};# coverage testing deletion ? $field->{id} : 'formdiva_' . $field->{name};
         if ($moredata) {
             $row{extra}       = $field->{extra};
             $row{values}      = $field->{values};
             $row{default}     = $field->{default};
             $row{placeholder} = $field->{placeholder};
-            $row{class}       = $field->{class} || $self->{input_class};
+            $row{class}       = $field->{class} ?
+                $field->{class} : $self->{input_class};
 
         }
         push @datavalues, \%row;

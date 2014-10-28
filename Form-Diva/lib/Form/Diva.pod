@@ -75,15 +75,15 @@ A second optional hashref may be passed to override the values list for select, 
 
 The data returned is in the form of an array reference where each element of the array three  hashreferences: label, input and comment. 
 
+=head2 prefill
+
+The prefill method differs from generate in that it sets values for data provided to it, but leaves defaults and placeholders for fields without a value. The syntax is the same as for generate and providing no data will provide a blank form as generate would.
+
 =head2 hidden
 
 Generate the hidden fields in the data structure. The generated hidden tags are returned as a singular block of text since no formatting is applicable and they just need to be included somewhere in the form. 
 
   $c->stash( hidden => $diva->hidden( $data_hashref ) );
-
-=head2 prefill
-
-not yet written
 
 =head2 clone
 
@@ -95,7 +95,7 @@ Copy a Form::Diva object optionally modifying some of the values in the copy. Th
 
 =head3 Arguments to clone
 
-Arguments to clone are passed as a hashref. All of the arguments are optional since if omitted the original object is just copied. clone with no arguments would just make a copy of your original object. The arguments are:
+Arguments to clone are passed as a hashref. All of the arguments are optional since if omitted the original object is just copied. The arguments are:
 
 =head4 neworder, newhidden
 
