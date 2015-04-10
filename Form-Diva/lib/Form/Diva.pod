@@ -113,7 +113,7 @@ Array refs of the names of fields in your form. This will let you re-order field
 
 =head4 input_class, label_class
 
-Change these values for your copy.
+Change these values for your copy. Note that id_base cannot be changed in the clone process.
 
 =head2 datavalues
 

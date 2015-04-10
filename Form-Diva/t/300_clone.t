@@ -42,13 +42,12 @@ is( $diva3->input_class, 'different', 'The new input_class is in effect');
 is( $diva3->label_class, 'testclass', 'but we didnt change label_class');
 is( $diva3->{HiddenMap}[1]{name},'hush', 
     'Check a hidden field to make sure it was cloned.');
-
 my $diva4 = $diva2->clone({ 
     neworder => ['phone', 'name', 'secret', 'mystery', ],
     newhidden   => [ 'our_id', 'hush'],
     form_name => 'newform',
+    id_base => 'new_clone_',
     input_class => 'different' });
-
 is( $diva4->{FormMap}[0]{name}, 'phone', 'successfully crossmapped');
 is( $diva4->{FormMap}[1]{name}, 'name', 'where one field moved');
 is( $diva4->{FormMap}[2]{name}, 'secret', 'from hidden to normal');
@@ -77,5 +76,4 @@ like( $generated4->[3]{input},
 like( $generated4->[3]{input},
    qr/custom="bizarre"/,
    'extra for previously hidden field in generated input' );
-
 done_testing();

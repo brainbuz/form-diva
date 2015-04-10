@@ -17,7 +17,7 @@ use Storable 2.51 qw(dclone);
 my %id_uq = ();
 sub _clear_id_uq { %id_uq = () }
 
-our $id_base = 'formdiva_';
+# our $id_base = 'formdiva_';
 
 # True if all fields are used no more than once, if not it dies.
 # Form::Diva->{FormHash} stores all the fields a duplicated fieldname
@@ -45,9 +45,11 @@ sub new {
     $self->{class} = $class;
     unless ( $self->{input_class} ) { die 'input_class is required.' }
     unless ( $self->{label_class} ) { die 'label_class is required.' }
-    if ( $self->{id_base} ) { $id_base = $self->{id_base} }
-    ( $self->{HiddenMap}, my $HHash ) = &_expandshortcuts( $self->{hidden} );
-    ( $self->{FormMap},   my $FHash ) = &_expandshortcuts( $self->{form} );
+    $self->{id_base} = length $self->{id_base} ? $self->{id_base} : 'formdiva_';
+    ( $self->{HiddenMap}, my $HHash )
+        = $self->_expandshortcuts( $self->{hidden} );
+    ( $self->{FormMap}, my $FHash )
+        = $self->_expandshortcuts( $self->{form} );
     $self->{FormHash} = { %{$HHash}, %{$FHash} };
     $self->_field_once;
     return $self;
@@ -76,7 +78,6 @@ sub clone {
         $new->{HiddenMap} = \@hidden;
     }
     else { $new->{HiddenMap} = dclone $self->{HiddenMap}; }
- #   if( $args->{id_base} ) { $new::}
     bless $new, $class;
     $self->_field_once;
     return $new;
@@ -85,7 +86,8 @@ sub clone {
 # specification calls for single letter shortcuts on all fields
 # these all need to expand to the long form.
 sub _expandshortcuts {
-    my $FormMap = shift;    # data passed to new
+    my $self         = shift;
+    my $FormMap      = shift;    # data passed to new
     my %DivaShortMap = (
         qw /
             n name t type i id e extra x extra l label p placeholder
@@ -103,7 +105,7 @@ sub _expandshortcuts {
         unless ( $formfield->{type} ) { $formfield->{type} = 'text' }
         unless ( $formfield->{name} ) { die "fields must have names" }
         unless ( $formfield->{id} ) {
-            $formfield->{id} = $id_base . $formfield->{name};
+            $formfield->{id} = $self->{id_base} . $formfield->{name};
         }
 
         # dclone because otherwise it would be a ref into FormMap
@@ -142,7 +144,8 @@ sub _field_bits {
     $out{extra} = $in{extra};    # extra is taken literally
     $out{input_class} = $self->_class_input($field_ref);
     $out{name}        = qq!name="$in{name}"!;
-    $out{id} = qq!id="$in{id}"!;
+    $out{id}          = qq!id="$in{id}"!;
+
     if ( lc( $in{type} ) eq 'textarea' ) {
         $out{type}     = 'textarea';
         $out{textarea} = 1;
@@ -175,11 +178,6 @@ sub _label {
     # http://www.w3.org/TR/html5/forms.html#the-label-element
     my $self  = shift;
     my $field = shift;
-
-    # changed due to coverage testing
-    # if ( $field->{type} eq 'hidden' ) {
-    #     return '<!-- formdivahiddenfield -->';
-    # }
     my $label_class
         = $field->{label_class}
         ? $field->{label_class}

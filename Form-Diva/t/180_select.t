@@ -56,7 +56,7 @@ my $select3 = Form::Diva->new(
     ],
 );
 
-my ($newform) = &Form::Diva::_expandshortcuts( $select1->{form} );
+my ($newform) = $select1->_expandshortcuts( $select1->{form} );
 
 is( $newform->[0]{type}, 'select', 'check _expandshortcuts type is select' );
 

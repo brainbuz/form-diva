@@ -49,8 +49,8 @@ dies_ok(
     form        => [{qw /t email n Email /}, ],
     ) }, 'Dies: Not providing input_class is fatal' );
 
-my ($newform, $newmap) = &Form::Diva::_expandshortcuts( $diva1->{form} );
-my ($newhid, $hidmap)  = &Form::Diva::_expandshortcuts( $diva1->{hidden} );
+my ($newform, $newmap) = $diva1->_expandshortcuts( $diva1->{form} );
+my ($newhid, $hidmap)  = $diva1->_expandshortcuts( $diva1->{hidden} );
 
 is( scalar( keys %$newmap), scalar(@$newform), 
     '_expandshortcuts check that returned hash and array are same size ');

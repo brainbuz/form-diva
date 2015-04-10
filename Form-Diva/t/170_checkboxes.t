@@ -46,7 +46,7 @@ my $labels1 = Form::Diva->new(
     ],
 );
 
-my ($newform) = &Form::Diva::_expandshortcuts( $radio1->{form} );
+my ($newform) = $radio1->_expandshortcuts( $radio1->{form} );
 
 my $testradio1values = $newform->[0]{values};
 is( $newform->[0]{type}, 'radio', 
