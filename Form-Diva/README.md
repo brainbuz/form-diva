@@ -4,7 +4,7 @@ Form::Diva - Generate HTML5 form label and input fields
 
 # VERSION
 
-version 0.17
+version 0.18
 
 # DESCRIPTION
 
@@ -81,7 +81,7 @@ The data returned is in the form of an array reference where each element of the
 
 ## prefill
 
-The prefill method differs from generate in that it sets values for data provided to it, but leaves defaults and placeholders for fields without a value. The syntax is the same as for generate and providing no data will provide a blank form as generate would.
+The prefill method differs from generate in that while it sets values for data provided to it, but leaves defaults and placeholders for fields without a value. The syntax is the same as for generate and providing no data will provide a blank form as generate would. Internally it temporarily overrides the default value of the fields for which data is provided leaving existing default or placeholder values on the remaining fields.
 
 ## hidden
 
@@ -99,7 +99,7 @@ Copy a Form::Diva object optionally modifying some of the values in the copy. Th
 
 ### Arguments to clone
 
-Arguments to clone are passed as a hashref. All of the arguments are optional since if omitted the original object is just copied. clone with no arguments would just make a copy of your original object. The arguments are:
+Arguments to clone are passed as a hashref. All of the arguments are optional since if omitted the original object is just copied. The arguments are:
 
 #### neworder, newhidden
 
@@ -123,7 +123,7 @@ When these parameters are used without data it is necessary to pass undef in pla
     my $datavalues = $diva->datavalues( undef, 'moredata');
     say $datavalues->[2]{name};
 
-    my $dv = $diva->datavalues( { user => 'me', password = 'secret' } );
+    my $dv = $diva->datavalues( { user => 'me', password => 'secret' } );
     foreach my $row ( @{$dv} ) { say "$row->{name} = $row->{value}" }
       output : user = me
                password = secret
@@ -159,6 +159,7 @@ Multivalued fields (checkboxes, select) are not currently supported, but may be 
 Supported attributes and their shortcuts
 
     c       class        over-ride input_class for this field
+    lc      label_class  over-ride label_class for this field
     d       default      sets value for an empty form
     e,x     extra        any other attribute(s)
     i       id           defaults to formdiva_$field{name}
@@ -167,7 +168,7 @@ Supported attributes and their shortcuts
     p       placeholder  placeholder to show in an empty form
     t       type         checkbox, radio, textarea or any input types
                          type defaults to text input type
-    v       values       for radio and checkbox inputs only
+    v       values       for radio, select and checkbox inputs only
 
             comment      comment has no shortcut and is not included in the input tag
                          or label it is instead returned as a seperate element by generate.
@@ -287,7 +288,7 @@ John Karr <brainbuz@brainbuz.org>
 
 # COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2014 by John Karr.
+This software is Copyright (c) 2015 by John Karr.
 
 This is free software, licensed under:
 

@@ -5,7 +5,14 @@ package DBIx::Class::Row;
 
 sub new {
     my $class = shift;
-    my $self = { @_, data => { fname => 'mocdbic', purpose => 'testing' } };
+    my $self  = {
+        @_,
+        data => {
+            fname     => 'mocdbic',
+            purpose   => 'testing',
+            invisible => 'hide me'
+        }
+    };
     bless $self, $class;
     return $self;
 }
@@ -24,8 +31,9 @@ use Test::Exception;
 use_ok('Form::Diva');
 
 my $notdbic = {
-    fname   => 'realhash',
-    purpose => 'comparison',
+    fname     => 'realhash',
+    purpose   => 'comparison',
+    invisible => 'hide me'
 };
 
 my $mocdbic = DBIx::Class::Row->new;
@@ -41,20 +49,26 @@ is( eq_hash( $rehashnotdbic, $notdbic ),
     1, "_checkdatadbic returns the original with a plain hashref" );
 
 my $rehashdbic = Form::Diva::_checkdatadbic($mocdbic);
-is( eq_hash( $rehashdbic, { fname => 'mocdbic', purpose => 'testing' } ),
-    1, "_checkdatadbic returns the data with a dbic row" );
+is( eq_hash(
+        $rehashdbic,
+        {   fname     => 'mocdbic',
+            purpose   => 'testing',
+            invisible => 'hide me'
+        }
+    ),
+    1,
+    "_checkdatadbic returns the data with a dbic row"
+);
 
-is( eq_hash( 
-        Form::Diva::_checkdatadbic( [qw / not valid data /] ),
-        {} ),
-    1, 
-    'sending an array_ref to _checkdatadbic returns empty hashref' );
+is( eq_hash( Form::Diva::_checkdatadbic( [qw / not valid data /] ), {} ),
+    1, 'sending an array_ref to _checkdatadbic returns empty hashref' );
 
 my $diva = Form::Diva->new(
     label_class => 'testclass',
     input_class => 'form-control',
     form_name   => 'diva1',
     form        => [ { n => 'fname' }, { name => 'purpose' }, ],
+    hidden => [ { n => 'invisible' } ],
 );
 
 my $results_plain = $diva->generate($notdbic);
@@ -78,5 +92,14 @@ like( $results_dbic->[0]{input},
 like( $results_dbic->[1]{input},
     qr/testing"/,
     'dbic result generates input tag with value of purpose field' );
-
+# following 2 tests from issue #2 (github).
+# hidden fields did not set value when data was in a dbic_row object.
+like(
+    $diva->hidden($mocdbic),
+    qr/value="hide me"/,
+    "value of hidden field set when data is from dbic."
+);
+like( $diva->prefill($mocdbic)->[1]{input},
+    qr/testing"/,
+    'prefills input tag with value of purpose field when data is from dbic' );
 done_testing();

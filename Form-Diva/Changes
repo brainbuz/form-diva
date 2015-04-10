@@ -1,5 +1,8 @@
 Revision history for Form::Diva
 
+0.18    5  April 2015 
+	Added support to over-ride the field class as well as the input
+	class.
 0.17    30 October 2014 
 	Add prefill method.
 	Changed some statements so that cover could see they were tested.

@@ -3,6 +3,7 @@ use warnings;
 no warnings 'uninitialized';
 
 package Form::Diva;
+
 # use Data::Printer;
 
 # ABSTRACT: Generate HTML5 form label and input fields
@@ -15,6 +16,8 @@ use Storable 2.51 qw(dclone);
 # and before before the _option_id sub is declared.
 my %id_uq = ();
 sub _clear_id_uq { %id_uq = () }
+
+our $id_base = 'formdiva_';
 
 # True if all fields are used no more than once, if not it dies.
 # Form::Diva->{FormHash} stores all the fields a duplicated fieldname
@@ -42,6 +45,7 @@ sub new {
     $self->{class} = $class;
     unless ( $self->{input_class} ) { die 'input_class is required.' }
     unless ( $self->{label_class} ) { die 'label_class is required.' }
+    if ( $self->{id_base} ) { $id_base = $self->{id_base} }
     ( $self->{HiddenMap}, my $HHash ) = &_expandshortcuts( $self->{hidden} );
     ( $self->{FormMap},   my $FHash ) = &_expandshortcuts( $self->{form} );
     $self->{FormHash} = { %{$HHash}, %{$FHash} };
@@ -54,13 +58,14 @@ sub clone {
     my $args  = shift;
     my $new   = {};
     my $class = 'Form::Diva';
-    $new->{FormHash}    = dclone $self->{FormHash};
-    $new->{input_class} = $args->{input_class} ?
-        $args->{input_class} : $self->{input_class};
-    $new->{label_class} = $args->{label_class} ?
-        $args->{label_class} : $self->{label_class};
-    $new->{form_name}   = $args->{form_name} ? 
-        $args->{form_name} : $self->{form_name};
+    $new->{FormHash} = dclone $self->{FormHash};
+    $new->{input_class}
+        = $args->{input_class} ? $args->{input_class} : $self->{input_class};
+    $new->{label_class}
+        = $args->{label_class} ? $args->{label_class} : $self->{label_class};
+    $new->{form_name}
+        = $args->{form_name} ? $args->{form_name} : $self->{form_name};
+
     if ( $args->{neworder} ) {
         my @reordered = map { $new->{FormHash}->{$_} } @{ $args->{neworder} };
         $new->{FormMap} = \@reordered;
@@ -71,6 +76,7 @@ sub clone {
         $new->{HiddenMap} = \@hidden;
     }
     else { $new->{HiddenMap} = dclone $self->{HiddenMap}; }
+ #   if( $args->{id_base} ) { $new::}
     bless $new, $class;
     $self->_field_once;
     return $new;
@@ -79,14 +85,14 @@ sub clone {
 # specification calls for single letter shortcuts on all fields
 # these all need to expand to the long form.
 sub _expandshortcuts {
+    my $FormMap = shift;    # data passed to new
     my %DivaShortMap = (
         qw /
             n name t type i id e extra x extra l label p placeholder
-            d default v values c class /
+            d default v values c class lc label_class /
     );
     my %DivaLongMap = map { $DivaShortMap{$_}, $_ } keys(%DivaShortMap);
     my $FormHash = {};
-    my $FormMap = shift;    # data passed to new
     foreach my $formfield ( @{$FormMap} ) {
         foreach my $tag ( keys %{$formfield} ) {
             if ( $DivaShortMap{$tag} ) {
@@ -97,7 +103,7 @@ sub _expandshortcuts {
         unless ( $formfield->{type} ) { $formfield->{type} = 'text' }
         unless ( $formfield->{name} ) { die "fields must have names" }
         unless ( $formfield->{id} ) {
-            $formfield->{id} = 'formdiva_' . $formfield->{name};
+            $formfield->{id} = $id_base . $formfield->{name};
         }
 
         # dclone because otherwise it would be a ref into FormMap
@@ -136,9 +142,7 @@ sub _field_bits {
     $out{extra} = $in{extra};    # extra is taken literally
     $out{input_class} = $self->_class_input($field_ref);
     $out{name}        = qq!name="$in{name}"!;
-# coverage replaced next line
- #   $out{id} = $in{id} ? qq!id="$in{id}"! : qq!id="formdiva_$in{name}"!;
-    $out{id} = qq!id="$in{id}"!; 
+    $out{id} = qq!id="$in{id}"!;
     if ( lc( $in{type} ) eq 'textarea' ) {
         $out{type}     = 'textarea';
         $out{textarea} = 1;
@@ -148,7 +152,7 @@ sub _field_bits {
         $out{textarea} = 0;
         if ( $in{type} eq 'hidden' ) { $out{hidden} = 1 }
     }
-    if (keys %{$data}) {   ;
+    if ( keys %{$data} ) {
         $out{placeholder} = '';
         $out{rawvalue} = $data->{$fname} || '';
     }
@@ -171,13 +175,17 @@ sub _label {
     # http://www.w3.org/TR/html5/forms.html#the-label-element
     my $self  = shift;
     my $field = shift;
+
     # changed due to coverage testing
     # if ( $field->{type} eq 'hidden' ) {
     #     return '<!-- formdivahiddenfield -->';
     # }
-    my $label_class = $self->{label_class};
-    my $label_tag = $field->{label} ? 
-        $field->{label} : ucfirst( $field->{name} );
+    my $label_class
+        = $field->{label_class}
+        ? $field->{label_class}
+        : $self->{label_class};
+    my $label_tag
+        = $field->{label} ? $field->{label} : ucfirst( $field->{name} );
     return qq|<LABEL for="$field->{id}" class="$label_class">|
         . qq|$label_tag</LABEL>|;
 }
@@ -240,15 +248,16 @@ sub _option_input {    # field, input_class, data;
     my $field          = shift;    # field definition from FormMap or FormHash
     my $data           = shift;    # data for this form field
     my $replace_fields = shift;    # valuelist to use instead of default
-    my $datavalue      = $data->{ $field->{name} };
-    my $output         = '';
+    my $datavalue   = $data->{ $field->{name} };
+    my $output      = '';
     my $input_class = $self->_class_input($field);
     my $extra       = $field->{extra} || "";
+
     # in case default is 0, it must be checked in a string context
-    my $default     = length ($field->{default}) 
+    my $default = length( $field->{default} )
         ? do {
         if   ( keys %{$data} ) {undef}
-        else { $field->{default} }
+        else                   { $field->{default} }
         }
         : undef;
     my @values
@@ -262,8 +271,8 @@ sub _option_input {    # field, input_class, data;
             my ( $value, $v_lab ) = ( split( /\:/, $val ), $val );
             my $idf = $self->_option_id( $field->{id}, $value );
             my $selected = '';
-            if    ( $datavalue eq $value )  { $selected = 'selected ' }
-            elsif ( $default eq $value )    { $selected = 'selected ' }
+            if    ( $datavalue eq $value ) { $selected = 'selected ' }
+            elsif ( $default eq $value )   { $selected = 'selected ' }
             $output
                 .= qq| <option value="$value" $idf $selected>$v_lab</option>\n|;
         }
@@ -274,10 +283,12 @@ sub _option_input {    # field, input_class, data;
             my ( $value, $v_lab ) = ( split( /\:/, $val ), $val );
             my $idf = $self->_option_id( $field->{id}, $value );
             my $checked = '';
-            if    ( $datavalue eq $value )    { 
-                $checked = q !checked="checked" ! }
-            elsif ( $default eq $value ) { 
-                $checked = q !checked="checked" ! }
+            if ( $datavalue eq $value ) {
+                $checked = q !checked="checked" !;
+            }
+            elsif ( $default eq $value ) {
+                $checked = q !checked="checked" !;
+            }
             $output
                 .= qq!<input type="$field->{type}" $input_class $extra name="$field->{name}" $idf value="$value" $checked>$v_lab<br>\n!;
         }
@@ -299,9 +310,7 @@ sub generate {
     my $self      = shift @_;
     my $data      = _checkdatadbic( shift @_ );
     my $overide   = shift @_;
-     my @generated = ();
-# p( $self->{FormHash} ) ; 
-# die "exit here\n";    
+    my @generated = ();
     $self->_clear_id_uq;    # needs to be empty when form generation starts.
     foreach my $field ( @{ $self->{FormMap} } ) {
         my $input = undef;
@@ -309,11 +318,10 @@ sub generate {
             || $field->{type} eq 'checkbox'
             || $field->{type} eq 'select' )
         {
-            $input = $self->_option_input(
-                $field,
-                $data,
+            $input
+                = $self->_option_input( $field, $data,
                 $overide->{ $field->{name} },
-            );
+                );
         }
         else {
             $input = $self->_input( $field, $data );
@@ -331,25 +339,25 @@ sub generate {
 }
 
 sub prefill {
-    my $self             = shift @_;
-    my $data             = _checkdatadbic( shift @_ );
-    my $overide          = shift @_;
-    my $oriFormMap      =  dclone $self->{FormMap};
-    foreach my $item ( @{$self->{FormMap }}) {
+    my $self       = shift @_;
+    my $data       = _checkdatadbic( shift @_ );
+    my $overide    = shift @_;
+    my $oriFormMap = dclone $self->{FormMap};
+    foreach my $item ( @{ $self->{FormMap} } ) {
         my $iname = $item->{name};
-        if ( $data->{$iname}) { 
+        if ( $data->{$iname} ) {
             $item->{default} = $data->{$iname};
-            delete $item->{placeholder} ;            
+            delete $item->{placeholder};
         }
-    }         
-    my $generated        = $self->generate( undef, $overide);
-    $self->{FormMap} = $oriFormMap;  
-    return $generated ;  
+    }
+    my $generated = $self->generate( undef, $overide );
+    $self->{FormMap} = $oriFormMap;
+    return $generated;
 }
 
 sub hidden {
     my $self   = shift;
-    my $data   = shift;
+    my $data   = _checkdatadbic( shift @_ );
     my $output = '';
     foreach my $field ( @{ $self->{HiddenMap} } ) {
         $output .= $self->_input_hidden( $field, $data ) . "\n";
@@ -373,21 +381,22 @@ PLAINLOOP:
             unless ( $data->{ $field->{name} } ) { next PLAINLOOP }
         }
         my %row = (
-            name  => $field->{name},
-            type  => $field->{type},
-            value => $data->{ $field->{name} },
-            comment => $field->{comment}, 
+            name    => $field->{name},
+            type    => $field->{type},
+            value   => $data->{ $field->{name} },
+            comment => $field->{comment},
         );
-        $row{label} = $field->{label} ?
-            $field->{label} : ucfirst( $field->{name} );
-        $row{id} = $field->{id};# coverage testing deletion ? $field->{id} : 'formdiva_' . $field->{name};
+        $row{label}
+            = $field->{label} ? $field->{label} : ucfirst( $field->{name} );
+        $row{id} = $field->{id}
+            ; # coverage testing deletion ? $field->{id} : 'formdiva_' . $field->{name};
         if ($moredata) {
             $row{extra}       = $field->{extra};
             $row{values}      = $field->{values};
             $row{default}     = $field->{default};
             $row{placeholder} = $field->{placeholder};
-            $row{class}       = $field->{class} ?
-                $field->{class} : $self->{input_class};
+            $row{class}
+                = $field->{class} ? $field->{class} : $self->{input_class};
 
         }
         push @datavalues, \%row;

@@ -22,6 +22,12 @@ my $diva1 = Form::Diva->new(
             extra   => 'disabled',
             default => 57,
         },
+        {   name    => 'label_over',
+            type    => 'text',
+            label_class => 'not_that_class we_can_override_label_class',
+            label   => 'Label Over-Ride',
+        },
+
     ],
 );
 
@@ -52,6 +58,9 @@ foreach my $test (
     [   $diva1->_label( $fields[3] ),
         '<LABEL for="formdiva_our_id" class="testclass">Our_id</LABEL>'
     ],
+    [   $diva1->_label( $fields[4] ),
+        '<LABEL for="formdiva_label_over" class="not_that_class we_can_override_label_class">Label Over-Ride</LABEL>'
+    ],    
     [   $diva2->_label( $radiofields[0] ),
         '<LABEL for="formdiva_radiotest" class="testclass">Radiotest</LABEL>'
     ],

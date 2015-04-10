@@ -89,4 +89,32 @@ foreach my $case (qw /select radio checkbox/) {
     is( $datavalues->[1]{id}, "zmyxfd", "$case datavalues returned preset id zmyxfd" );
 }
 
+note( 'check id_base');
+my $diva2 = Form::Diva->new(
+    label_class => 'testclass',
+    input_class => 'form-control',
+    id_base => 'myidbase_',
+    form_name   => 'diva2',
+    form        => [
+        { n => 'name', t => 'text', p => 'Your Name', l => 'Full Name' },
+        { name => 'phone', type => 'tel', extra => 'required' },
+        {qw / n email t email l Email c form-email id eml/},
+        { name => 'our_id', type => 'number', extra => 'disabled' },
+    ],
+    hidden => [
+        { n => 'secret' },
+        { n => 'hush', default => 'very secret' },
+        {   n     => 'mystery',
+            id    => 'mystery_site_url',
+            extra => 'custom="bizarre"',
+            type  => "url"
+        }
+    ],
+);
+
+my $generated2 = $diva2->generate;
+like( $generated2->[0]{input},
+        qr/id="myidbase_name"/,
+        "generated id on pattern myidbase myidbase_name" );
+
 done_testing;
