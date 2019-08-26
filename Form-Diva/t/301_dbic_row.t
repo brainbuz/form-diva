@@ -102,4 +102,9 @@ like(
 like( $diva->prefill($mocdbic)->[1]{input},
     qr/testing"/,
     'prefills input tag with value of purpose field when data is from dbic' );
+
+note("Bug in prior versions -- datavalues did not work with dbic row data");
+my $dv_dbic = $diva->datavalues($mocdbic) ;
+is ( $dv_dbic->[0]{value}, 'mocdbic', "Test that datavalues method also worked with dbic data");
+is ( $dv_dbic->[1]{id}, 'formdiva_purpose', "Test that datavalues method also worked with dbic data");
 done_testing();

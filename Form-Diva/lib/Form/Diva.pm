@@ -4,11 +4,13 @@ no warnings 'uninitialized';
 
 package Form::Diva;
 
+our $VERSION='1.02';
+
 # use Data::Printer;
 
 # ABSTRACT: Generate HTML5 form label and input fields
 
-use Storable 2.51 qw(dclone);
+use Storable 3.15 qw(dclone);
 
 # The _option_id sub needs access to a variable for hashing the ids
 # in use, even though it is initialized at the beginning of generate,
@@ -184,7 +186,7 @@ sub _label {
         : $self->{label_class};
     my $label_tag
         = $field->{label} ? $field->{label} : ucfirst( $field->{name} );
-    return qq|<LABEL for="$field->{id}" class="$label_class">|
+    return qq|<LABEL for="$field->{id}" id="$field->{id}_label" class="$label_class">|
         . qq|$label_tag</LABEL>|;
 }
 
@@ -363,9 +365,14 @@ sub hidden {
     return $output;
 }
 
+
+    # my $data      = _checkdatadbic( shift @_ );
+    # my $overide   = shift @_;
+    # my @generated = ();
+
 sub datavalues {
     my $self      = shift;
-    my $data      = shift;
+    my $data      = _checkdatadbic( shift @_ );
     my $skipempty = 0;
     my $moredata  = 0;
     for (@_) {

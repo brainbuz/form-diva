@@ -4,13 +4,17 @@ Form::Diva - Generate HTML5 form label and input fields
 
 # VERSION
 
-version 0.19
+version 1.02
 
 # DESCRIPTION
 
 Generate Form Label and Input Tags from a simple data structure.
 Simplify form code in your views without replacing it without a lot of even
 uglier Perl Code in your Controller. 
+
+# VERSION
+
+Version 1.02
 
 # USAGE
 
@@ -258,9 +262,9 @@ Wherever works best for you. Think of it as preparing your data for the View.
 
 # SEE ALSO
 
-Here are a few other Form Modules on CPAN: HTML::Form::Fu, Form::Sensible, Form::Factory, Form::Toolkit
+Here are a few other Form Modules on CPAN: [HTML::Form::Fu](https://metacpan.org/pod/HTML::Form::Fu), [Form::Sensible](https://metacpan.org/pod/Form::Sensible), [Form::Factory](https://metacpan.org/pod/Form::Factory), [Form::Toolkit](https://metacpan.org/pod/Form::Toolkit)
 
-Form::Diva is meant to be used with a Templating System. Template::Toolkit is the default templating system for Catalyst and Dancer. Template::Alloy is a drop in replacement for TemplateToolkit. Mojo::Template is a Perl reimplemenation of ERB and the default for Mojolicious.
+Form::Diva is meant to be used with a Templating System. [Template::Toolkit](https://metacpan.org/pod/Template::Toolkit) is the default templating system for Catalyst and Dancer. [Template::Alloy](https://metacpan.org/pod/Template::Alloy) is a drop in replacement for TemplateToolkit. [Mojo::Template](https://metacpan.org/pod/Mojo::Template) is a Perl reimplemenation of ERB and the default for [Mojolicious](https://metacpan.org/pod/Mojolicious).
 
 # AUTHOR
 
@@ -280,7 +284,7 @@ You can also look for information at:
 
 # LICENSE AND COPYRIGHT
 
-Copyright 2014 John Karr.
+Copyright 2014-2019 John Karr.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
