@@ -255,9 +255,9 @@ Wherever works best for you. Think of it as preparing your data for the View.
 
 =head1 SEE ALSO
 
-Here are a few other Form Modules on CPAN: HTML::Form::Fu, Form::Sensible, Form::Factory, Form::Toolkit
+Here are a few other Form Modules on CPAN: L<HTML::Form::Fu>, L<Form::Sensible>, L<Form::Factory>, L<Form::Toolkit>
 
-Form::Diva is meant to be used with a Templating System. Template::Toolkit is the default templating system for Catalyst and Dancer. Template::Alloy is a drop in replacement for TemplateToolkit. Mojo::Template is a Perl reimplemenation of ERB and the default for Mojolicious.
+Form::Diva is meant to be used with a Templating System. L<Template::Toolkit> is the default templating system for Catalyst and Dancer. L<Template::Alloy> is a drop in replacement for TemplateToolkit. L<Mojo::Template> is a Perl reimplemenation of ERB and the default for L<Mojolicious>.
 
 =head1 AUTHOR
 
