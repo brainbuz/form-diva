@@ -1,5 +1,5 @@
 # File Author / Maintainer
-AUTHOR Sophie Lemoine <slemoine@biologie.ens.fr>
+# AUTHOR Sophie Lemoine <slemoine@biologie.ens.fr>
 MAINTAINER John Karr <brainbuz@cpan.org>
 
 # Update the repository sources list
@@ -16,3 +16,4 @@ RUN apt-get install --yes \
 
 # Install perl modules 
 RUN apt-get install -y cpanminus
+
