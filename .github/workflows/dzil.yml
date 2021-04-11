@@ -41,6 +41,8 @@ jobs:
           cpanfile: "Form-Diva/cpanfile"
           sudo: false
 
-      - run: |
-        cd Form-Diva
-        dzil test
+      - name: Run Tests
+        run: |
+          cd Form-Diva
+          dzil test
+
