@@ -1,4 +1,4 @@
-name: workflow_windows
+name: Windows
 
 # Controls when the action will run.
 on:

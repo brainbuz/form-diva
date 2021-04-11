@@ -1,4 +1,4 @@
-name: workflow_macos
+name: MacOS
 
 # Controls when the action will run.
 on:
