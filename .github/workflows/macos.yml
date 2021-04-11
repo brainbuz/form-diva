@@ -38,7 +38,14 @@ jobs:
           perl-version: ${{ matrix.perl }}
 
       - run: perl -V
-      - run: cpanm --installdeps --cpanfile Form-Diva/cpanfile
+
+      - name: Dependencies install-with-cpm
+        uses: perl-actions/install-with-cpm@stable
+        with:
+          cpanfile: "Form-Diva/cpanfile"
+          sudo: false
+
+#      - run: cpanm --installdeps --cpanfile Form-Diva/cpanfile
 
       - name: Run Tests
         run: |
