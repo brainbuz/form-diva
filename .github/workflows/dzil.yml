@@ -1,4 +1,4 @@
-name: workflow_distzilla
+name: test on linux with distzilla
 
 # Controls when the action will run.
 on:
