@@ -1,4 +1,4 @@
-name: test on linux with distzilla
+name: test on linux with prove 
 
 # Controls when the action will run.
 on:
@@ -44,5 +44,5 @@ jobs:
       - name: Run Tests
         run: |
           cd Form-Diva
-          dzil test
+          prove -lv t/*.t
 
