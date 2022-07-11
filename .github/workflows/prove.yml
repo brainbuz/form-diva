@@ -2,11 +2,11 @@ name: test on linux with prove
 
 # Controls when the action will run.
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
+  # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ main, ci ]
+    branches: [ master, ci ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -20,6 +20,8 @@ jobs:
       fail-fast: false
       matrix:
         perl-version:
+          - "5.36"
+          - "5.34"
           - "5.32"
           - "5.30"
           - "5.28"
