@@ -180,12 +180,15 @@ sub _label {
     # http://www.w3.org/TR/html5/forms.html#the-label-element
     my $self  = shift;
     my $field = shift;
+
+    return '' if exists $field->{label} && !defined $field->{label};
+
     my $label_class
         = $field->{label_class}
         ? $field->{label_class}
         : $self->{label_class};
     my $label_tag
-        = $field->{label} ? $field->{label} : ucfirst( $field->{name} );
+        = exists $field->{label} ? $field->{label} || '' : ucfirst( $field->{name} );
     return qq|<LABEL for="$field->{id}" id="$field->{id}_label" class="$label_class">|
         . qq|$label_tag</LABEL>|;
 }
@@ -392,7 +395,7 @@ PLAINLOOP:
             comment => $field->{comment},
         );
         $row{label}
-            = $field->{label} ? $field->{label} : ucfirst( $field->{name} );
+            = exists $field->{label} ? $field->{label} || '' : ucfirst( $field->{name} );
         $row{id} = $field->{id}
             ; # coverage testing deletion ? $field->{id} : 'formdiva_' . $field->{name};
         if ($moredata) {
