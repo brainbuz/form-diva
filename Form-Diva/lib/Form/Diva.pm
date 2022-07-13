@@ -4,7 +4,7 @@ no warnings 'uninitialized';
 
 package Form::Diva;
 
-our $VERSION='1.03';
+our $VERSION='1.04';
 
 # use Data::Printer;
 
@@ -207,8 +207,6 @@ sub _input {
         $input .= qq|<INPUT $B{type} $B{name} $B{id}
         $B{input_class} $B{placeholder} $B{extra} $B{value} >|;
     }
-    $input =~ s/\s+/ /g;     # remove extra whitespace.
-    $input =~ s/\s+>/>/g;    # cleanup space before closing >
     return $input;
 }
 
