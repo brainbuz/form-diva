@@ -14,7 +14,7 @@ uglier Perl Code in your Controller.
 
 # VERSION
 
-Version 1.03
+Version 1.04
 
 # USAGE
 
@@ -262,9 +262,9 @@ Wherever works best for you. Think of it as preparing your data for the View.
 
 # SEE ALSO
 
-Here are a few other Form Modules on CPAN: [HTML::Form::Fu](https://metacpan.org/pod/HTML::Form::Fu), [Form::Sensible](https://metacpan.org/pod/Form::Sensible), [Form::Factory](https://metacpan.org/pod/Form::Factory), [Form::Toolkit](https://metacpan.org/pod/Form::Toolkit)
+Here are a few other Form Modules on CPAN: [HTML::Form::Fu](https://metacpan.org/pod/HTML%3A%3AForm%3A%3AFu), [Form::Sensible](https://metacpan.org/pod/Form%3A%3ASensible), [Form::Factory](https://metacpan.org/pod/Form%3A%3AFactory), [Form::Toolkit](https://metacpan.org/pod/Form%3A%3AToolkit)
 
-Form::Diva is meant to be used with a Templating System. [Template::Toolkit](https://metacpan.org/pod/Template::Toolkit) is the default templating system for Catalyst and Dancer. [Template::Alloy](https://metacpan.org/pod/Template::Alloy) is a drop in replacement for TemplateToolkit. [Mojo::Template](https://metacpan.org/pod/Mojo::Template) is a Perl reimplemenation of ERB and the default for [Mojolicious](https://metacpan.org/pod/Mojolicious).
+Form::Diva is meant to be used with a Templating System. [Template::Toolkit](https://metacpan.org/pod/Template%3A%3AToolkit) is the default templating system for Catalyst and Dancer. [Template::Alloy](https://metacpan.org/pod/Template%3A%3AAlloy) is a drop in replacement for TemplateToolkit. [Mojo::Template](https://metacpan.org/pod/Mojo%3A%3ATemplate) is a Perl reimplemenation of ERB and the default for [Mojolicious](https://metacpan.org/pod/Mojolicious).
 
 # AUTHOR
 
