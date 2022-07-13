@@ -1,6 +1,7 @@
 Revision history for Form::Diva
 
-1.03    17 Mar 2020 minor pod fix, remove class deprecated in bootstrap 4.
+1.04  <placeholder for next release>
+1.03  17 Mar 2020 minor pod fix, remove class deprecated in bootstrap 4.
 1.02	26 Aug 2019 minor pod fix.
 1.01	26 Feb 2019
   added a generated id to the label for tag on a field.

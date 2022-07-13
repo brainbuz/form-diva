@@ -11,7 +11,7 @@ uglier Perl Code in your Controller.
 
 =head1 VERSION
 
-Version 1.03
+Version 1.04
 
 =head1 USAGE
 
