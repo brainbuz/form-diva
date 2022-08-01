@@ -162,13 +162,16 @@ sub _field_bits {
         $out{rawvalue} = $data->{$fname} || '';
     }
     else {
-        if ( $in{placeholder} ) {
-            $out{placeholder} = qq!placeholder="$in{placeholder}"!;
-        }
-        else { $out{placeholder} = '' }
         if   ( $in{default} ) { $out{rawvalue} = $in{default}; }
         else                  { $out{rawvalue} = '' }
     }
+    if ( $in{placeholder} ) {
+        $out{placeholder} = qq!placeholder="$in{placeholder}"!;
+    }
+    else {
+        $out{placeholder} = '';
+    }
+
     $out{value} = qq!value="$out{rawvalue}"!;
     return %out;
 }
@@ -348,7 +351,6 @@ sub prefill {
         my $iname = $item->{name};
         if ( $data->{$iname} ) {
             $item->{default} = $data->{$iname};
-            delete $item->{placeholder};
         }
     }
     my $generated = $self->generate( undef, $overide );
@@ -411,3 +413,4 @@ PLAINLOOP:
 }
 
 1;
+
