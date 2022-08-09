@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  tester:
+    image: divatester
+    working_dir: /build
+    volumes:
+      - type: bind
+        source: ./build
+        target: /build
+    command: /build/runtest.sh
+
+    # volumes:
+    #    - ./root/instantclient_12_2/ojdbc8.jar:/etc/kafka-connect/jars/ojdbc8.jar
+    #    - type: bind
+    #      source: $HOST/etc
+    #      target: /kernel-etc
