@@ -2,16 +2,11 @@ version: "3.9"
 
 services:
   tester:
-    image: divatester
+    image: perldocker/perl-tester
+    container_name: diva-test
     working_dir: /build
     volumes:
       - type: bind
-        source: ./build
+        source: ../
         target: /build
-    command: /build/runtest.sh
-
-    # volumes:
-    #    - ./root/instantclient_12_2/ojdbc8.jar:/etc/kafka-connect/jars/ojdbc8.jar
-    #    - type: bind
-    #      source: $HOST/etc
-    #      target: /kernel-etc
+    command: /build/docker/build/runtest.sh
