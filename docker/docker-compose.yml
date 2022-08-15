@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   tester:
-    image: perldocker/perl-tester
+    image: "perldocker/perl-tester:${PERLVER}"
     container_name: diva-test
     working_dir: /build
     volumes:
