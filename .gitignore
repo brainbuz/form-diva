@@ -4,3 +4,4 @@ blib/
 .build
 pod2htmd.tmp
 result
+local/
