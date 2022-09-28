@@ -4,7 +4,7 @@ no warnings 'uninitialized';
 
 package Form::Diva;
 
-our $VERSION='1.04';
+our $VERSION='1.05';
 
 # use Data::Printer;
 
