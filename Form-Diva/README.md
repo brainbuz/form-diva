@@ -4,7 +4,7 @@ Form::Diva - Generate HTML5 form label and input fields
 
 # VERSION
 
-version 1.04
+version 1.05
 
 # DESCRIPTION
 
@@ -14,7 +14,7 @@ uglier Perl Code in your Controller.
 
 # VERSION
 
-Version 1.04
+Version 1.05
 
 # USAGE
 
