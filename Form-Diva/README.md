@@ -268,7 +268,13 @@ Form::Diva is meant to be used with a Templating System. [Template::Toolkit](htt
 
 # AUTHOR
 
-John Karr, `brainbuz at brainbuz.org`
+John Karr [BRAINBUZ](https://metacpan.org/author/BRAINBUZ)
+
+## CONTRIBUTORS
+
+Bartosz Jarzyna [BRTASTIC](https://metacpan.org/author/BRTASTIC)
+
+Mohammad S Anwar [MANWAR](https://metacpan.org/author/MANWAR)
 
 # BUGS
 
